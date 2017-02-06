@@ -275,7 +275,7 @@ ol{padding-left: 24px;}
 .list-unstyle ul{list-style:disc;}
 .list-inline li{display:inline-block;padding:0 10px;width:auto;}
 /***布局***/
-.layout{width: 100%;}
+.layout{width: 100%;margin-bottom: 20px; margin-top: 40px; }
 .container{margin: 0 auto;width: 1200px;}
 /*宽度比例*/
 .w10 { width: 10%; }
