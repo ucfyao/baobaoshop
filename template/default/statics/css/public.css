@@ -215,22 +215,22 @@ img { display: block; }
 .short-share .button:hover { background-color: #fff; }
 
 /*.item-info { float: left; width: 622px; min-height: 495px; border-left: 1px solid #eee; border-right: 1px solid #eee; color: #272636; background-color: #fafafa; }*/
-.item-info { float: left; width: 622px; min-height: 495px;  color: #272636; }
+.item-info { float: left; width: 602px; margin-left: 20px; min-height: 495px;  color: #272636; border-left: 1px solid #eee;}
 .item-info .name { padding: 20px 10px 20px 42px; }
 .item-info .name h1 { line-height: 45px; font-weight: bold; }
 .item-info .name p { min-height: 16px; line-height: normal; }
 /*.item-info .summary { padding: 20px 10px 8px 30px; border-top: 1px solid #eaeaea; border-bottom: 1px solid #eaeaea; background-color: #eee; }*/
-.item-info .summary { padding: 20px 10px 8px 30px; margin-bottom: 53px;  background-color: #F7F7F7; }
+.item-info .summary { padding: 20px 10px 8px 30px; margin-bottom: 3px;  background-color: #F7F7F7; }
 .item-info .summary .market-price { margin-bottom: 6px; }
 .item-info .summary .market-price b { text-decoration: line-through; }
 .item-info .summary .price-info { margin-bottom: 13px; }
-.item-info .summary .promo-price em { font-size: 18px; }
+.item-info .summary .promo-price em { font-size: 32px; }
 .item-info .summary .timer em { display: inline-block; margin: 0 10px; width: 29px; height: 18px; text-align: center; line-height: 18px; background-color: #f7f5f8; }
 .item-info .choose-wrap { position: relative; margin: 7px 0; padding: 13px; }
 .item-info .choose-wrap.error { padding: 10px; border: 3px solid #FF6138; }
 .item-info .choose-wrap .dl { float: left; width: 100%; }
-.item-info .choose-wrap .dt { float: left; width: 67px; text-align: right; line-height: 24px; }
-.item-info .choose-wrap .dd { float: left; margin-left: 7px; width: 520px; }
+.item-info .choose-wrap .dt { float: left; width: 67px; text-align: right; line-height: 36px; }
+.item-info .choose-wrap .dd { float: left; margin-left: 27px; width: 520px; }
 .item-info .choose-wrap .choose-tips { display: none; position: absolute; right: 10px; bottom: 0; }
 .choose-wrap.error .choose-tips { display: block; }
 .item-info .item-btn { margin-left: 20px; }
@@ -273,16 +273,17 @@ img { display: block; }
 .item-btn svg { display: block; }
 .item-btn:hover { color: #fff; background-color: #00A388; }
 
-.item-title { height: 51px; line-height: 50px; border-bottom: 1px solid #eee; text-indent: 10px; }
+.item-title { height: 70px; line-height: 70px; border-bottom: 1px solid #eee; text-indent: 10px; font-size: 19px; background: #fff; }
 .item-double-txt { padding: 5px; line-height: 18px; text-align: center; overflow: hidden; }
 .product-ext { float: left; width: 208px; }
-.product-ext .ext-content { border-color: #eee; }
+.product-ext .ext-content { border-color: #eee; background: #fff; border-bottom: 1px solid #ccc; }
 .product-ext .ext-content .item-double-txt { float: left; width: 69px; height: 50px; border-right: 1px solid #eee; }
 .product-ext .ext-content .item-double-txt.last { width: 70px; border-right: 0; }
 .ext-content .ext-show { width: 100%; overflow: hidden; }
 .ext-con-wrap { width: 196px; }
 .ext-con-wrap .ext-con-box { float: left; margin-right: 8px; }
 .ext-con-wrap .ext-con-box a { display: block; width: 90px; height: 90px; }
+.ext-con-wrap .ext-con-box a img { #border:1px solid #ccc;}
 .ext-con-wrap .ext-con-box p { line-height: 30px; color: #FF6138; }
 /*组合商品*/
 .fitting-suit { border-top-width: 2px; border-top-color: #999; }
@@ -309,7 +310,12 @@ img { display: block; }
 .p-tab-trigger-wrap { width: 100%; height: 50px; #border-bottom: 1px solid #eee; #background-color: #f7f7f7;  }
 .p-tab-trigger-wrap .ui-switchtab-item { padding: 5px 66px 5px 0px; line-height: 40px; }
 .p-tab-trigger-wrap .ui-switchtab-item a { #padding: 0 19px; }
+.p-tab-trigger-wrap .current a { color:#009688; }
+.p-tab-trigger-wrap .current a:hover { color:#FF6138; }
+
 .p-tab-trigger-wrap .current a { font-size:19px; #margin-top: -6px; #margin-left: -1px; #padding: 0  18px; line-height: 34px; #border-top: 2px solid #00A388; #border-left: 1px solid #ddd; #border-right: 1px solid #ddd; #color: #00A388; #background-color: #fff; }
+.p-tab-trigger-wrap .current a { color:#009688; }
+.p-tab-trigger-wrap .current a:hover { color:#FF6138; }
 .ui-switch-panel { display: none; }
 .ui-selected { display: block; padding: 20px; }
 /*商品详情*/
@@ -320,10 +326,10 @@ img { display: block; }
 .product-detail img { display: block; }
 .product-detail .right, .list-right { width: 980px; }
 #pro-detail-right { position: relative; }
-#item-bar {  width: 980px; background-color: #fff; }
-#item-bar .tab { position: relative; margin-top: 4px; height: 48px; border-bottom: 1px solid #eee;  background-color: #fff; }
+#item-bar {  width: 980px; #background-color: #fff; }
+#item-bar .tab { position: relative; margin-top: 4px; height: 48px; border-bottom: 1px solid #eee;  #background-color: #fff; }
 #item-bar .item-btn { display: none;margin-top: 2px; right: 10px; top: 2px; padding: 1px 0; width: 110px; }
-#pro-detail-right .item-bar { position: fixed; top: 0; z-index: 999; }
+#pro-detail-right .item-bar { position: fixed; top: 0; z-index: 999; background-color: #fff;  }
 #pro-detail-right .item-bar div.item-btn { display: block !important; }
 .p-parameter-list li { float: left; padding-left: 20px; width: 239px; line-height: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .detail-content-wrap { width: 980px; overflow: hidden; }
@@ -657,7 +663,7 @@ img { display: block; }
 .join-cart-success .cart .cart-goods-title { width: 140px; }
 
 /***footer***/
-.global-footer .hd-service .fore { float: left; width: 205px; }
+.global-footer .hd-service .fore { float: left; width: 205px; display: none; }
 .global-footer .hd-service .last { float: right; width: 175px; }
 /*.footer-logo{ height: 45px; } 谁加的这个*/
 .hd-service .fore dt { margin: 15px 0; font-size: 14px; }
@@ -964,7 +970,6 @@ img { display: block; }
 .shade-slider .shade-right .next { left: 20px; background-position: -32px -255px; }
 .shade-slider .box { float: left; position: relative; left: -1200px; text-align: center; }
 .shade-slider .box .item { float: left; }
-.shade-slider .box .item li a img { width: auto; margin-left: auto; margin-right: auto; }
 .shade-slider .thumb { position: absolute; left: 0; bottom: 20px; width: 100%; text-align: center; z-index: 4; }
 .shade-slider .thumb li { display: inline-block; margin: 0 5px; width: 14px; height: 14px; border-radius: 7px; opacity: 0.4; background-color: black; cursor: pointer; }
 .shade-slider .thumb li.current { background-color: red; }
@@ -1014,13 +1019,13 @@ img { display: block; }
 
 .floor { font-size: 14px; }
 .floor .left { float: left; width: 947px; }
-.floor-info { position: relative; height: 46px; #border-bottom: 1px solid #00A388; font-size: 18px; }
+.floor-info { position: relative; height: 46px; border-bottom: 1px solid #ff6138; font-size: 18px; }
 .floor-info .floor-logo { float: left; width: 46px; height: 46px; text-align: center; line-height: 46px; color: #fff; background:#FF6138 url(#../images/ico_general.png) no-repeat 0 -327px; border-top-left-radius: 15px; }
 .floor-info h3 { float: left; margin-top: 9px; margin-left: 12px; line-height: 36px; }
 .floor .floor-info ul { margin-top: 15px; margin-right: 1px; padding-left: 1px; /*border-bottom: 1px solid #00A388;*/ display: #none; }
-.floor .floor-info ul li {padding: 0 10px; height: 30px; text-align: center; line-height: 30px; }
-.floor .floor-info ul li.current { margin: -2px -1px -1px;padding: 0 10px;height: 33px; border-top: 2px solid #00A388; border-left: 1px solid #00A388; border-right: 1px solid #00A388; background-color: #fff; }
-.floor-content { height: 600px; #border: 1px solid #eee; border-top: 0; overflow: hidden; }
+.floor .floor-info ul li {padding: 0 30px; height: 30px; text-align: center; line-height: 30px; }
+.floor .floor-info ul li.current { margin: -7px -1px -1px;padding: 0 30px;height: 38px; border-top: 1px solid #ff6138; border-left: 1px solid #ff6138; border-right: 1px solid #ff6138; background-color: #f7f7f7; }
+.floor-content { height: 600px; #border: 1px solid #eee; border-top: 0; overflow: hidden; margin-top: 20px; }
 .floor-content .left ul { margin: 14px 0 7px 0px; width: 936px;  }
 .floor-content .left ul li {     float: left;margin-right: 1px;width: 233px;margin-bottom: 1px;background: #fff;}
 .floor .right { float: right; padding-left: 9px; width: 249px; }

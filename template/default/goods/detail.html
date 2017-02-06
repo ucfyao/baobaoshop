@@ -197,7 +197,7 @@
 		<div class="ext-content padding clearfix">
 			<div class="ext-show">
 				<div class="ext-con-wrap">
-					{hd:goods tagfile="goods" method="lists" num="6" order="rand()"}
+					{hd:goods tagfile="goods" method="lists" num="4" order="rand()"}
 					{loop $data $r}
 					<div class="ext-con-box">
 						<a href="{url('detail',array('sku_id'=>$r['sku_id']))}" title="{$r['name']}"><img class="lazy" src="{SKIN_PATH}statics/images/lazy.gif" data-original="{thumb($r['thumb'])}" width="90" height="90" /></a>
@@ -451,8 +451,8 @@
 		</div>
 		<!-- <div id="pro-detail-comment" class="margin-big-top border border-gray-white product-detail-panel item-blue-top"> -->
 		<div id="pro-detail-comment" class="product-detail-panel item-blue-top margin-large-top">
-			<ul class="tab p-tab-trigger-wrap title margin-bottom">
-				<li class="ui-switchtab-item"><a href="javascript:;">商品评价</a></li>
+			<ul class="tab p-tab-trigger-wrap">
+				<li class="ui-switchtab-item current"><a href="javascript:;">商品评价</a></li>
 			</ul>
 			<div class="ui-switch-panel ui-selected padding-tb border border-gray-white clearfix">
 				<div class="text-center goods-comment-info">
