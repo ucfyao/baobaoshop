@@ -42,7 +42,7 @@
 /*图片区块*/
 img { display: block; }
 .pic { float:left; width: 100%; height: 100%; border: 1px solid #ddd; background: #eee; }
-.pic img { width: 100%; height: 100%; }
+.pic img { width: auto; height: 100%; }
 .lazy { background: #fefefe url(../images/loading.gif) no-repeat center; }
 /*垂直水平居中*/
 .pic-center { display: block; text-align: center; line-height: 0; border: 1px solid #ddd; }
