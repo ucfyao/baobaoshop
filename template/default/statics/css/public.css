@@ -42,7 +42,7 @@
 /*图片区块*/
 img { display: block; }
 .pic { float:left; width: 100%; height: 100%; border: 1px solid #ddd; background: #eee; }
-.pic img { width: auto; height: 100%; }
+.pic img { width: 100%; height: 100%; }
 .lazy { background: #fefefe url(../images/loading.gif) no-repeat center; }
 /*垂直水平居中*/
 .pic-center { display: block; text-align: center; line-height: 0; border: 1px solid #ddd; }
@@ -964,7 +964,6 @@ img { display: block; }
 .shade-slider .shade-right .next { left: 20px; background-position: -32px -255px; }
 .shade-slider .box { float: left; position: relative; left: -1200px; text-align: center; }
 .shade-slider .box .item { float: left; }
-.shade-slider .box .item img { width: auto; height: 100%; }
 .shade-slider .thumb { position: absolute; left: 0; bottom: 20px; width: 100%; text-align: center; z-index: 4; }
 .shade-slider .thumb li { display: inline-block; margin: 0 5px; width: 14px; height: 14px; border-radius: 7px; opacity: 0.4; background-color: black; cursor: pointer; }
 .shade-slider .thumb li.current { background-color: red; }
