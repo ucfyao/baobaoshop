@@ -275,7 +275,7 @@ img { display: block; }
 
 .item-title { height: 70px; line-height: 70px; border-bottom: 1px solid #eee; text-indent: 10px; font-size: 19px; background: #fff; }
 .item-double-txt { padding: 5px; line-height: 18px; text-align: center; overflow: hidden; }
-.product-ext { float: left; width: 208px; }
+.product-ext { float: left; width: 208px; margin-top: 20px; }
 .product-ext .ext-content { border-color: #eee; background: #fff; border-bottom: 1px solid #ccc; }
 .product-ext .ext-content .item-double-txt { float: left; width: 69px; height: 50px; border-right: 1px solid #eee; }
 .product-ext .ext-content .item-double-txt.last { width: 70px; border-right: 0; }
@@ -663,6 +663,7 @@ img { display: block; }
 .join-cart-success .cart .cart-goods-title { width: 140px; }
 
 /***footer***/
+.global-footer { margin-top: 26px; }
 .global-footer .hd-service .fore { float: left; width: 205px; display: none; }
 .global-footer .hd-service .last { float: right; width: 175px; }
 /*.footer-logo{ height: 45px; } 谁加的这个*/
@@ -978,17 +979,17 @@ img { display: block; }
 .index-pic-1 .img { text-align: center; }
 .index-pic-1 .img img { width: 180px; height: 180px; margin-left: auto; margin-right: auto; margin-top: 10px; }
 .index-pic-1 .text { margin-top: 10px; #margin-right: 30px; }
-.index-pic-1 .title { margin-bottom: 7px; height: 23px; line-height: 23px; text-align: center; }
-.index-pic-1 .price { color: #FF6138; font-size: 14px; line-height: 19px; margin-bottom: 7px; text-align: center; }
+.index-pic-1 .title { margin-bottom: 5px; height: 22px; line-height: 23px; text-align: center; }
+.index-pic-1 .price { color: #FF6138; font-size: 14px; line-height: 19px; margin-bottom: 20px; text-align: center; }
 
 .index-pic-2 { width: 218px; }
 .index-pic-2 .img img { width: 218px; height: 218px; margin:auto; margin-top: 10px; }
-.index-pic-2 .text { #margin-top: 7px; #margin-right: 50px; font-size: 14px; text-align: center; }
-.index-pic-2 .title { #margin-bottom: 10px; height: 21px; line-height: 18px; overflow: hidden; }
-.index-pic-2 .price { margin-bottom: 21px; color: #FF6138; line-height: 19px; }
+.index-pic-2 .text { #margin-top: 7px; #margin-right: 50px; font-size: 14px; text-align: center; margin-left: 10px; margin-right: 10px; }
+.index-pic-2 .title { #margin-bottom: 10px; height: 22px; line-height: 18px; overflow: hidden; margin-top: 10px; }
+.index-pic-2 .price { #margin-bottom: 21px; color: #FF6138; line-height: 19px; }
 
 .index-activity { margin-top: 60px; margin-left: 0px; width: 974px; overflow: hidden;  }
-.index-activity .tab li { margin-bottom: -1px; margin-right: 14px; width: 183px; height: 38px; line-height: 32px;  }
+.index-activity .tab li { margin-bottom: -1px; #margin-right: 14px; width: 194px; height: 38px; line-height: 32px;  }
 .index-activity .tab li b { display: none; }
 .index-activity .tab li.current { position: relative; border-bottom: 1px solid #FF6138; }
 .index-activity .tab li.current b { display: block; margin: auto; width: 10px; height: 5px; background: url(../images/ico_general.png) no-repeat left top; }
@@ -996,11 +997,14 @@ img { display: block; }
 .index-activity .tab-tag { overflow: hidden; }
 .index-activity .tab-tag ul { #width: 975px; }
 .index-activity ul.tag li { float: left; #padding: 30px 0px 15px 0px; width: 193px; margin-right:1px; #border-left: 1px dotted #eee; background: #fff; }
-.index-activity ul.tag li:hover { #border:1px solid #ccc; z-index: 999;-webkit-box-shadow:inset 0 0 1px #555;  
-  -moz-box-shadow:inset 0 0 1px #555;  
-  box-shadow:inset 0 0 1px #555; }
+.index-activity ul.tag li:hover { #border:1px solid #ccc; z-index: 999;-webkit-box-shadow:inset 0 0 0px 1px #ff6138;  
+  -moz-box-shadow:inset 0 0 0px 1px #ff6138;  
+  box-shadow:inset 0 0 0px 1px #ff6138; }
 
-.notice { margin-top: 120px; }
+.index-activity ul.tag li:hover a { color: #00A388; }
+.index-activity ul.tag li:hover img {  }
+
+.notice { margin-top: 80px; width: 210px; }
 .news-plate .title { padding: 30px 0 13px; color: #00A388; font-size:18px; }
 .news-plate .content { height: 180px; line-height: 24px; }
 .news-plate .content .hot { color: #ef4481; }
@@ -1016,9 +1020,10 @@ img { display: block; }
 .like { margin: 15px 0px 10px 0px; #width: 1181px; overflow: hidden; }
 .like ul { #width: 1184px; }
 .like ul li { float: left; width: 199px; margin-right: 1px; background: #fff;}
-.like ul li:hover { #border:1px solid #ccc; z-index: 999;-webkit-box-shadow:inset 0 0 1px #555;  
-  -moz-box-shadow:inset 0 0 1px #555;  
-  box-shadow:inset 0 0 1px #555; }
+.like ul li:hover { #border:1px solid #ccc; z-index: 999;-webkit-box-shadow:inset 0 0 0px 1px #ff6138;  
+  -moz-box-shadow:inset 0 0 0px 1px #ff6138;  
+  box-shadow:inset 0 0 0px 1px #ff6138; }
+.like ul li:hover a { color: #00A388; }
 .like .index-pic-1 .img { #padding: 0 23px;  }
 .like .index-pic-1 .img img { margin:auto; margin-top: 10px; }
 .like .index-pic-1 .text { #padding-left: 23px; #border-right: 1px solid #eee; }
@@ -1033,11 +1038,12 @@ img { display: block; }
 .floor .floor-info ul li {padding: 0 30px; height: 30px; text-align: center; line-height: 30px; }
 .floor .floor-info ul li.current { margin: -2px -1px -1px;padding: 0 30px;height: 33px; border-top: 1px solid #ff6138; border-left: 1px solid #ff6138; border-right: 1px solid #ff6138; background-color: #f7f7f7; }
 .floor-content { height: 600px; #border: 1px solid #eee; border-top: 0; overflow: hidden; margin-top: 20px; }
-.floor-content .left ul { margin: 14px 0 7px 0px; width: 936px;  }
-.floor-content .left ul li {     float: left;margin-right: 1px;width: 233px;margin-bottom: 1px;background: #fff;}
-.floor-content .left ul li:hover { #border:1px solid #ccc; z-index: 999;-webkit-box-shadow:inset 0 0 1px #555;  
-  -moz-box-shadow:inset 0 0 1px #555;  
-  box-shadow:inset 0 0 1px #555; }
+.floor-content .left ul { #margin: 14px 0 7px 0px; width: 936px;  }
+.floor-content .left ul li { float: left;margin-right: 1px; width: 233px; margin-bottom: 1px;background: #fff; padding-bottom: 20px;}
+.floor-content .left ul li:hover { #border:1px solid #ccc; z-index: 999;-webkit-box-shadow:inset 0 0 0px 1px #ff6138;  
+  -moz-box-shadow:inset 0 0 0px 1px #ff6138;  
+  box-shadow:inset 0 0 0px 1px #ff6138; }
+.floor-content .left ul li:hover a { color: #00A388; }
 .floor .right { float: right; padding-left: 9px; width: 249px; }
 .top-text { margin-top: -9px; line-height: 55px; border-bottom: 1px solid #eee; }
 .top-con li { float: left; padding: 7px 0; line-height: 31px; border-bottom: 1px dotted #c1c1c1; }
