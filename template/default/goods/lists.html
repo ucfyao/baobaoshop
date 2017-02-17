@@ -11,7 +11,7 @@
 		<!--list-->
 		<div class="item-two-column container margin-large-top clearfix">
 			<div class="left fl">
-				<div class="list-category border radius margin-big-bottom border-gray-white">
+				<div class="list-category bg-white border radius margin-big-bottom border-gray-white">
 				<!-- <div class="list-category "> -->
 					<div class="item-title">{$category['top_parentid']['name']}</div>
 					<div class="layout sp-category">
@@ -40,7 +40,7 @@
 						{/hd}
 					</div>
 				</div>
-				<div class="layout margin-top border radius margin-big-bottom border-gray-white clearfix">
+				<div class="layout bg-white margin-top border radius margin-big-bottom border-gray-white clearfix">
 					<div class="item-title">看了又看</div>
 					<div class="ext-content padding clearfix">
 						<div class="ext-show">
@@ -256,14 +256,14 @@
 								<a href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}">{if isset($r['prom_time']) && $r['prom_time'] > 0}<span class="padding-small-left padding-small-right radius-small bg-mix text-white margin-small-right">限时促销</span>{/if}{$r['sku_name']}</a>
 							</div>
 							<div class="p-price">
-								<span class="text-mix">￥<?php echo $r['prom_price']?></span>
+								<span class="text-mix">￥<?php echo $r['prom_price']?><!-- <i>￥{$r['market_price']}</i> --></span>
 							</div>
 							<div class="p-hand text-right">
 								<div class="short-share">
 									{if $r[number] > 0}
 									<a class="cart-btn fl" data-event="cart_add" data-skuids="{$r['sku_id']}">加入购物车</a>
 									{else}
-									<span class="fl">商品已售罄</span>
+									<span class="fl text-gray">商品已售罄</span>
 									{/if}
 									{if is_favorite($member['id'],$r['sku_id'])}
 									<span class="button"><em class="text-gray">已收藏</em></span>

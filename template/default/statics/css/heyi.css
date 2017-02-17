@@ -51,7 +51,7 @@ h1 small,.h1 small,h2 small,.h2 small,h3 small,.h3 small{font-size:60%;filter:al
 h4 small,.h4 small,h5 small,.h5 small,h6 small,.h6 small{font-size:12px;filter:alpha(opacity=60);opacity:.6;}
 /*自定义链接颜色(可自由更换)*/
 a{color:#484848;text-decoration:none;} /*链接-颜色*/
-a:hover{color:#00A388;} /*链接-悬浮颜色*/
+a:hover{color:#B12518;} /*链接-悬浮颜色*/
 .text-underline:hover {text-decoration:underline;}
 /*段落*/
 p,.p{line-height:25px;}
@@ -74,10 +74,10 @@ p,.p{line-height:25px;}
 .text-small{font-size:12px !important;}
 .text-little{font-size:10px !important;}
 /*字体颜色*/
-.text-main{color:#FF6138;}/*主色*/
-.text-sub{color:#00A388;}/*辅色*/
+.text-main{color:#EE260D;}/*主色*/
+.text-sub{color:#B12518;}/*辅色*/
 .text-dot{color:#ff5a00;}/*点缀色*/
-.text-mix{color:#FF6138;}/*融合色*/
+.text-mix{color:#EE260D;}/*融合色*/
 .text-white{color:#fff;}/*白色*/
 .text-black{color:#000;}/*黑色*/
 .text-gray{color:#999;}/*浅灰色*/
@@ -107,7 +107,7 @@ p,.p{line-height:25px;}
 .button.bg-black,.button.bg-dark-grey,.button.bg-main,.button.bg-dot,.button.bg-gray,.button.bg-light-gray,.button.bg-sub,.button.bg-mix,.button.bg-pink,.button.bg-red,.button.bg-orange,.button.bg-blue,.button.bg-green {color:#fff;border:0;}
 .button.bg-black:hover{background:#222;}
 .button.bg-dark-grey:hover{background:#444;}
-.button.bg-main:hover{background:#00A388;}
+.button.bg-main:hover{background:#B12518;}
 .button.bg-dot:hover{background:#d93600;}
 .button.bg-gray:hover{background:#aaa;}
 .button.bg-light-gray:hover{background:#aaa;}
@@ -126,7 +126,7 @@ p,.p{line-height:25px;}
 .button.border-gray:hover{background:#999;}
 .button.border-black:hover{background:#000;}
 .button.border-main:hover{background:#2a95de;}
-.button.border-sub:hover{background:#00A388;}
+.button.border-sub:hover{background:#B12518;}
 .button.border-mix:hover{background: #d93600;}
 .button.border-dot:hover{background: #ff5a00;}
 /***select***/
@@ -161,8 +161,8 @@ p,.p{line-height:25px;}
 .border-gray-white { border-color: #eee; }
 .border-light-gray { border-color:#ccc; }
 .border-gray { border-color:#999; }
-.border-main { border-color:#2a95de; }
-.border-sub{border-color:#00A388;}
+.border-main { border-color:#EE260D; }
+.border-sub{border-color:#B12518;}
 .border-mix{border-color: #d93600;}
 .border-dot{border-color: #ff5a00;}
 .border-white{border-color: #fff;}
@@ -183,8 +183,8 @@ p,.p{line-height:25px;}
 .bg-black{background: #000;}
 .bg-white{background: #fff;}
 .bg-gray-white{background: #f7f7f7;}
-.bg-main{background: #2a95de;}
-.bg-sub{background: #00A388;}
+.bg-main{background: #EE260D;}
+.bg-sub{background: #B12518;}
 .bg-mix{background: #d93600;}
 .bg-dot{background: #ff5a00;}
 .bg-pink{background: #e13538;}
@@ -192,7 +192,7 @@ p,.p{line-height:25px;}
 .bg-orange{background: #f60;}
 .bg-blue{background: #0ae;}
 .bg-green{background: green;}
-.bg-OrangeRed {background: #FF6138;}
+.bg-OrangeRed {background: #EE260D;}
 .bg-inverse,.bg-inverse a{color: #fff;}
 .bg-none{background:none !important;}
 .bg-light-red{background: #f00;}
