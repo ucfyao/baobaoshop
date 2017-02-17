@@ -5,6 +5,7 @@
 	<title>{if isset($SEO['title']) && !empty($SEO['title'])}{$SEO['title']}{/if}{$SEO['site_title']}</title>
 	<meta name="Keywords" content="{$SEO['keywords']}" />
 	<meta name="Description" content="{$SEO['description']}" />
+	<link rel="shortcut icon" href="favicon.ico" />
 	<link type="text/css" rel="stylesheet" href="{__ROOT__}template/default/statics/css/heyi.css?v={HD_VERSION}" />
 	<link type="text/css" rel="stylesheet" href="{__ROOT__}template/default/statics/css/public.css?v={HD_VERSION}" />
 	<script type="text/javascript" src="{__ROOT__}template/default/statics/js/jquery-1.7.2.min.js?v={HD_VERSION}"></script>
@@ -34,7 +35,8 @@
 			</ul>
 			-->
 			<div class="logo fl">
-				<span><a href="{__APP__}"><img width="190px" height="64px" src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></a></span>
+				<!-- <span><a href="{__APP__}"><img width="190px" height="64px" src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></a></span> -->
+				<span><a href="{__APP__}"><img width="190px" height="auto" src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></a></span>
 			</div>
 			{hook/mid_site_bar data}
 			<ul class="fr">
