@@ -426,25 +426,24 @@ img { display: block; }
 .item-page a { display: block; float: left; position: relative; margin-left: 10px; padding: 0 12px; height: 22px; line-height: 20px; font-family: "宋体"; border: 1px solid #ccc; border-radius: 3px; background-color: #fff; }
 .item-page a.disabled { color: #ccc; }
 
-.picon { display: block; position: absolute; right: -1px; top: -1px; width: 56px; height: 56px; background: url(../images/ico_general.png) no-repeat; }
+.picon { display: block; position: absolute; right: 7px; top: 0px; width: 56px; height: 56px; background: url(../images/ico_general.png) no-repeat; }
 .pi1 { background-position: 0 -49px; }
 .pi2 { background-position: -61px -49px; }
 .pi3 { background-position: -122px -49px; }
 
 .list-wrap { width: 100%; }
-.list-wrap .list-h { width: 996px; }
-.list-wrap .list-h li { float: left; width: 244px; background: #fff; margin-left: 1px; margin-bottom: 1px; }
-.list-wrap .list-h li:hover { #border:1px solid #ccc; z-index: 999;-webkit-box-shadow:inset 0 0 0px 1px #EE260D;  
-  -moz-box-shadow:inset 0 0 0px 1px #EE260D;  
-  box-shadow:inset 0 0 0px 1px #EE260D; }
+.list-wrap .list-h { #width: 996px; }
+.list-wrap .list-h li { float: left; #width: 244px; width: 25%; background: #fff;  }
+.list-wrap .list-h li:hover { #border:1px solid #ccc; }
 .list-wrap .list-h li:hover img {}
 .list-wrap .list-h .lh-wrap {  }
 .list-wrap .list-h .hover {   }
 /*.list-wrap .list-h .hover { box-shadow: 0 0 5px #555; }*/
 .list-wrap .list-h .hover .lh-wrap {  }
 /*.list-wrap .list-h .hover .lh-wrap { margin: 0; width: 236px; border: 3px solid #B12518; }*/
-.lh-wrap .p-img { position: relative; }
-.lh-wrap .p-name { margin: 5px 10px; height: 36px;; line-height: 18px; overflow: hidden; }
+.lh-wrap .p-img { position: relative; z-index: 1; }
+.lh-wrap .p-img img { margin-top: 5px; margin-left: auto; margin-right: auto; }
+.lh-wrap .p-name { position: relative; z-index: 2; background: #fff; padding: 5px 10px; height: 36px;; line-height: 18px; overflow: hidden; }
 .lh-wrap .p-price { padding: 0 10px; font-size: 18px; }
 .lh-wrap .p-hand { padding: 10px; }
 
@@ -1001,9 +1000,9 @@ img { display: block; }
 .index-pic-2 .title { #margin-bottom: 10px; height: 22px; line-height: 18px; overflow: hidden; margin-top: 10px; }
 .index-pic-2 .price { #margin-bottom: 21px; color: #EE260D; line-height: 19px; }
 
-.index-pic-1, .index-pic-2 { overflow: hidden; border:1px solid #ffffff; }
-.index-pic-1:hover, .index-pic-2:hover { border:1px solid #ff0000; transition: all 0.8s linear; cursor: pointer;  }
-.index-pic-1:hover img, .index-pic-2:hover img { -webkit-transform:scale(1.2) ; -moz-transform:scale(1.2) ; -o-transform:scale(1.2) ; -webkit-transition:all 0.3s; -moz-transition:all 0.3s; -o-transition:all 0.3s; z-index: 1;}
+.index-pic-1, .index-pic-2, .list-wrap .list-h li { overflow: hidden; border:1px solid #fff; border-right: 1px solid #F7F7F7; border-bottom: 1px solid #F7F7F7;  }
+.index-pic-1:hover, .index-pic-2:hover, .list-wrap .list-h li:hover { border:1px solid #ff0000; transition: all 0.8s linear; cursor: pointer;  }
+.index-pic-1:hover img, .index-pic-2:hover img, .list-wrap .list-h li:hover img { -webkit-transform:scale(1.2) ; -moz-transform:scale(1.2) ; -o-transform:scale(1.2) ; -webkit-transition:all 0.3s; -moz-transition:all 0.3s; -o-transition:all 0.3s; z-index: 1;}
 .index-pic-1 .price i, .index-pic-2 .price i, .lh-wrap .p-price i {font-size: 12px; text-decoration:line-through; margin-left: 20px; color:#999;}
 
 .index-activity { margin-top: 60px; margin-left: 0px; width: 974px; overflow: hidden;  }
