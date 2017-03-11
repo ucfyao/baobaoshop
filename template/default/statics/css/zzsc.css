@@ -1,5 +1,5 @@
 /* leftsead */
-#leftsead{width:161px;height:290px;position:fixed;top:381px;right:13px; z-index:999;}
+#leftsead{width:161px;height:290px;position:fixed;top:381px;right:13px; z-index:999; display: inline-block;}
 *html #leftsead{margin-top:258px;position:absolute;top:expression(eval(document.documentElement.scrollTop));}
 #leftsead li{width:161px;height:49px;}
 #leftsead li img{float:right; position: relative; z-index: 999;}
