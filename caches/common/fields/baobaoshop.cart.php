@@ -1,0 +1,3 @@
+<?php
+//000000000000a:9:{i:0;s:2:"id";i:1;s:8:"buyer_id";i:2;s:6:"sku_id";i:3;s:4:"nums";i:4;s:11:"system_time";i:5;s:8:"clientip";s:8:"_autoinc";b:1;s:3:"_pk";s:2:"id";s:5:"_type";a:6:{s:2:"id";s:21:"mediumint(8) unsigned";s:8:"buyer_id";s:21:"mediumint(8) unsigned";s:6:"sku_id";s:21:"mediumint(8) unsigned";s:4:"nums";s:21:"mediumint(8) unsigned";s:11:"system_time";s:16:"int(10) unsigned";s:8:"clientip";s:8:"char(15)";}}
+?>

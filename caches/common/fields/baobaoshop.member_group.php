@@ -1,0 +1,3 @@
+<?php
+//000000000000a:11:{i:0;s:2:"id";i:1;s:4:"name";i:2;s:10:"min_points";i:3;s:10:"max_points";i:4;s:8:"discount";i:5;s:6:"status";i:6;s:4:"sort";i:7;s:11:"description";s:8:"_autoinc";b:1;s:3:"_pk";s:2:"id";s:5:"_type";a:8:{s:2:"id";s:11:"smallint(6)";s:4:"name";s:11:"varchar(30)";s:10:"min_points";s:16:"int(10) unsigned";s:10:"max_points";s:16:"int(10) unsigned";s:8:"discount";s:19:"tinyint(3) unsigned";s:6:"status";s:19:"tinyint(1) unsigned";s:4:"sort";s:15:"int(8) unsigned";s:11:"description";s:12:"varchar(255)";}}
+?>

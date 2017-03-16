@@ -1,0 +1,3 @@
+<?php
+//000000000000a:14:{i:0;s:2:"id";i:1;s:8:"group_id";i:2;s:8:"username";i:3;s:8:"password";i:4;s:5:"email";i:5;s:7:"encrypt";i:6;s:15:"last_login_time";i:7;s:13:"last_login_ip";i:8;s:9:"login_num";i:9;s:6:"status";i:10;s:4:"sort";s:8:"_autoinc";b:1;s:3:"_pk";s:2:"id";s:5:"_type";a:11:{s:2:"id";s:12:"mediumint(8)";s:8:"group_id";s:21:"mediumint(8) unsigned";s:8:"username";s:11:"varchar(60)";s:8:"password";s:11:"varchar(32)";s:5:"email";s:11:"varchar(60)";s:7:"encrypt";s:8:"char(10)";s:15:"last_login_time";s:16:"int(10) unsigned";s:13:"last_login_ip";s:8:"char(15)";s:9:"login_num";s:16:"int(10) unsigned";s:6:"status";s:19:"tinyint(1) unsigned";s:4:"sort";s:15:"int(8) unsigned";}}
+?>

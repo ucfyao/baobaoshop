@@ -1,0 +1,3 @@
+<?php
+//000000000000a:13:{i:0;s:2:"id";i:1;s:9:"o_sku_ids";i:2;s:6:"sub_sn";i:3;s:11:"delivery_id";i:4;s:13:"delivery_name";i:5;s:11:"delivery_sn";i:6;s:13:"delivery_time";i:7;s:9:"isreceive";i:8;s:12:"receive_time";i:9;s:10:"print_time";s:8:"_autoinc";b:1;s:3:"_pk";s:2:"id";s:5:"_type";a:10:{s:2:"id";s:16:"int(11) unsigned";s:9:"o_sku_ids";s:12:"varchar(200)";s:6:"sub_sn";s:8:"char(20)";s:11:"delivery_id";s:21:"mediumint(8) unsigned";s:13:"delivery_name";s:11:"varchar(20)";s:11:"delivery_sn";s:11:"varchar(50)";s:13:"delivery_time";s:16:"int(10) unsigned";s:9:"isreceive";s:19:"tinyint(1) unsigned";s:12:"receive_time";s:16:"int(10) unsigned";s:10:"print_time";s:16:"int(10) unsigned";}}
+?>

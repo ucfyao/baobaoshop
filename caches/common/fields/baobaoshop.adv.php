@@ -1,0 +1,3 @@
+<?php
+//000000000000a:15:{i:0;s:2:"id";i:1;s:11:"position_id";i:2;s:5:"title";i:3;s:4:"link";i:4;s:11:"description";i:5;s:9:"starttime";i:6;s:7:"endtime";i:7;s:7:"loading";i:8;s:4:"hist";i:9;s:7:"content";i:10;s:6:"status";i:11;s:4:"sort";s:8:"_autoinc";b:1;s:3:"_pk";s:2:"id";s:5:"_type";a:12:{s:2:"id";s:7:"int(10)";s:11:"position_id";s:16:"int(10) unsigned";s:5:"title";s:12:"varchar(255)";s:4:"link";s:12:"varchar(255)";s:11:"description";s:12:"varchar(255)";s:9:"starttime";s:16:"int(10) unsigned";s:7:"endtime";s:16:"int(10) unsigned";s:7:"loading";s:19:"tinyint(1) unsigned";s:4:"hist";s:16:"int(11) unsigned";s:7:"content";s:4:"text";s:6:"status";s:19:"tinyint(1) unsigned";s:4:"sort";s:15:"int(8) unsigned";}}
+?>

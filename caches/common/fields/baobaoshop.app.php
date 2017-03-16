@@ -1,0 +1,3 @@
+<?php
+//000000000000a:16:{i:0;s:2:"id";i:1;s:10:"identifier";i:2;s:4:"name";i:3;s:11:"description";i:4;s:9:"available";i:5;s:9:"copyright";i:6;s:7:"version";i:7;s:3:"url";i:8;s:6:"author";i:9;s:9:"branch_id";i:10;s:4:"sort";i:11;s:9:"is_system";i:12;s:4:"menu";s:8:"_autoinc";b:1;s:3:"_pk";s:2:"id";s:5:"_type";a:13:{s:2:"id";s:11:"smallint(6)";s:10:"identifier";s:12:"varchar(100)";s:4:"name";s:12:"varchar(100)";s:11:"description";s:12:"varchar(255)";s:9:"available";s:19:"tinyint(1) unsigned";s:9:"copyright";s:12:"varchar(255)";s:7:"version";s:11:"varchar(20)";s:3:"url";s:12:"varchar(255)";s:6:"author";s:11:"varchar(50)";s:9:"branch_id";s:21:"mediumint(8) unsigned";s:4:"sort";s:20:"smallint(3) unsigned";s:9:"is_system";s:10:"tinyint(1)";s:4:"menu";s:4:"text";}}
+?>

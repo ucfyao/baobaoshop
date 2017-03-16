@@ -1,0 +1,3 @@
+<?php
+//000000000000a:13:{i:0;s:2:"id";i:1;s:8:"order_sn";i:2;s:6:"sub_sn";i:3;s:6:"action";i:4;s:11:"operator_id";i:5;s:13:"operator_name";i:6;s:13:"operator_type";i:7;s:3:"msg";i:8;s:11:"system_time";i:9;s:8:"clientip";s:8:"_autoinc";b:1;s:3:"_pk";s:2:"id";s:5:"_type";a:10:{s:2:"id";s:21:"mediumint(8) unsigned";s:8:"order_sn";s:8:"char(20)";s:6:"sub_sn";s:8:"char(20)";s:6:"action";s:11:"varchar(50)";s:11:"operator_id";s:21:"mediumint(8) unsigned";s:13:"operator_name";s:11:"varchar(60)";s:13:"operator_type";s:19:"tinyint(1) unsigned";s:3:"msg";s:4:"text";s:11:"system_time";s:16:"int(10) unsigned";s:8:"clientip";s:8:"char(15)";}}
+?>
