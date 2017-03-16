@@ -1,25 +1,36 @@
 <?php
 /**
  *		商品促销
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'admin');
 class goods_control extends init_control {
 	public function _initialize() {
 		parent::_initialize();
 		$this->model = $this->load->service('promotion/promotion_goods');
-		$this->table = $this->load->table('promotion/promotion_goods');
 	}
 
+	/**
+	 * [lists 订单促销列表]
+ 	 */
 	public function index() {
 		$limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 20;
-		$result = $this->model->lists($sqlmap, $limit, $_GET['page']);
-		$result['pages'] = $this->admin_pages($result['count'], $limit);
-		$this->load->librarys('View')->assign('result',$result)->display('goods_index');
+		$result = $this->model->get_lists($sqlmap, $limit, $_GET['page']);
+		$pages = $this->admin_pages($result['count'], $limit);
+		$lists = array(
+			'th' => array(
+				'name' => array('title' => '促销名称','length' => 40,'style' => 'double_click'),
+				'start_time' => array('title' => '促销时间','length' => 40),
+ 				'status' => array('title' => '状态','length' => 10)
+			),
+			'lists' => $result['lists'],
+            'pages' => $pages,
+			);
+		$this->load->librarys('View')->assign('lists',$lists)->display('goods_index');
 	}
 
 	public function add() {
@@ -73,9 +84,9 @@ class goods_control extends init_control {
 		if($id < 1 || empty($name)) {
 			showmessage(lang('_param_error_'));
 		}
-		$result = $this->table->where(array('id' => $id))->setField('name', $name);
+		$result = $this->model->setField(array('name'=>$name), array('id' => $id));
 		if($result === false) {
-			showmessage($this->table->getError());
+			showmessage($this->model->getError());
 		} else {
 			showmessage(lang('_operation_success_'), url('index'), 1);
 		}

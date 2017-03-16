@@ -74,7 +74,7 @@ p,.p{line-height:25px;}
 .text-little{font-size:10px !important;}
 /*字体颜色*/
 .text-main{color:#2a95de;}/*主色*/
-.text-sub{color:#F32611;}/*辅色*/
+.text-sub{color:#1380cb;}/*辅色*/
 .text-dot{color:#ff5a00;}/*点缀色*/
 .text-mix{color:#d93600;}/*融合色*/
 .text-white{color:#fff;}/*白色*/
@@ -182,7 +182,7 @@ p,.p{line-height:25px;}
 .bg-black{background: #000;}
 .bg-white{background: #fff;}
 .bg-gray-white{background: #f7f7f7;}
-.bg-main{background: #EE260D;}
+.bg-main{background: #2a95de;}
 .bg-sub{background: #1380cb;}
 .bg-mix{background: #d93600;}
 .bg-dot{background: #ff5a00;}

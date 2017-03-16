@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'goods');
 class order_control extends init_control {
@@ -31,9 +31,9 @@ class order_control extends init_control {
         if (isset($_GET['sn'])) $sqlmap['sn'] = array('LIKE','%'.$_GET['sn'].'%');
 		if (!isset($_GET['type'])) $sqlmap['status'] = array('IN','1,2');
 		$limit  = (isset($_GET['limit'])) ? $_GET['limit'] : 5;
-        $orders = $this->table->where($sqlmap)->page($_GET['page'])->order('id DESC')->limit($limit)->select();
-        $count  = $this->table->where($sqlmap)->count();
-         $setting = $this->load->service('admin/setting')->get_setting();
+        $orders = $this->service->fetch($sqlmap, $limit, $_GET['page'], 'id DESC');
+        $count  = $this->service->count($sqlmap);
+        $setting = $this->load->service('admin/setting')->get();
         $pages  = pages($count,$limit);
         $SEO = seo('我的订单 - 会员中心');
         $this->load->librarys('View')->assign('setting',$setting)->assign('orders',$orders)->assign('SEO',$SEO)->assign('pages',$pages)->display('my_order');
@@ -50,10 +50,10 @@ class order_control extends init_control {
             $detail = $this->service_sub->sub_detail($_GET['sub_sn'] ,$o_d_id);
         }
         $detail['_member'] = $this->load->table('member/member')->find($detail['buyer_id']);
-        $detail['_main'] = $this->table->detail($detail['order_sn'])->subs(FALSE ,FALSE, FALSE)->output();
+        $detail['_main'] = $this->service->member_table_detail($detail['order_sn']);
         // 是否显示子订单号信息
         $detail['_showsubs'] = (count($detail['_main']['_subs']) > 1) ? TRUE : FALSE;
-        $setting = $this->load->service('admin/setting')->get_setting();
+        $setting = $this->load->service('admin/setting')->get();
         $SEO = seo('订单详情 - 会员中心');
         $this->load->librarys('View')->assign('detail',$detail)->assign('SEO',$SEO)->assign('setting',$setting)->display('order_detail');
     }
@@ -62,7 +62,7 @@ class order_control extends init_control {
     public function cancel() {
         if (checksubmit('dosubmit')) {
             $sub_sn = remove_xss($_GET['sub_sn']);
-            $order = $this->table_sub->field('buyer_id,order_sn')->where(array('sub_sn' => $sub_sn))->find();
+            $order = $this->service_sub->find(array('sub_sn' => $sub_sn), 'buyer_id,order_sn');
             if ($order['buyer_id'] != $this->member['id']) {
                 showmessage(lang('no_promission_operate_order','member/language'));
             }
@@ -79,7 +79,7 @@ class order_control extends init_control {
     public function recycle() {
         if (checksubmit('dosubmit')) {
             $sn = remove_xss($_GET['sn']);
-            $order = $this->table->field('member_id')->where(array('sn' => $sn))->find();
+            $order = $this->service->find(array('sn' => $sn), 'member_id');
             if ($order['member_id'] != $this->member['id']) showmessage(lang('no_promission_operate_order','member/language'));
             $result = $this->service->set_order($sn ,$action = 'order',$status = 3 ,array('msg'=>'订单放入回收站'));
             if (!$result) showmessage($this->service->error);
@@ -93,7 +93,7 @@ class order_control extends init_control {
     public function delete_sn() {
         if (checksubmit('dosubmit')) {
             $sn = remove_xss($_GET['sn']);
-            $order = $this->table->field('member_id')->where(array('sn' => $sn))->find();
+            $order = $this->service->find(array('sn' => $sn), 'member_id');
             if ($order['member_id'] != $this->member['id']) showmessage(lang('no_promission_operate_order','member/language'));
             $result = $this->service->set_order($sn ,'order', 4 ,array('msg'=>'用户删除订单'));
             if (!$result) showmessage($this->service->error);
@@ -107,7 +107,7 @@ class order_control extends init_control {
     public function finish() {
         if (checksubmit('dosubmit')) {
             $sub_sn = remove_xss($_GET['sub_sn']);
-            $order = $this->table_sub->field('buyer_id')->where(array('sub_sn' => $sub_sn))->find();
+            $order = $this->service_sub->find(array('sub_sn' => $sub_sn), 'buyer_id');
             if ($order['buyer_id'] != $this->member['id']) showmessage(lang('no_promission_operate_order','member/language'));
             $data = array();
             $data['msg'] = '确认订单商品收货';
@@ -123,14 +123,14 @@ class order_control extends init_control {
     /* wap查看物流 */
     public function delivery() {
         $o_d_id = (int) $_GET['o_d_id'];
-        $order_delivery = $this->load->table('order/order_delivery')->where(array('id' => $o_d_id))->find();
+        $order_delivery = $this->load->service('order/delivery')->order_delivery_find(array('id' => $o_d_id));
         if (!$order_delivery) return FALSE;
         //更新物流跟踪
         if($o_d_id > 0){
             $this->service_track->update_api100($order_delivery['sub_sn'],$o_d_id);
         }
         $info = array();
-        $info['delivery'] = $this->load->table('order/delivery')->where(array('id' => $order_delivery['delivery_id']))->find();
+        $info['delivery'] = $this->load->service('order/delivery')->find(array('id' => $order_delivery['delivery_id']));
         $info['tracks'] = $this->service_track->get_tracks_by_sn($order_delivery['sub_sn']);
         $SEO = seo('查看物流 - 会员中心');
         $this->load->librarys('View')->assign('SEO',$SEO)->assign('order_delivery',$order_delivery)->assign('info',$info)->display('track');
@@ -148,9 +148,9 @@ class order_control extends init_control {
         if (isset($_GET['sn'])) $sqlmap['sn'] = array('LIKE','%'.$_GET['sn'].'%');
         if (!isset($_GET['type'])) $sqlmap['status'] = array('IN','1,2');
         $limit  = (isset($_GET['limit'])) ? $_GET['limit'] : 10;
-        $data['orders'] = $this->table->where($sqlmap)->page($_GET['page'])->order('id DESC')->limit($limit)->select();
-        $data['count']  = $this->table->where($sqlmap)->count();
-        $data['pages']  = pages($count,$limit);
+        $data['orders'] = $this->service->fetch($sqlmap, $limit, $_GET['page'], 'id DESC');
+        $data['count']  = $this->service->count($sqlmap);
+        $data['pages']  = pages($data['count'],$limit);
         $this->load->librarys('View')->assign('data',$data);
         $data = $this->load->librarys('View')->get('data');
         echo json_encode($data);

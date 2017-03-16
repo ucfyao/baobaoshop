@@ -22,7 +22,31 @@ class promotion_order_service extends service {
 		}
 		return $result;
 	}
-    
+
+    public function get_lists($sqlmap = array(), $limit = 10, $page = 1, $order = "sort ASC, id DESC"){
+    	$orders = $this->lists($sqlmap,$limit,$page,$order);
+    	$lists = array();
+    	$types = array('满额立减', '满额免邮', '满额赠礼');
+    	foreach ($orders['lists'] AS $order) {
+    		if($order['status'] == 1){
+    			$status = '未开始';
+    		}elseif($order['status'] == 2){
+    			$status = '已结束';
+    		}else{
+    			$status = '进行中';
+    		}
+    		$start_time = $order['start_time'] ? date('Y-m-d H:i', $order['start_time']) : '无限制';
+    		$end_time = $order['end_time'] ? date('Y-m-d H:i', $order['end_time']) : '无限制';
+    		$lists[] = array(
+    			'id' => $order['id'],
+    			'name' => $order['name'],
+    			'type' => $types[$order['type']],
+    			'time' => $start_time.'~'.$end_time,
+    			'status' => $status
+    		);
+    	}
+    	return array('lists'=>$lists,'count'=>$order['count']);
+    }
     /**
      * 查询有效期内的订单促销列表
      * @param int $price 满金额
@@ -104,5 +128,18 @@ class promotion_order_service extends service {
 			return false;
 		}
 		return true;
+	}
+	/*修改*/
+	public function setField($data, $sqlmap = array()){
+		if(empty($data)){
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		$result = $this->model->where($sqlmap)->save($data);
+		if($result === false){
+			$this->error = $this->model->getError();
+			return false;
+		}
+		return $result;
 	}
 }

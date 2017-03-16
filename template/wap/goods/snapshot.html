@@ -58,7 +58,7 @@
 										{loop $data $n $r}
 											<?php ++$n; ?>
 							            	<li class="hd-col-xs-e5">
-							            		<a class="pic square-pic" href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}"><img src="{SKIN_PATH}statics/images/square_seat.png" style="background-image: url({__ROOT__}{thumb($r['thumb'])});" /></a>
+							            		<a class="pic square-pic" href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}"><img src="{SKIN_PATH}statics/images/square_seat.png" style="background-image: url({thumb($r['thumb'])});" /></a>
 							            		<div class="name">
 							            			<a href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}">{$r['name']}</a>
 							            		</div>
@@ -98,7 +98,7 @@
 				            	<span class="mui-btn mui-btn-primary mui-pull-right comment_btn" data-url="{urlencode($_SERVER['REQUEST_URI'])}">我要评论</span>
 				            </div>
 				          	<ul class="comment-lists margin-none padding-lr list-col-10 mui-clearfix">
-								
+
 							</ul>
 							<a class="top mui-block border-bottom mui-text-center text-black more" href="javascript:;" data-mark="comment">点击查看更多</a>
 				        </div>
@@ -116,7 +116,7 @@
 				        </div>
 				    </div>
 				</div>
-				
+
 				<div id="detail-nav" class="mui-row bg-white padding-lr">
 					<span class="mui-col-xs-4 active" data-scroll="0"><a href="javascript:;" data-id="detail">商品详情</a></span>
 				    <span class="mui-col-xs-4" data-scroll="0"><a href="javascript:;" data-id="comment">商品评价</a></span>
@@ -125,7 +125,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div id="spec" class="hd-cover">
 		<div class="body">
 			{loop $goods['specs'] $specs}
@@ -237,10 +237,10 @@
 		},'json')
 	})
 	var detail = new hdTouch();
-	
+
 	$(function(){
-		
-		var page = { 
+
+		var page = {
 	        comment : 1,
 	        consult : 1
 	    };
@@ -281,7 +281,7 @@
 	    	var mark = $(this).data("mark");
 	    	loadLists(mark);
 	    })
-		
+
 		function loadLists(mark){
 			if(mark==''||mark==undefined||!mark) return false;
 	    	if(mark=="comment"){
@@ -297,7 +297,7 @@
 	            			if(this.reply_content){
 		            			reply_content = '<div class="admin-text">'
 											+'		<p><span class="text-blue">商家回复：</span>'
-											+ 		this.reply_content 
+											+ 		this.reply_content
 											+'		</p>'
 											+'	 </div>'
 	            			}
@@ -369,10 +369,10 @@
 	            });
 			}
 		}
-		
+
 		loadLists("comment");
 		loadLists("consult");
-        
+
 	});
 	$(".number").numberSet();
 
@@ -386,9 +386,9 @@
 		$(".comment-slider").removeClass("hide").find(".mui-slider-group").html(lists);
 		mui('.comment-slider').slider().gotoItem(index);
 	});
-	
+
 	mui(".comment-slider").on('tap','.mui-slider-item',function(){
 		$(".comment-slider").addClass("hide");
 	});
-	
+
 </script>

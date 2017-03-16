@@ -34,85 +34,95 @@
 					<div class="th check-option" data-resize="false">
 						<input id="check-all" type="checkbox" />
 					</div>
-					<div class="th" data-width="35"><span class="td-con">名称</span></div>
-					<div class="th" data-width="10"><span class="td-con">类别</span></div>
-					<div class="th" data-width="10"><span class="td-con">宽度</span></div>
-					<div class="th" data-width="10"><span class="td-con">高度</span></div>
-					<div class="th" data-width="10"><span class="td-con">已发布</span></div>
-					<div class="th" data-width="10"><span class="td-con">启用</span></div>
+					<?php foreach ($lists['th'] AS $th) {?>
+						<span class="th" data-width="<?php echo $th['length']?>">
+							<span class="td-con"><?php echo $th['title']?></span>
+						</span>
+					<?php }?>
 					<div class="th" data-width="15"><span class="td-con">操作</span></div>
 				</div>
-				<?php foreach($position as $k=>$v):?>
+				<?php foreach ($lists['lists'] AS $list) {?>
 				<div class="tr">
-					<div class="td check-option"><input type="checkbox" name="id" value="<?php echo $v['id']?>" /></div>
-					<div class="td">
-						<div class="td-con">
+					<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $list['id']?>" /></span>
+					<?php foreach ($list as $key => $value) {?>
+					<?php if($lists['th'][$key]){?>
+					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
+					<span class="td">
+						<div class="double-click">
+							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
+							<input class="input double-click-edit text-ellipsis" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
+						</div>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'ident') {?>
+						<span class="td ident">
+							<span class="ident-show">
+								<em class="ico_pic_show"></em>
+								<div class="ident-pic-wrap">
+									<img src="<?php echo $list['logo'] ? $list['logo'] : '../images/default_no_upload.png'?>" />
+								</div>
+							</span>
 							<div class="double-click">
 								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis" type="text" value="<?php echo $v['name']?>" data-id='<?php echo $v['id']?>'/>
+								<input class="input double-click-edit text-ellipsis" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" type="text" value="<?php echo $value?>" />
 							</div>
-						</div>
-					</div>
-					<div class="td">
-						<span class="td-con"><?php echo $v['type_text']?></span>
-					</div>
-					<div class="td">
-						<span class="td-con"><?php echo $v['width']?></span>
-					</div>
-					<div class="td">
-						<span class="td-con"><?php echo $v['height']?></span>
-					</div>
-					<div class="td">
-						<span class="td-con"><?php echo $v['adv_count']?></span>
-					</div>
-					<div class="td">
-						<?php if($v['status']==1):?>
-							<a class="ico_up_rack" href="javascript:;" title="点击启用/禁用广告位" data-id="<?php echo $v['id'];?>"></a>	
-							<div id="view<?php echo $v['id'];?>" style="display: none;">
-								<textarea style="width:100%;height:300px;" name="view2" class="textarea hd-input">{hd:ads tagfile="ads" method="lists" position="<?php echo $v['id'];?>" num="5" order="id desc"}
-<!-- 可删除
-	调用参数说明
-	position(int) 广告位ID自动生成
-	num(int) 调用有效广告数量
-	order(string)[id desc(降序)|id asc(升序)|rand()(随机)]
-	返回结果
-	width 宽度
-	height 高度
-	type [0(图片)|1(文字)]
-	defaultpic 默认图片
-	defaulttext 默认文字
-	list 结果列表
-	list['title'] 广告标题
-	list['link'] 链接地址
-	list['content'] 广告内容
--->
-{loop $data['list'] $r}
-<a href="{url('ads/index/adv_view',array('id'=>$r['id'],'url'=>$r['link']))}" title="{$r['title']}">
-	{if empty($r['content'])}
-		{$data['defaultpic']}
-	{else}
-		{$r['content']}
-	{/if}
-</a>
-{/loop}
-{/hd}</textarea>
+						</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
+					<span class="td">
+					<div id="view<?php echo $list['id'];?>" style="display: none;">
+								<textarea style="width:100%;height:300px;" name="view2" class="textarea hd-input">
+								{hd:ads tagfile="ads" method="lists" position="<?php echo $list['id'];?>" num="5" order="id desc"}
+							<!-- 可删除
+								调用参数说明
+								position(int) 广告位ID自动生成
+								num(int) 调用有效广告数量
+								order(string)[id desc(降序)|id asc(升序)|rand()(随机)]
+								返回结果
+								width 宽度
+								height 高度
+								type [0(图片)|1(文字)]
+								defaultpic 默认图片
+								defaulttext 默认文字
+								list 结果列表
+								list['title'] 广告标题
+								list['link'] 链接地址
+								list['content'] 广告内容
+							-->
+						{loop $data['list'] $r}
+						<a href="{url('ads/index/adv_view',array('id'=>$r['id'],'url'=>$r['link']))}" title="{$r['title']}">
+							{if ($data['type']==0)}
+								<img src="{if empty($r['content'])}{$data['defaultpic']}{else}{$r['content']}{/if}" width="{$data['width']}" height="{$data['height']}"/>
+							{else}
+								{if empty($r['content'])}{$data['defaultpic']}{else}{$r['content']}{/if}
+							{/if}
+						</a>
+						{/loop}
+						{/hd}</textarea>
 								请复制以调用代码到页面注释说明可删除
 							</div>
-							<?php else:?>
-							<a class="ico_up_rack cancel" href="javascript:;" title="点击启用/禁用广告位" data-id="<?php echo $v['id'];?>"></a>
-							<?php endif;?>
-					</div>
-					<div class="td">
-						<span class="td-con"><span class="td-con"><a href="<?php echo url('position_edit',array('id'=>$v['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a href="javascript:popup('view<?php echo $v['id'];?>');">代码调用</a>&nbsp;&nbsp;&nbsp;
-						<a data-confirm="是否确定删除？" href="<?php echo url('position_del',array('id'=>$v['id'],'formhash'=>FORMHASH))?>">删除</a>
-						</span></span>
-					</div>
+						<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
+					<span class="td">
+						<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
+						<input type="hidden" name="id" value="<?php echo $value?>" />
+					<?php }else{?>
+					<span class="td">
+						<span class="td-con"><?php echo $value;?></span>
+					</span>
+					<?php }?>
+					<?php }?>
+					<?php }?>
+					<span class="td">
+						<span class="td-con">
+						<a href="<?php echo url('position_edit',array('id'=>$list['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a href="javascript:popup('view<?php echo $list['id'];?>');">代码调用</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('position_del', array('id[]' => $list['id'])); ?>">删除</a><?php echo $lists['option']?></span>
+					</span>
 				</div>
-				<?php endforeach;?>
-				
+				<?php }?>
 				<div class="paging padding-tb body-bg clearfix">
 					<ul class="fr">
-						<?php echo $pages?>
+						<?php echo $lists['pages']?>
 					</ul>
 					<div class="clear"></div>
 				</div>
@@ -150,14 +160,14 @@
 					return status;
 				}
 			})
-			
+
 			$(function(){
 				//双击编辑
 				$('.double-click-edit').on('blur',function(){
 					$.post(save_name_url,{id:$(this).attr('data-id'),name:""+$(this).val()+"",formhash:""+formhash+""},function(data){
 					})
 				})
-				
+
 			})
 			function popup(v){
 				top.dialog({
@@ -166,7 +176,7 @@
 					width: 420,
 					cancelValue: '关闭',
 					cancel: function(){
-	
+
 					}
 				})
 				.showModal();

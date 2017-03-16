@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class member_address_service extends service
 {
@@ -14,7 +14,7 @@ class member_address_service extends service
 		$this->table = $this->load->table('member/member_address');
 	}
 
-	public function lists($sqlmap = array(), $limit = 10, $page = 1) {
+	public function lists($sqlmap = array(), $limit = 20, $page = 1) {
 		$this->sqlmap = array_merge($this->sqlmap, $sqlmap);
         $DB = $this->table->where($this->sqlmap);
         $lists = &$DB->page($page)->limit($limit)->order("id DESC")->select();
@@ -32,6 +32,7 @@ class member_address_service extends service
 	 * @param array $params [description]
 	 */
 	public function add($params = array()) {
+		$params['address'] = remove_xss($params['address']);
 		$params['status'] = 1;
 		if(!$this->_validate($params)) {
 			return $params['id'] ? true : false;
@@ -66,6 +67,7 @@ class member_address_service extends service
 	 * @return [type]         [description]
 	 */
 	public function edit($params = array()) {
+		$params['address'] = remove_xss($params['address']);
 		if($params['id'] < 1) {
 			$this->error = lang('_param_error_');
 			return false;
@@ -92,7 +94,11 @@ class member_address_service extends service
 	}
 
 	public function set_default($id, $mid) {
-		$this->table->where(array("id" => $id))->setField('isdefault', 1);
+		$result = $this->table->where(array("id" => $id))->setField('isdefault', 1);
+		if(!$result) {
+			$this->error = lang('该地址不存在');
+			return false;
+		}
 		$this->table->where(array("id" => array("NEQ", $id), 'mid' => $mid))->setField('isdefault', 0);
 		return true;
 	}
@@ -170,16 +176,19 @@ class member_address_service extends service
 			return false;
 		}
 		/* 检测地区必须选到最下级 */
-		if(!$params['id']){
-			if($this->load->service('admin/district')->get_children($params['district_id'])) {
-				$this->error = lang('subordinate_area_empty','member/language');
-				return false;
-			}
-		}
+		// if(!$params['id']){
+		// 	if($this->load->service('admin/district')->get_children($params['district_id'])) {
+		// 		$this->error = lang('subordinate_area_empty','member/language');
+		// 		return false;
+		// 	}
+		// }
 		if(empty($params['address']) || strlen($params['address']) < 5) {
 			$this->error = lang('detail_area_require','member/language');
 			return false;
 		}
 		return $params;
+	}
+	public function fetch_all_by_mid($id, $order){
+		return $this->load->table('member/member_address')->fetch_all_by_mid($id, $order);
 	}
 }

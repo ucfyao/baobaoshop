@@ -4,18 +4,18 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" >
 		<title>后台首页面板</title>
-		<link type="text/css" rel="stylesheet" href="<?php echo __ROOT__;?>statics/css/heyi.css" />
-		<link type="text/css" rel="stylesheet" href="<?php echo __ROOT__;?>statics/css/admin.css" />
-		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/jquery-1.7.2.min.js"></script>
-		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/heyi.plug.js" ></script>
-		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/heyi.resizeable.columns.js" ></script>
-		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/heyi.form.js" ></script>
-		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/heyi.validate.js?v=5.3.2" ></script>
-		<link rel="stylesheet" href="<?php echo __ROOT__;?>statics/css/validate.css?v=0.0.1"/>
+		<link type="text/css" rel="stylesheet" href="<?php echo __ROOT__;?>statics/css/haidao.css?v=<?php echo HD_VERSION ?>" />
+		<link type="text/css" rel="stylesheet" href="<?php echo __ROOT__;?>statics/css/admin.css?v=<?php echo HD_VERSION ?>" />
+		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/jquery-1.7.2.min.js?v=<?php echo HD_VERSION ?>"></script>
+		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/haidao.plug.js?v=<?php echo HD_VERSION ?>" ></script>
+		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/haidao.resizeable.columns.js" ></script>
+		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/haidao.form.js?v=<?php echo HD_VERSION ?>" ></script>
+		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/haidao.validate.js?v=<?php echo HD_VERSION ?>" ></script>
+		<link rel="stylesheet" href="<?php echo __ROOT__;?>statics/css/validate.css?v=<?php echo HD_VERSION ?>"/>
 
-		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/admin.js" ></script>
-		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/dialog/dialog-plus-min.js"></script>
-		<link type="text/css" rel="stylesheet" href="./statics/js/dialog/ui-dialog.css" />
+		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/admin.js?v=<?php echo HD_VERSION ?>" ></script>
+		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/dialog/dialog-plus-min.js?v=<?php echo HD_VERSION ?>"></script>
+		<link type="text/css" rel="stylesheet" href="./statics/js/dialog/ui-dialog.css?v=<?php echo HD_VERSION ?>" />
 		<script type="text/javascript">
 		var formhash = "<?php echo FORMHASH ?>";
 		var SYS_MODULE_NAME = "<?php echo MODULE_NAME ?>";

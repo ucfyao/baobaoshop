@@ -1,3 +1,0 @@
-<?php
-//000000000000a:11:{i:0;s:2:"id";i:1;s:9:"parent_id";i:2;s:3:"url";i:3;s:5:"title";i:4;s:7:"content";i:5;s:7:"display";i:6;s:4:"sort";i:7;s:8:"keywords";s:8:"_autoinc";b:1;s:3:"_pk";s:2:"id";s:5:"_type";a:8:{s:2:"id";s:11:"smallint(6)";s:9:"parent_id";s:20:"smallint(6) unsigned";s:3:"url";s:11:"varchar(50)";s:5:"title";s:11:"varchar(50)";s:7:"content";s:4:"text";s:7:"display";s:19:"tinyint(1) unsigned";s:4:"sort";s:15:"int(8) unsigned";s:8:"keywords";s:11:"varchar(50)";}}
-?>

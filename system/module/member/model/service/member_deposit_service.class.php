@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class member_deposit_service extends service
 {
@@ -24,5 +24,33 @@ class member_deposit_service extends service
 	}
 	public function is_sucess($sqlmap){
 		return  $this->table->where($sqlmap)->order('id DESC')->getField('order_status');
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	条数
+	 * @param  integer 	页数
+	 * @param  string 	排序
+	 * @return [type]
+	 */
+	public function fetch($sqlmap = array(), $limit = 20, $page = 1, $order = "") {
+		$result = $this->table->where($sqlmap)->limit($limit)->page($page)->order($order)->select();
+		if($result===false){
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		return $result;
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	读取的字段
+	 * @return [type]
+	 */
+	public function find($sqlmap = array(), $field = "") {
+		$result = $this->table->where($sqlmap)->field($field)->find();
+		if($result===false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
 	}
 }

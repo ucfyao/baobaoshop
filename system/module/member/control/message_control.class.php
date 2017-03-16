@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class message_control extends cp_control {
 	public function _initialize() {
@@ -19,11 +19,10 @@ class message_control extends cp_control {
 			$sqlmap['status'] = (int)$_GET['status'];
 		}
 		$_GET['limit'] = $_GET['limit'] ? $_GET['limit'] : 15;
-		$result = $this->load->table('member_message')->where($sqlmap)->order('dateline desc')->page($_GET['page'])->limit($_GET['limit'])->select();
-		$count = $this->load->table('member_message')->where($sqlmap)->count();
-		$pages = pages($count,$_GET['limit']);
+		$result = $this->service->lists($sqlmap, $_GET['limit'], $_GET['page'], 'dateline desc');
+		$pages = pages($result['count'],$_GET['limit']);
 		$SEO = seo('我的消息 - 会员中心');
-		$this->load->librarys('View')->assign('result',$result)->assign('pages',$pages)->assign('SEO',$SEO)->display('message');
+		$this->load->librarys('View')->assign('result',$result['lists'])->assign('pages',$pages)->assign('SEO',$SEO)->display('message');
 	}
 	/* 已读 */
 	public function ajax_update(){

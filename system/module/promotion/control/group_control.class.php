@@ -1,18 +1,17 @@
 <?php
 /**
  *      捆绑营销控制器
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'admin');
 class group_control extends init_control {
     public function _initialize() {
         parent::_initialize();
         $this->service = $this->load->service('promotion_group');
-        $this->db = $this->load->table('promotion_group');
         $this->sku_service = $this->load->service('goods/goods_sku');
     }
     /**
@@ -21,10 +20,20 @@ class group_control extends init_control {
      */
     public function index(){
         $limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 20;
-        $info = $this->service->get_lists();
-        $count = $this->db->where($sqlmap)->count();
+        $info = $this->service->lists($sqlmap);
+        $count = $this->service->count($sqlmap);
         $pages = $this->admin_pages($count, $limit);
-        $this->load->librarys('View')->assign('info',$info)->assign('pages',$pages)->display('group_lists');
+        $lists = array(
+            'th' => array(
+                'title' => array('title' => '组合标题','length' => 30,'style' => 'double_click'),
+                'subtitle' => array('title' => '组合名称','length' => 25,'style' => 'double_click'),
+                'count'=>array('title' => '商品数量','length' => 15),
+                'status' => array('title' => '状态','length' => 15,'style' => 'ico_up_rack')
+            ),
+            'lists' => $info ['lists'],
+            'pages' => $pages,
+            );
+        $this->load->librarys('View')->assign('lists',$lists)->display('group_lists');
     }
     /**
      * [add 编辑]

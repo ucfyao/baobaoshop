@@ -6,6 +6,6 @@ class taglib_ads
 	}
 
 	public function lists($sqlmap = array(), $options = array()) {
-		return $this->service->getdetail(array_merge($sqlmap,$options));
+		return $this->service->lists($sqlmap, $options);
 	}
 };

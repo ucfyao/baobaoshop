@@ -1,34 +1,36 @@
 <?php
 /**
  *		商品品牌数据层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 
 class goods_category_service extends service {
 	public function _initialize() {
-		$this->db = model('goods/goods_category');
-		$this->goods_db = model('goods/goods_spu');
-		$this->brand_db = model('goods/brand');
-		$this->goods_category = cache('goods_category');
-		$this->type_service = model('goods/type','service');
+		$this->db = $this->load->table('goods/goods_category');
+		$this->type_service = $this->load->service('goods/type');
 	}
+	/**
+     * [category_lists 后台分类列表]
+     * @return [type]            [description]
+     */
 	public function category_lists(){
-		$result = $this->db->where(array('parent_id' => 0))->order('sort asc')->getField('id,name,sort,parent_id,type_id,status');
+		$result = $this->db->where(array('parent_id' => 0))->order('sort asc')->getField('id,sort,name,parent_id,type_id,status');
+		if(!$result){
+    		$this->error = $this->db->getError();
+    	}
 		foreach ($result as $key => $value) {
-			$type_name = $this->type_service->get_name_by_id($value['type_id']);
+			$type_name = $this->type_service->fetch_by_id($value['type_id'],'name');
 			$result[$key]['type_name'] = $type_name ? $type_name : '';
 			if($this->has_child($value['id'])){
 				$result[$key]['level'] = 1;
 			}
+			$lists[] = array('id'=>$value['id'],'sort'=>$value['sort'],'name'=>$value['name'],'type_name'=>$result[$key]['type_name'],'status'=>$value['status'],'level'=>$result[$key]['level']);
 		}
-		if(!$result){
-    		$this->error = $this->db->getError();
-    	}
-    	return $result;
+		return $lists;
     }
     /**
      * [ajax_category ajax获取分类]
@@ -42,7 +44,7 @@ class goods_category_service extends service {
 		}
 		$result = $this->db->where(array('parent_id' =>$parent_id))->order('sort desc')->select();
 		foreach ($result as $key => $value) {
-			$type_name = $this->type_service->get_name_by_id($value['type_id']);
+			$type_name = $this->type_service->fetch_by_id($value['type_id'],'name');
 			$result[$key]['type_name'] = $type_name ? $type_name : '';
 			$result[$key]['row'] = $this->db->where(array('parent_id' =>array('eq',$value['id'])))->count();
 		}
@@ -66,13 +68,13 @@ class goods_category_service extends service {
 		runhook('before_add_category',$params);
 		$data = $this->db->create($params);
 		$result = $this->db->add($data);
-		$this->build_cache();
+		cache('goods_category',NULL);
     	if($result === FALSE){
     		$this->error = $this->db->getError();
     		return FALSE;
     	}else{
     		return TRUE;
-    	}		
+    	}
 	}
 	/**
 	 * [edit_spec 编辑分类]
@@ -92,13 +94,13 @@ class goods_category_service extends service {
 		}
 		runhook('before_edit_category',$params);
 		$result = $this->db->update($params);
-		$this->build_cache();
+		cache('goods_category',NULL);
     	if($result === FALSE){
     		$this->error = $this->db->getError();
     		return FALSE;
     	}else{
     		return TRUE;
-    	}		
+    	}
 	}
 	/**
 	 * [change_status 改变状态]
@@ -118,7 +120,7 @@ class goods_category_service extends service {
     		return FALSE;
     	}else{
     		return TRUE;
-    	}	
+    	}
 	}
 	/**
 	 * [delete_spec 删除分类]
@@ -140,6 +142,7 @@ class goods_category_service extends service {
     		$this->error = lang('_operation_fail_');
     		return FALSE;
     	}else{
+    		cache('goods_category',NULL);
 			runhook('after_delete_category',$params);
     		return TRUE;
     	}
@@ -149,14 +152,12 @@ class goods_category_service extends service {
 	 * @param  [array] $params [规格id和排序数组]
 	 * @return [boolean]     [返回更改结果]
 	 */
-	public function change_sort($params){
+	public function change_info($params){
 		if((int)$params['id'] < 1){
 			$this->error = lang('_param_error_');
 			return FALSE;
 		}
-		$data = array();
-		$data['sort'] = $params['sort'];
-		$result = $this->db->where(array('id'=>array('eq',$params['id'])))->save($data);
+		$result = $this->db->where(array('id'=>$params['id']))->save($params);
 		if(!$result){
     		$this->error = lang('_operation_fail_');
     		return FALSE;
@@ -165,128 +166,51 @@ class goods_category_service extends service {
     	}
 	}
 	/**
-	 * [change_sort 改变名称]
-	 * @param  [array] $params [品牌id和name]
-	 * @return [boolean]     [返回更改结果]
+	 * [get_category_tree 获取商品分类树]
+	 * @param type $lists 分类列表
+	 * @return [type] [description]
 	 */
-	public function change_name($params){
-		if((int)$params['id'] < 1){
-			$this->error = lang('_param_error_');
-			return FALSE;
-		}
-		$data = array();
-		$data['name'] = $params['name'];
-		$result = $this->db->where(array('id'=>array('eq',$params['id'])))->save($data);
+	public function get_category_tree($lists){
+		$result = $this->get_tree($lists);
 		if(!$result){
     		$this->error = lang('_operation_fail_');
     		return FALSE;
     	}
     	return $result;
-	}
-	/**
-	 * [get_format_category 获取商品分类树]
-	 * @return [type] [description]
-	 */
-	public function get_category_tree(){
-		$_catinfo = $this->db->order('sort ASC')->select();
-		$result = $this->get_tree($_catinfo,0);
-		if(!$result){
-    		$this->error = lang('_operation_fail_');
-    		return FALSE;
-    	}else{
-    		return $result;
-    	}
-	}
+    }
     /**
 	 * 分类层级
 	 * @staticvar array $tree
-	 * @param type $list 分类信息
-	 * @param type $parent_id	分类父级id	
+	 * @param type $lists 分类信息
+	 * @param type $parent_id	分类父级id
 	 * @param type $level 级别
-	 * @return array 
+	 * @return array
 	 */
-	public function get_tree($list,$parent_id,$level=0){
-		 static $tree = array();
-		 foreach ($list as $row){
-			  if($row['parent_id'] == $parent_id){
-					$row['level'] = $level;
-					$tree[] = $row;
-					$this -> get_tree($list, $row['id'],$level+1);
-			  }
-		 }
-		 return $tree;
-	}
-	/**
-	 * [get_parent_tree 获取商品分类树]
-	 * @return [type] [description]
-	 */
-	public function get_parent_tree(){
-		$_catinfo = $this->db->order('sort asc')->select();
-		$result = $this->create_parent_tree($_catinfo,0);
-		if(!$result){
-    		$this->error = lang('_operation_fail_');
-    		return FALSE;
-    	}else{
-    		return $result;
-    	}
-	}
-	/**
-	 * 父级分类层级
-	 * @staticvar array $tree
-	 * @param type $list 分类信息
-	 * @param type $parent_id	分类父级id	
-	 * @param type $level 级别
-	 * @return array 
-	 */
-	private function create_parent_tree($list,$parent_id,$level=1){
-		 static $tree = array();
-		 $tree[0] = array('id' => 0,'name' => '顶级分类','level' => 0,'parent_id' => -1);
-		 foreach ($list as $row){
-			if($row['parent_id'] == $parent_id){
-				$row['level'] = $level;
-				$tree[] = $row;
-				$this -> create_parent_tree($list, $row['id'],$level+1);
+	public function get_tree(&$lists ,$parent_id = 0,$level = 0){
+		foreach ($lists as $k => $list){
+			if($list['parent_id'] == $parent_id){
+				$lists[$k]['level'] = $level;
+				$this -> get_tree($lists, $list['id'],$level+1);
 			}
 		 }
-		 return $tree;
+		 return $lists;
 	}
-	/**
-     * 格式化分类到选择框
-     * @param type $data
-     */
-    public function format_cat($id) {
-    	if((int)$id < 0){
-    		$this->error = lang('_param_error_');
-    		return FALSE;
-    	}
-		$cat_str = '';
-		$info = $this->get_parent($id);
-		$cat_arr = $this->db->where(array('id'=>array('IN',$info)))->getField('name',TRUE);
-		foreach ($cat_arr as $key => $value) {
-			if($key == count($cat_arr)-1){
-				$cat_str .= $value;
-			}else{
-				$cat_str .= $value.'-';
-			}
-		}
-		return $cat_str;
-    }
 	/**
 	 * [get_parent 获取商品分类所有父级id]
 	 * @param  string  $cid   [需要获取的商品分类cid]
 	 * @return [array]	$result       [返回父级id数组]
 	 */
-    public function get_parent($cid,$istop){
-    	 if ($istop ==  1) {
+    public function get_parent($cid,$istop = false){
+    	 if ($istop) {
             $result = 0;
-            $category = $this->db->detail($cid)->output();
+            $category = $this->get($cid);
             $result = $category['id'];
             if ($category['parent_id']) {
                 $result = $this->get_parent($category['parent_id'], $istop);
             }
         } else {
             $result = array();
-            $category = $this->db->detail($cid)->output();
+            $category = $this->get($cid);
             if ($category['parent_id'] ) {
                 $result[] = $category['parent_id'];
                 if ($category['parent_id'] != $cid) {
@@ -295,7 +219,7 @@ class goods_category_service extends service {
                         $result = array_merge($result,$parent_id);
                     }
                 }
-               
+
             }
         }
         return $result;
@@ -305,51 +229,16 @@ class goods_category_service extends service {
 	 * @param  [type] $id [description]
 	 * @return [type]     [description]
 	 */
-	public function create_cat_format($id,$extra){
-		if((int)$id < 1){
-    		$this->error = lang('_param_error_');
-    		return FALSE;
-    	}
-		$cat_str = '';
-		$info = $this->get_parent($id);
-		if(!$info){
-			$info = $id;
+	public function create_cat_format($category = array(),$extra = FALSE){
+		$names = array();
+		if(empty($category)){
+			if($extra == TRUE) $names = array('0' => '顶级分类');
 		}else{
-			array_push($info,$id);
+			$names = $this->db->where(array('id'=>array('IN',$category)))->getField('name',TRUE);
+			if($extra == TRUE) array_unshift($names,'顶级分类');
 		}
-		$cat_arr = $this->db->where(array('id'=>array('IN',$info)))->getField('name',TRUE);
-		if($extra == TRUE){
-			array_unshift($cat_arr,'顶级分类');
-		}
-		foreach ($cat_arr as $key => $value) {
-			if($key == count($cat_arr)-1){
-				$cat_str .= $value;
-			}else{
-				$cat_str .= $value.'>';
-			}
-		}
-		return $cat_str;
-	}
-	/**
-	 * [create_cat_format 组合父分类关系,排除自身]
-	 * @param  [type] $id [description]
-	 * @return [type]     [description]
-	 */
-	public function create_parent_cat_format($id){
-		if((int)$id < 0){
-    		$this->error = lang('_param_error_');
-    		return FALSE;
-    	}
-		$cat_str = '';
-		$info = $this->get_parent($id);
-		$cat_arr = $this->db->where(array('id'=>array('IN',$info)))->getField('name',TRUE);
-		if(!$cat_arr){
-			$cat_arr = array('0' => '顶级分类');
-		}else{
-			array_unshift($cat_arr,'顶级分类');
-		}
-		foreach ($cat_arr as $key => $value) {
-			if($key == count($cat_arr)-1){
+		foreach ($names as $key => $value) {
+			if($key == count($names)-1){
 				$cat_str .= $value;
 			}else{
 				$cat_str .= $value.'>';
@@ -362,40 +251,14 @@ class goods_category_service extends service {
 	 * @param  [type] $id [description]
 	 * @return [type]     [description]
 	 */
-	public function create_format_id($id){
-		if((int)$id < 0){
-    		$this->error = lang('_param_error_');
-    		return FALSE;
-    	}
-    	$info = $this->get_parent($id);
-    	if(!$info){
-			$info = $id;
+	public function create_format_id($categorys,$isparent = FALSE){
+		if(empty($categorys)){
+			if($isparent) $categorys = array(0,0);
 		}else{
-			krsort($info);
-			array_push($info,$id);
+			krsort($categorys);
+			if($isparent) array_unshift($categorys,0);
 		}
-    	return implode(',',$info);
-	}
-	/**
-	 * [create_format_id 格式父子级分类id]
-	 * @param  [type] $pid [description]
-	 * @return [type]     [description]
-	 */
-	public function create_parent_format_id($parent_id){
-		if((int)$parent_id < 0){
-    		$this->error = lang('_param_error_');
-    		return FALSE;
-    	}
-    	$info = $this->get_parent($parent_id);
-    	if(!$info){
-			$info = array('0' => 0);
-			array_push($info,$parent_id);
-		}else{
-			krsort($info);
-			array_unshift($info,0);
-			array_push($info,$parent_id);
-		}
-    	return implode(',',$info);
+    	return implode(',',$categorys);
 	}
     /**
      * [has_child 判断分类是否有子分类]
@@ -434,13 +297,12 @@ class goods_category_service extends service {
         return $return;
     }
     /**
-     * [build_cache 生成分类缓存]
+     * [get_cache 获取分类缓存]
      * @return [type] [description]
      */
-    public function build_cache() {
-        $result = $this->db->getField(implode(',', array_keys($this->db->get_fields())), TRUE);
-        cache('goods_category', $result);
-        return true;
+    public function get($key = NULL) {
+		$result = $this->db->order('sort asc,id desc')->cache('goods_category',3600)->getField(implode(',', array_keys($this->db->get_fields())), TRUE);
+		return is_string($key) ? $result[$key] : $result;
     }
     /**
 	 * [get_cate_grades 获取分类的价格分级]
@@ -452,7 +314,7 @@ class goods_category_service extends service {
     		$this->error = lang('_param_error_');
     		return FALSE;
     	}
-    	$category = $this->goods_category[$id];
+    	$category = $this->get($id);
     	$grades = explode(',',$category['grade']);
     	$result = array();
     	foreach ($grades as $grade) {
@@ -483,9 +345,9 @@ class goods_category_service extends service {
 		}
 		$sqlmap['brand_id'] = array("GT", 0);
 		$sqlmap['_string'] = JOIN(" OR ", $join);
-		$brand_ids = $this->goods_db->where($sqlmap)->getField('brand_id', TRUE);
+		$brand_ids = $this->load->table('goods/goods_spu')->where($sqlmap)->getField('brand_id', TRUE);
 		if($brand_ids) {
-			$brand_arr = $this->brand_db->where(array('id' => array("IN", $brand_ids)))->select();
+			$brand_arr = $this->load->table('goods/brand')->where(array('id' => array("IN", $brand_ids)))->select();
 		}
 		return $brand_arr;
     }
@@ -494,15 +356,18 @@ class goods_category_service extends service {
      * @param  [type] $id [description]
      * @return [type]     [description]
      */
-    public function get_category_by_id($id){
+    public function get_category_by_id($id,$flag = TRUE){
     	if((int)$id < 1){
 			$this->error = lang('_param_error_');
 			return FALSE;
 		}
     	$result = $this->db->detail($id)->output();
-    	$result['cat_format'] = $this->create_parent_format_id($result['parent_id']);
-    	$result['parent_name'] = $this->create_parent_cat_format($id);
-    	$typeinfo = $this->type_service->get_type_by_id($result['type_id']);
+    	$categorys = $this->get_parent($id);
+    	if(!$flag) array_unshift($categorys, $id);
+
+    	$result['cat_format'] = $this->create_format_id($categorys,$flag);
+    	$result['parent_name'] = $this->create_cat_format($categorys,$flag);
+    	$typeinfo = $this->type_service->fetch_by_id($result['type_id']);
     	$result['type_name'] = $typeinfo['name'];
     	if(!$result){
     		$this->error = lang('_operation_fail_');
@@ -523,12 +388,12 @@ class goods_category_service extends service {
 		}
         if ($istop ==  1) {
             $result = 0;
-            $category = $this->db->detail($cid,'id,parent_id')->output();
+            $category = $this->get($cid);
             $result = $category['id'];
             if ($category['parent_id']) {
             	$result = $this->get_top_parent($category['parent_id'], $istop);
             }
-        } 
+        }
         return $result;
     }
     /**
@@ -541,13 +406,53 @@ class goods_category_service extends service {
 			$this->error = lang('_param_error_');
 			return FALSE;
 		}
-		$category = $this->goods_category[$id];
+		$goods_category = $this->get();
+		$category = $goods_category[$id];
 		if(!$category){
 			$this->error = lang('goods_category_not_exist','goods/language');
 			return FALSE;
 		}
 		$top_parentid = $this->get_top_parent($id);
-		$category['top_parentid'] = $this->goods_category[$top_parentid];
+		$category['top_parentid'] = $goods_category[$top_parentid];
 		return $category;
+    }
+    /**
+	 * @param  string  获取的字段
+	 * @param  array 	sql条件
+	 * @return [type]
+	 */
+    public function detail($id, $field = TRUE){
+    	return $this->db->detail($id, $field)->output();
+    }
+	/**
+	 * 分类列表
+	 */
+    public function lists($sqlmap = array(), $options = array()) {
+        $sqlmap['status'] = 1;
+        if ($sqlmap['only']) {
+            $catids = str_replace('，', ',', $sqlmap['catid']);
+            $catids = explode(',', $catids);
+            $sqlmap['id'] = array('IN',$catids);
+        } else {
+            if($sqlmap['type'] == 'nav') {
+                $sqlmap['show_in_nav'] = 1;
+                $cat_ids = $this->get_child($sqlmap['catid']);
+                $sqlmap['id'] = array('IN',$cat_ids);
+            }else{
+                $sqlmap['parent_id'] = $sqlmap['catid'] ? $sqlmap['catid'] : 0;
+            }
+        }
+        if(!isset($sqlmap['order'])){
+           $sqlmap['order'] = 'sort asc,id asc';
+        }
+        $this->db->order($sqlmap['order']);
+        if(isset($options['limit'])){
+            $this->db->limit($options['limit']);
+        }
+        if(isset($options['page'])){
+            $this->db->page($options['page']);
+        }
+        $lists = $this->db->where($sqlmap)->select();
+        return $lists;
     }
 }

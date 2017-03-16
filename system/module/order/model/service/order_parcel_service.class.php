@@ -1,11 +1,11 @@
 <?php
 /**
  * 		发货单服务层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class order_parcel_service extends service {
 
@@ -124,5 +124,51 @@ class order_parcel_service extends service {
 	public function order_parcel_import($params){
 		$data = $this->table->create($params);
 		return $this->table->add($params);
+	}
+
+	public function get_lists($sqlmap,$page,$limit){
+		$parcels = $this->load->table('order/order_parcel')->page($page)->limit($limit)->order('id DESC')->where($sqlmap)->select();
+		$lists = array();
+		foreach ($parcels AS $parcel) {
+			$lists[] = array(
+				'id' => $parcel['id'],
+				'order_sn' => $parcel['order_sn'],
+				'member_name' => $parcel['member_name'],
+				'address_name' => $parcel['address_name'],
+				'address_detail' => $parcel['address_detail'],
+				'address_mobile' => $parcel['address_mobile'],
+				'status' => $parcel['status']
+			);
+		}
+		return $lists;
+	}
+	/**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->table->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->table->getError();
+            return false;
+        }
+        return $result;
+    }
+    public function fetch_by_id($id, $field = ''){
+    	return $this->table->fetch_by_id($id, $field);
+    }
+    /**
+	 * @param  array 	sql条件
+	 * @param  integer 	读取的字段
+	 * @return [type]
+	 */
+	public function find($sqlmap = array(), $field = "") {
+		$result = $this->table->where($sqlmap)->field($field)->find();
+		if($result===false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
 	}
 }

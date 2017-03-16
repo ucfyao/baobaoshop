@@ -10,9 +10,7 @@
 		{catpos($goods['catid'])}<em>></em>{$goods['sku_name']}
 	</p>
 </div>
-{hook/detail_crumbs}
-<!-- <div class="product-info container border border-gray-white clearfix"> -->
-<div class="product-info container border-top clearfix">
+<div class="product-info container border border-gray-white clearfix">
 	<div class="preview">
 		<div id="spec-n">
 			<div class="jqzoom"><img class="lazy" src="{SKIN_PATH}statics/images/lazy.gif" data-original="<?php echo $goods['img_list'][0]?>" width="338" height="338" /></div>
@@ -32,11 +30,7 @@
 			</div>
 		</div>
 		<div class="short-share padding-tb border-top clearfix">
-			{if $favorite}
-			<span class="button fl"><em class="text-gray">已收藏</em></span>
-			{else}
-			<a class="button collect-btn fl" data-skuid="{$goods['sku_id']}" data-name="{$good['sku_name']}" data-url="{urlencode($_SERVER['REQUEST_URI'])}" data-price="{$goods['shop_price']}">收藏商品</a>
-			{/if}
+			<a class="button collect <?php if(!$favorite)echo 'collect-btn';?>  fl" data-skuid="{$goods['sku_id']}" data-name="{$goods['sku_name']}" data-url="{urlencode($_SERVER['REQUEST_URI'])}" data-price="{$goods['shop_price']}"><?php if($favorite){echo "已收藏";}else if(!$favorite){echo "收藏商品";};?></a>
 			{hook/detail_behind_album}
 		</div>
 	</div>
@@ -106,15 +100,14 @@
 			<div class="dl">
 				<div class="dt">{$specs['name']}：</div>
 				<div class="dd item-check">
-					<?php foreach(explode(',',$specs['value']) as $k => $spec):?>
+					<?php foreach($specs['value'] as $k => $spec):?>
 					<div class="item" data-id="{$specs['id']}" data-name="{$specs['name']}" data-value="{$spec}">
 						<i></i>
 						{if $specs[style] == 1}
 						<?php $color = explode(',',$specs['color'])?>
 						<div class="square-check" title="{$spec}" style="background-color:{$color[$k]};"></div>
 						{elseif $specs[style] == 2}
-						<?php $img = explode(',',$specs['img'])?>
-						<div class="square-check pic-center" title="{$spec}"><img title="{$spec}" src="{$img[$k]}"></div>
+						<div class="square-check pic-center" title="{$spec}"><img title="{$spec}" src="{$specs['img'][$k]}"></div>
 						{else}
 						<a href="javascript:;" title="">{$spec}</a>
 						{/if}
@@ -175,7 +168,7 @@
 		{hook/detail_goods_operate}
 	</div>
 	<!--右边外栏-->
-	<div class="product-ext fr">
+	<div class="product-ext">
 		<div class="item-title">商品概况</div>
 		<div class="ext-content border-bottom clearfix">
 			<div class="item-double-txt">
@@ -190,14 +183,13 @@
 				<em class="consult-total">0</em>
 				<p>商品咨询</p>
 			</div>
-			{hook/detail_goods_info data}
+			{hook/detail_goods_info}
 		</div>
-		{hook/detail_info_between_lists}
 		<div class="item-title">看了又看</div>
 		<div class="ext-content padding clearfix">
 			<div class="ext-show">
 				<div class="ext-con-wrap">
-					{hd:goods tagfile="goods" method="lists" num="4" order="rand()"}
+					{hd:goods tagfile="goods" method="lists" num="6" order="rand()"}
 					{loop $data $r}
 					<div class="ext-con-box">
 						<a href="{url('detail',array('sku_id'=>$r['sku_id']))}" title="{$r['name']}"><img class="lazy" src="{SKIN_PATH}statics/images/lazy.gif" data-original="{thumb($r['thumb'])}" width="90" height="90" /></a>
@@ -214,18 +206,16 @@
 {hook/detail_brief_between_detail saless}
 {if $goods[number] > 0}
 {hd:promotion tagfile="prom_group" method="lists" sku_id="$_GET[sku_id]"}
-<!-- <div class="container fitting-suit border border-gray-white"> -->
-<div class="container fitting-suit">
-	<ul class="text-big text-lh-large padding-bottom p-tab-first clearfix">
+<div class="container fitting-suit border border-gray-white">
+	<ul class="p-tab-first clearfix">
 		{if $data}<li class="tab-first-lists current" ><a href="javascript:;">组合销售</a></li>{/if}
 		{if $saless}<li class="tab-first-lists" ><a href="javascript:;">组合促销</a></li>{/if}
 	</ul>
 </div>
 
 {if $data}
-<!-- <div class="container border border-gray-white border-top-none prom_group combine_way"> -->
-<div class="container prom_group combine_way border border-gray-white radius">
-	<ul class="tab p-tab-second padding-big-left padding-big-top clearfix">
+<div class="container border border-gray-white border-top-none prom_group combine_way">
+	<ul class="tab p-tab-trigger-wrap p-tab-second clearfix margin-big-bottom">
 		{loop $data $k $group}
 		<li class="ui-switchtab-item tab-second-lists" data-id="{$group['id']}"><a href="javascript:;">{$k}</a></li>
 		<span class="spacer fl"></span>
@@ -280,7 +270,7 @@
 			</div>
 		</div>
 		<div class="fitting-suit-info fr">
-			<span class="padding-big-bottom border-bottom border-dotted margin-big-bottom">商品总价：<em class="text-big text-mix">￥<em class="price"><?php echo $goods['prom_price']?></em></em></span>
+			<span class="padding-bottom border-bottom border-dotted">商品总价：<em class="text-big text-mix">￥<em class="price"><?php echo $goods['prom_price']?></em></em></span>
 			<span class="text-lh">已选商品：<em class="total_num">1</em>件</span>
 			<span class="text-lh">参考价格：<em class="delete-line">￥<em class="market">{$goods['market_price']}</em></em></span>
 			<div class="item-btn button border-none" data-event="cart_add" data-skuids="{$goods['sku_id']}">
@@ -373,7 +363,7 @@
 
 <!--商品详情-->
 <div class="container padding-big-top item-two-column clearfix">
-	<div class="left fr">
+	<div class="left fl">
 		<div class="product-ext border border-gray-white clearfix">
 			<div class="item-title">浏览记录</div>
 			<div class="ext-content padding clearfix">
@@ -391,23 +381,22 @@
 				</div>
 			</div>
 		</div>
-		{hook/detail_behind_history}
 	</div>
 
-	<div id="pro-detail-right" class="fl right">
+	<div id="pro-detail-right" class="fr right">
 
 		<div id="item-bar">
 			<ul class="tab p-tab-trigger-wrap">
 				<li class="ui-switchtab-item current"><a href="javascript:;">商品详情</a></li>
 				<li class="ui-switchtab-item"><a href="javascript:;" class="total-comment">商品评价(0)</a></li>
 				<li class="ui-switchtab-item" id="consult"><a href="javascript:;">商品咨询(0)</a></li>
-				<?php $cache = cache('setting');?>
+				<?php $cache = model('admin/setting','service')->get();?>
 				{if $cache[invoice_vat_enabled] == 1}
 				{hd:order method="records" tagfile="order" sid="$goods[spu_id]" isspu="true" page="$_GET[page]" num="8"}
 				<li class="ui-switchtab-item"><a href="javascript:;">销售记录({$data[count]})</a></li>
 				{/hd}
 				{/if}
-				<li class="fl">
+				<li class="fr">
 					{if $goods['number'] > 0}
 					<div class="item-btn button border-none" data-event="cart_add" data-skuids="{$goods['sku_id']}">
 						<i class="icon-cart">
@@ -420,7 +409,7 @@
 					</div>
 					{hook/detail_tab_right}
 					{else}
-					<div class="fr margin-right text-lh-large padding-top text-main">商品已售罄</div>
+					<div class="fr margin-right text-lh-large">商品已售罄</div>
 					{/if}
 				</li>
 				{if $qr_code[0]>0}
@@ -449,12 +438,11 @@
 		<div class="detail-content-wrap">
 			<p>{$goods['content']}</p>
 		</div>
-		<!-- <div id="pro-detail-comment" class="margin-big-top border border-gray-white product-detail-panel item-blue-top"> -->
-		<div id="pro-detail-comment" class="product-detail-panel item-blue-top margin-large-top">
+		<div id="pro-detail-comment" class="margin-big-top border border-gray-white product-detail-panel item-blue-top">
 			<ul class="tab p-tab-trigger-wrap">
-				<li class="ui-switchtab-item current"><a href="javascript:;">商品评价</a></li>
+				<li class="ui-switchtab-item"><a class="text-sub" href="javascript:;">商品评价</a></li>
 			</ul>
-			<div class="ui-switch-panel ui-selected padding-tb border border-gray-white clearfix">
+			<div class="ui-switch-panel ui-selected padding-tb clearfix">
 				<div class="text-center goods-comment-info">
 					<span class="h2 text-mix" id="positive-nb">100%</span>
 					<span>好评度</span>
@@ -487,14 +475,14 @@
 				</div>
 			</div>
 		</div>
-		<div id="pro-all-comment" class="margin-large-top product-detail-panel">
-			<ul class="tab p-tab-trigger-wrap border-bottom" id="comment_tab">
-				<li class="ui-switchtab-item current border-gray-white"><a href="javascript:;" data-load="false">全部评价</a></li>
+		<div id="pro-all-comment" class="margin-big-top border border-gray-white product-detail-panel item-blue-top pro-border-top-gray">
+			<ul class="tab p-tab-trigger-wrap consult-tab" id="comment_tab">
+				<li class="ui-switchtab-item current"><a href="javascript:;" data-load="false">全部评价</a></li>
 				<li class="ui-switchtab-item" data-mood="positive"><a href="javascript:;" data-load="false">好评({$count['positive']})</a></li>
 				<li class="ui-switchtab-item" data-mood="neutral"><a href="javascript:;" data-load="false">中评({$count['neutral']})</a></li>
 				<li class="ui-switchtab-item" data-mood="negative"><a href="javascript:;" data-load="false">差评({$count['negative']})</a></li>
 			</ul>
-			<div class="tab-tag p-tab-con-wrap consult-tag bg-white">
+			<div class="tab-tag p-tab-con-wrap consult-tag">
 				<div class="tag selected padding clearfix default_comment">
 					<ul class="comment-area layout">
 					</ul>
@@ -525,11 +513,11 @@
 				</div>
 			</div>
 		</div>
-		<div id="pro-goods-consult" class="margin-large-top product-detail-panel item-blue-top">
+		<div id="pro-goods-consult" class="margin-big-top border border-gray-white product-detail-panel item-blue-top">
 			<ul class="tab p-tab-trigger-wrap">
-				<li class="ui-switchtab-item current"><a href="javascript:;">商品咨询</a></li>
+				<li class="ui-switchtab-item"><a class="text-sub" href="javascript:;">商品咨询</a></li>
 			</ul>
-			<div class="ui-switch-panel ui-selected padding border border-gray-white clearfix">
+			<div class="ui-switch-panel ui-selected padding clearfix">
 				<dl class="lh20 goods-consult-info">
 					<dt>温馨提示：</dt>
 					<dd class="text-gray">
@@ -551,13 +539,13 @@
 				</div>
 			</div>
 		</div>
-		<div id="pro-all-consult" class="margin-large-top border-gray-white product-detail-panel item-blue-top pro-border-top-gray">
+		<div id="pro-all-consult" class="margin-big-top border border-gray-white product-detail-panel item-blue-top pro-border-top-gray">
 			<ul class="tab p-tab-trigger-wrap">
-				<li class="ui-switchtab-item current"><a href="javascript:;">全部咨询</a></li>
+				<li class="ui-switchtab-item current"><a class="text-sub" href="javascript:;">全部咨询</a></li>
 			</ul>
 			{hd:goods tagfile="consult" method="lists" num="5" spu_id="$goods[spu_id]"}
 			{if empty($data)}
-			<div class="ui-switch-panel ui-selected padding border border-gray-white">
+			<div class="ui-switch-panel ui-selected padding">
 				<p class="goods-item-no-info">暂无商品咨询</p>
 			</div>
 			{else}
@@ -590,11 +578,11 @@
 			{/hd}
 		</div>
 		{if $cache[invoice_vat_enabled] == 1}
-		<div id="pro-buy-record" class="margin-large-top product-detail-panel">
+		<div id="pro-buy-record" class="margin-big-top border border-gray-white product-detail-panel item-blue-top">
 			<ul class="tab p-tab-trigger-wrap">
-				<li class="ui-switchtab-item current"><a class="#text-sub" href="javascript:;" id="record_btn">购买记录(0)</a></li>
+				<li class="ui-switchtab-item"><a class="text-sub" href="javascript:;" id="record_btn">购买记录(0)</a></li>
 			</ul>
-			<div class="ui-switch-panel ui-selected padding border border-gray-white">
+			<div class="ui-switch-panel ui-selected padding">
 				<div class="table text-ellipsis buy-record">
 					<div class="tr strong">
 						<div class="td w20">买家</div>
@@ -686,6 +674,16 @@
 		if($len<4){
 			$(".product-info .slider .next").addClass("disabled");
 		}
+
+		$.get("<?php echo url('ajax_get_favorite')?>",{sku_id:'<?php echo $_GET["sku_id"]?>'},function(ret){
+			if(ret.status == 1){
+				$(".collect").removeClass('collect-btn');
+				$(".collect").html('<em class="text-gray">已收藏</em>');
+			}else{
+				$(".collect").addClass('collect-btn');
+				$(".collect").html('收藏商品');
+			}
+		},'json');
 	})
 	function ajax_comment(page,that){
 		var page = page || 1;

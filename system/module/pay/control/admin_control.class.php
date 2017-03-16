@@ -1,11 +1,11 @@
 <?php
 /**
  *      后台支付设置控制器
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'admin');
 class admin_control extends init_control {
@@ -34,7 +34,7 @@ class admin_control extends init_control {
         if (checksubmit('dosubmit')) {
             $_POST['config'] = serialize($_POST['config']);
             if ($this->service->save($_POST)) {
-            	$this->service->build_cache();
+            	cache('payment_enable',NULL);
                 showmessage(lang('_enabled_success_','pay/language'), url('setting'), 1);
             } else {
                 showmessage(lang('_enabled_error_','pay/language'), url('setting'), 0);
@@ -63,8 +63,9 @@ class admin_control extends init_control {
         $pay_code = $_GET['pay_code'];
         $data = array();
         $data['pay_code'] = $pay_code;
-        $this->load->table('payment')->where(array('pay_code'=>$pay_code))->delete();
-		$this->service->build_cache();
+        $result = $this->service->delete($pay_code);
+		cache('payment_enable',NULL);
+        if($result === false) showmessage($this->service->error);
         showmessage(lang('_uninstall_success_','pay/language'), url('setting'), 1);
     }
 

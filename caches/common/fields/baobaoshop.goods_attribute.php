@@ -1,3 +1,0 @@
-<?php
-//000000000000a:8:{i:0;s:6:"sku_id";i:1;s:12:"attribute_id";i:2;s:15:"attribute_value";i:3;s:4:"type";i:4;s:6:"status";i:5;s:4:"sort";s:8:"_autoinc";b:0;s:5:"_type";a:6:{s:6:"sku_id";s:16:"int(10) unsigned";s:12:"attribute_id";s:16:"int(10) unsigned";s:15:"attribute_value";s:12:"varchar(255)";s:4:"type";s:19:"tinyint(1) unsigned";s:6:"status";s:19:"tinyint(1) unsigned";s:4:"sort";s:15:"int(8) unsigned";}}
-?>

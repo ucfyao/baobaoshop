@@ -1,16 +1,15 @@
 <?php
 /**
  *		商品咨询数据层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 
 class goods_consult_service extends service {
 	public function _initialize() {
-		$this->article_logic = $this->load->service('misc/article');
 		$this->model = $this->load->table('goods/goods_consult');
 	}
 	/**
@@ -19,10 +18,6 @@ class goods_consult_service extends service {
 	 * @return [bool]      [description]
 	 */
 	public function delete($params){
-		if(!$this->article_logic->is_array_null($params)){
-			$this->error = lang('_param_error_');
-			return FALSE;
-		}
 		runhook('before_consult_delete',$params);
 		$data = array();
 		$data['id'] = array("IN",$params['id']);
@@ -88,7 +83,7 @@ class goods_consult_service extends service {
 			return FALSE;
 		}
 		return TRUE;
- 	 }	
+ 	 }
 	/**
 	 * [add 添加]
 	 * @$params [array] [数组]
@@ -114,7 +109,7 @@ class goods_consult_service extends service {
  	 /**
  	  * [count 统计]
  	  * @$spu [条件]
- 	  * @return [int] 
+ 	  * @return [int]
  	  */
  	 public function seecont($spu){
 		$data = array();
@@ -130,7 +125,10 @@ class goods_consult_service extends service {
 	public function user_consult($mid,$page,$limit){
 		$userinfo = $this->load->table('goods_consult')->where(array('mid' => array('eq',$mid)))->page($page)->limit(10)->order('id DESC')->select();
 		foreach($userinfo as $k => $v){
-			 $userinfo[$k]['goods_detail'] =  $this->load->table('goods/goods_sku')->detail($v['sku_id'])->create_spec()->output();
+			 $userinfo[$k]['goods_detail'] =  $this->load->table('goods/goods_sku')->detail($v['sku_id'])->output();
+			 if($userinfo[$k]['goods_detail'] == null){
+				 unset($userinfo[$k]);
+			}
 		}
 		runhook('after_user_consult',$userinfo);
 		return $userinfo;
@@ -156,12 +154,18 @@ class goods_consult_service extends service {
 		}
 		return $count;
 	}
+	/**
+	 * 统计咨询
+	 */
 	public function handle(){
 		$data = array();
 		$data['status'] = 0;
 		$counts = $this->load->table('goods/goods_consult')->where($data)->count();
 		return (int)$counts;
 	}
+	/**
+	 * 商品咨询列表
+	 */
 	public function lists($sqlmap = array(),$options = array()){
 		$lists = array();
 		$lists['count'] = $this->model->where($sqlmap)->count();
@@ -181,6 +185,9 @@ class goods_consult_service extends service {
 		runhook('after_consult_lists',$lists);
 		return $lists;
 	}
+	/**
+	 * 获取商品咨询
+	 */
 	public function get_consult($mid,$page,$limit){
 		if(!$mid){
 			$this->error = lang('_valid_access_');
@@ -190,22 +197,30 @@ class goods_consult_service extends service {
 		$userinfo = '';
 		$userinfo = $this->load->table('goods_consult')->where(array('mid' => array('eq',$mid)))->page($page)->limit($limit)->order('id DESC')->select();
 		foreach($userinfo as $k => $v){
-			 $userinfo[$k]['goods_detail'] =  $this->load->table('goods/goods_sku')->detail($v['sku_id'])->create_spec()->output();
+			 $userinfo[$k]['goods_detail'] =  $this->load->table('goods/goods_sku')->detail($v['sku_id'])->output();
+			 if($userinfo[$k]['goods_detail'] == null){
+				 unset($userinfo[$k]);
+			}
 		}
 		foreach($userinfo as $k => $v){
 			foreach($v['goods_detail']['spec'] as $key => $value){
-				$data[$k]['goods_spec'] = $value['name'].' : '.$value['value'].';';
+				$data[$k]['goods_spec'] = $value['name'].' : '.$value['value'].'&nbsp;&nbsp;';
 			}
 			$data[$k]['sku_id'] = $v['sku_id'];
+			$data[$k]['_sku_url'] = url('goods/index/detail',array('sku_id' => $v['sku_id']));
 			$data[$k]['sku_name'] = $v['goods_detail']['sku_name'];
 			$data[$k]['dateline'] = date('Y-m-d H-s-i',$v['dateline']);
 			$data[$k]['question'] = $v['question'];
 			$data[$k]['reply_content'] = $v['reply_content'];
 			$data[$k]['status'] = $v['status'];
+			$data[$k]['thumb'] = $v['goods_detail']['thumb'];
 		}
 		runhook('after_get_consult',$data);
 		return $data;
 	}
+	/**
+	 * 发表咨询
+	 */
 	public function add_consult($params){
 		if(!$params['sku_id']){
 			$sku_ids = $this->load->service('goods/goods_sku')->get_sku_ids($params['spu_id']);
@@ -213,4 +228,61 @@ class goods_consult_service extends service {
 		}
 		return $this->model->update($params);
 	}
+	/**
+	 * 获取咨询列表（万能表格）
+	 */
+	public function get_lists($sqlmap, $limit = 5, $page = 1, $order = 'id DESC'){
+		$result = $this->load->table('goods_consult')->where($sqlmap)->page($page)->limit($limit)->order($order)->select();
+		$lists = array();
+		foreach($result as $key => $value){
+			 $result[$key]['goods_detail'] = $this->load->table('goods_sku')->detail($value['sku_id'],'sku_name,spec,thumb,spu_id')->output();
+			 $lists[] = array(
+			 	'id' => $value['id'],
+			 	'sku_name' => $result[$key]['goods_detail']['sku_name'],
+			 	'username' => empty($value['username']) ? '游客' : $value['username'],
+			 	'dateline' => $value['dateline'],
+			 	'sku_id' => $value['sku_id'],
+			 	'thumb' => $result[$key]['goods_detail']['thumb'],
+			 	'spec' => $result[$key]['goods_detail']['spec'],
+			 	'question' => $value['question'],
+			 	'status' => $value['status'],
+			 	'reply_content' => $value['reply_content']
+			 );
+		}
+		return $lists;
+	}
+
+	/**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->model->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->model->getError();
+            return false;
+        }
+        return $result;
+    }
+    /**
+	 * @param  string  获取的字段
+	 * @param  array 	sql条件
+	 * @return [type]
+	 */
+	public function getField($field = '', $sqlmap = array()) {
+		//field是否存在','
+		$exist = strpos($field, ',');
+		if($exist === false){
+			$result = $this->model->where($sqlmap)->getfield($field);
+		}else{
+			$result = $this->model->where($sqlmap)->field($field)->select();
+		}
+		if($result === false){
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		return $result;
+	}
+
 }

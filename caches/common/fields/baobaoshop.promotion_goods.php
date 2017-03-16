@@ -1,3 +1,0 @@
-<?php
-//000000000000a:12:{i:0;s:2:"id";i:1;s:4:"name";i:2;s:10:"start_time";i:3;s:8:"end_time";i:4;s:7:"sku_ids";i:5;s:5:"rules";i:6;s:11:"share_order";i:7;s:8:"dateline";i:8;s:4:"sort";s:8:"_autoinc";b:1;s:3:"_pk";s:2:"id";s:5:"_type";a:9:{s:2:"id";s:21:"mediumint(8) unsigned";s:4:"name";s:12:"varchar(200)";s:10:"start_time";s:16:"int(10) unsigned";s:8:"end_time";s:16:"int(10) unsigned";s:7:"sku_ids";s:4:"text";s:5:"rules";s:4:"text";s:11:"share_order";s:19:"tinyint(1) unsigned";s:8:"dateline";s:16:"int(10) unsigned";s:4:"sort";s:21:"mediumint(8) unsigned";}}
-?>

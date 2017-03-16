@@ -68,8 +68,11 @@
 			</div>
 		</form>
 		</div>
-		<script type="text/javascript" src="./statics/js/heyi.validate.js?v=5.3.2" ></script>
+		<script type="text/javascript" src="./statics/js/haidao.validate.js?v=5.3.2" ></script>
 		<script>
+			$(window).load(function(){
+				$(".cxcolor").find("table").removeClass("hidden");
+			})
 			$(function(){
 				var $val=$("input[type=text]").eq(0).val();
 				$("input[type=text]").eq(0).focus().val($val);	

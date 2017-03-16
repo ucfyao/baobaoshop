@@ -5,7 +5,7 @@ class index_control extends control {
 	public function _initialize() {
 		parent::_initialize();
 		if(file_exists(APP_ROOT.'caches/install.lock')){
-			die('您已安装过奕瑞系统，请勿重复执行安装操作！');
+			die('您已安装过海盗云商系统，请勿重复执行安装操作！');
 		}
 	}
 

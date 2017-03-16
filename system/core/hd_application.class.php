@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class hd_application extends hd_base {
 
@@ -52,7 +52,7 @@ class hd_application extends hd_base {
 
     private function _init_input() {
 		if (isset($_GET['GLOBALS']) ||isset($_POST['GLOBALS']) ||  isset($_COOKIE['GLOBALS']) || isset($_FILES['GLOBALS'])) {
-			error::system_error('_request_tainting_');
+			hd_error::system_error('_request_tainting_');
 		}
 		//加载钩子
 		$this->_hook_register();
@@ -66,15 +66,15 @@ class hd_application extends hd_base {
 			$_COOKIE = dstripslashes($_COOKIE);
 		}
 		if(IS_POST && !empty($_POST)) {
-			$_GET = array_merge($_GET, $_POST);
+			$_GET = array_merge_multi($_GET, $_POST);
 		}
-		$_GET['page'] = max(1, intval($_GET['page']));
+		if(!isset($_GET['page'])) $_GET['page'] = max(1, intval($_GET['page']));
 		define('IS_AJAX',       ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || !empty($_POST[config('VAR_AJAX_SUBMIT')]) || !empty($_GET[config('VAR_AJAX_SUBMIT')])) ? true : false);
 	}
 
 	private function _init_config() {
 		if(!is_file(CONF_PATH.'config.php')) {
-			error::system_error('_NO_EXISTS_CONFIG_');
+			hd_error::system_error('_NO_EXISTS_CONFIG_');
 		}
 		/* 加载系统配置 */
 		config(null, 'config');
@@ -122,7 +122,7 @@ class hd_application extends hd_base {
         runhook('pre_system');
 		$control = C::load_class($control_name, $module_name, true);
 		if(!$control) {
-		   error::system_error('_controller_not_exist_');
+		   hd_error::system_error('_controller_not_exist_');
 		}
 		/* 加载模块函数 */
 		if(is_file(MODULE_PATH.'function/function.php')) {
@@ -190,7 +190,7 @@ class hd_application extends hd_base {
 			$temp = strtoupper(urldecode(urldecode($temp)));
 			foreach ($check as $str) {
 				if(strpos($temp, $str) !== false) {
-					error::system_error('_request_tainting_');
+					hd_error::system_error('_request_tainting_');
 				}
 			}
 		}
@@ -223,7 +223,7 @@ class hd_application extends hd_base {
 	    	$apps = $this->load->service('admin/app')->get_apps();
 	    	$hooks = array();
 	    	foreach ($apps as $app) {
-	    		list($type, $appname) = explode('.', $app);		
+	    		list($type, $appname) = explode('.', $app);
 	    		if($type == 'module'){
 	    			$path = APP_PATH.config('DEFAULT_H_LAYER').'/'.$appname;
 	    		} else {
@@ -238,7 +238,7 @@ class hd_application extends hd_base {
 			    			$_classes = (!is_array($class)) ? explode(",", $class) : $class;
 			    			$_name = array();
 			    			foreach ($_classes AS $_c) {
-				    			$_name[] = $type.'/'.$appname.'/'.$_c;   				
+				    			$_name[] = $type.'/'.$appname.'/'.$_c;
 			    			}
 			    			$hooks[$hook][] = $_name;
 			    		}

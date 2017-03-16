@@ -1,18 +1,17 @@
 <?php
 /**
  * 		后台物流 控制器
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'admin');
 class admin_delivery_control extends init_control {
 
 	public function _initialize() {
 		parent::_initialize();
-		$this->model = $this->load->table('order/delivery');
 		$this->service = $this->load->service('order/delivery');
 		$this->service_district = $this->load->service('admin/district');
 		$this->load->helper('attachment');
@@ -22,10 +21,19 @@ class admin_delivery_control extends init_control {
 	public function index() {
 		$sqlmap = array();
 		$pagesize = isset($_GET['limit']) ? $_GET['limit'] : 10;
-		$deliverys = $this->model->page($_GET['page'])->limit($pagesize)->order('sort DESC')->select();
-		$count = $this->model->where($sqlmap)->count();
+		$deliverys = $this->service->get_list($_GET['page'],$pagesize);
+		$count = $this->service->count($sqlmap);
         $pages = $this->admin_pages($count, $pagesize);
-        $this->load->librarys('View')->assign('deliverys',$deliverys)->assign('pages',$pages)->display('delivery_index');
+        $lists = array(
+			'th' => array(
+				'name' => array('title' => '配送方式','length' => 70,'style'=>'data'),
+				'sort' => array('title' => '排序','length' => 10,'style'=>'double_click'),
+ 				'enabled' => array('title' => '状态','length' => 5,'style'=>'ico_up_rack')
+			),
+			'lists' => $deliverys,
+            'pages' => $pages,
+			);
+        $this->load->librarys('View')->assign('lists',$lists)->display('delivery_index');
 	}
 
 	/* [添加|编辑] 物流 */
@@ -51,7 +59,7 @@ class admin_delivery_control extends init_control {
 			$this->load->librarys('View')->assign('delivery',$delivery)->display('delivery_update');
 		}
 	}
-	
+
 	public function ajax_district_select() {
 		@ini_set('memory_limit','256M');
 		/* 查询三级 */
@@ -85,15 +93,15 @@ class admin_delivery_control extends init_control {
 		$ids = (array)$_GET['ids'];
 		$result = $this->service->deletes($ids);
 		if (!$result) showmessage($this->service->error);
-		showmessage(lang('_operation_success_'),url('index'),1,'json');	
+		showmessage(lang('_operation_success_'),url('index'),1,'json');
 	}
 
 	/* 物流快递模版 */
 	public function delivery_tpl() {
 		if (checksubmit('dosubmit')) {
 			if (empty($_GET['content']) || !isset($_GET['id'])) showmessage(lang('submit_parameters_error','order/language'));
-			$result = $this->model->where(array('id' => $_GET['id']))->setField('tpl', $_GET['content']);
-			if ($result === false) showmessage($this->model->getError());
+			$result = $this->service->setField(array('tpl' => $_GET['content']), array('id' => $_GET['id']));
+			if ($result === false) showmessage($this->service->getError());
 			showmessage(lang('_operation_success_'),url('order/admin_delivery/delivery_tpl',array('id'=>$_GET['id'])),1,'json');
 		} else {
 			$delivery = $this->service->get_by_id($_GET['id']);
@@ -114,8 +122,8 @@ class admin_delivery_control extends init_control {
 	public function print_kd($sn = '') {
 		$sn = (string) trim($_GET['sn']);
 		if (empty($sn)) showmessage(lang('order_sn_error','order/language'));
-		/* 查找该订单的快递图片名称 */ 
-		$order = $this->load->table('order/order')->where(array('sn' => $sn))->find();
+		/* 查找该订单的快递图片名称 */
+		$order = $this->load->service('order/order')->find(array('sn' => $sn));
 		// 收货人地区
 		$district = $this->load->service('admin/district')->fetch_position($order['delivery_address_district']);
 		$district = implode(' ', $district);

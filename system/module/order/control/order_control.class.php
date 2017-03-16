@@ -1,11 +1,11 @@
 <?php
 /**
  * 		前台订单控制器
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init','goods');
 class order_control extends init_control {
@@ -17,7 +17,6 @@ class order_control extends init_control {
 			$url_forward = $_GET['url_forward'] ? $_GET['url_forward'] : urlencode($_SERVER['REQUEST_URI']);
 			showmessage(lang('_not_login_'), url('member/public/login',array('url_forward'=>$url_forward)),0);
 		}
-		$this->table = $this->load->table('order/order');
 		$this->service = $this->load->service('order/order');
 		$this->service_cart = $this->load->service('order/cart');
 		$this->service_delivery = $this->load->service('order/delivery');
@@ -48,7 +47,7 @@ class order_control extends init_control {
 		}
 		runhook('guest_address',$address);
 		// 读取后台设置
-		$setting = $this->load->service("admin/setting")->get_setting();
+		$setting = $this->load->service("admin/setting")->get();
 		// 支付方式
 		$pay_type = array();
 		switch ($setting['pay_type']) {
@@ -121,7 +120,7 @@ class order_control extends init_control {
 
 	/* 获取物流费用 */
 	public function get_payable() {
-		$payable = $this->load->table('order/delivery_district')->where(array("id" => $_GET['id']))->find();
+		$payable = $this->load->service('order/delivery_district')->find(array("id" => $_GET['id']));
 		$this->load->librarys('View')->assign('payable',$payable);
         $payable = $this->load->librarys('View')->get('payable');
 		echo json_encode($payable);
@@ -149,13 +148,14 @@ class order_control extends init_control {
 		if (!$result) {
 			showmessage($this->service->error);
 		}
+		runhook('after_create_order',$result);
 		showmessage(lang('order_create_success','order/language'),url('order/order/detail',array('order_sn'=>$result)),1,'json');
 	}
 
 	public function detail() {
 		$order_sn = trim($_GET['order_sn']);
 		if (empty($order_sn)) showmessage(lang('_error_action_'));
-		$order = $this->table->detail($order_sn)->output();
+		$order = $this->service->order_table_detail($order_sn);
 		if ($this->member['id'] != $order['buyer_id']) {
 			showmessage(lang('no_promission_view','pay/language'));
 		}
@@ -166,8 +166,7 @@ class order_control extends init_control {
 			redirect(url('order/order/pay_success',array('sn'=>$order_sn)));
 		}
 		if (checksubmit('submit')) {
-			
-			$result = $this->service->detail_payment($_GET['order_sn'],$_GET['balance_checked'],$_GET['pay_code'],$_GET['pay_bank']);
+			$result = $this->service->detail_payment($_GET['order_sn'],$_GET['balance_checked'],$_GET['pay_code'],$_GET['pay_bank'],$this->member['id']);
 			if ($result == FALSE) showmessage($this->service->error);
 			$gateway = $result['gateway'];
 			// 已支付成功的订单跳转到成功页面
@@ -185,7 +184,7 @@ class order_control extends init_control {
 				return FALSE;
 			}
 			// 后台设置-余额支付 1:开启，0：关闭
-			$setting = $this->load->service('admin/setting')->get_setting();
+			$setting = $this->load->service('admin/setting')->get();
 			$balance_pay = $setting['balance_pay'];
 			$member_info = $this->member;
 			$pays = $setting['pays'];
@@ -198,7 +197,7 @@ class order_control extends init_control {
 	/* 获取支付状态 */
 	public function get_pay_status() {
 		$order_sn = $_GET['order_sn'];
-		$order = $this->table->detail($order_sn)->output();
+		$order = $this->service->order_table_detail($order_sn);
 		if (!$order || $order['buyer_id'] != $this->member['id']) {
 			showmessage(lang('no_promission_view','pay/language'));
 		}
@@ -212,10 +211,11 @@ class order_control extends init_control {
 	/* 支付成功 */
 	public function pay_success() {
 		$order_sn = $_GET['order_sn'] ? $_GET['order_sn'] : $_GET['sn'];
-		$order = $this->table->detail($order_sn)->output();
+		$order = $this->service->order_table_detail($order_sn);
 		if (!$order) showmessage(lang('order_not_exist','order/language'));
 		if ($order['buyer_id'] != $this->member['id']) showmessage(lang('no_promission_view','order/language'));
 		$SEO = seo('支付成功');
+		runhook('after_pay_success',$order_sn);
 		$this->load->librarys('View')->assign('order',$order)->assign('order_sn',$order_sn)->assign('SEO',$SEO)->display('order_success');
 	}
 
@@ -251,7 +251,7 @@ class order_control extends init_control {
 
 	/* 获取会员收货地址 */
 	public function get_address() {
-		$data = $this->load->table('member/member_address')->fetch_all_by_mid($this->member['id'], 'isdefault DESC');
+		$data = $this->load->service('member/member_address')->fetch_all_by_mid($this->member['id'], 'isdefault DESC');
 		foreach ($data as $k => $val) {
 			$area = $this->load->service('admin/district')->fetch_position($val['district_id']);
 			$data[$k]['_area'] = $area[2].' '.$area[3];

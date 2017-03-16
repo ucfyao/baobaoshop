@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'goods');
 class index_control extends init_control {
@@ -35,7 +35,7 @@ class index_control extends init_control {
 	 * [article_lists 文章列表]
 	 */
 	public function article_lists(){
-		$title = $this->category->get_category_by($_GET['category_id'],'name');
+		$title = $this->category->get_category_by_id($_GET['category_id'],'name');
 		$SEO = seo($title.' - 文章列表');
 		$this->load->librarys('View')->assign('SEO',$SEO)->display('article_lists');
 	}

@@ -1,17 +1,17 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 include_once APP_PATH.'module/pay/library/pay_abstract.class.php';
 include_once APP_PATH.'module/pay/function/function.php';
 class wechat_js extends pay_abstract {
     public $parameters;
     public $url='https://api.mch.weixin.qq.com/pay/unifiedorder';
-    public function __construct($config = array()) {    
+    public function __construct($config = array()) {
         if (!empty($config)) $this->set_config($config);
         $this->config['gateway_url'] = '';
         $this->config['gateway_method'] = 'POST';
@@ -45,7 +45,7 @@ class wechat_js extends pay_abstract {
     public function _notify(){
         return $this->_return();
     }
-    
+
     public function response($result){
         if (FALSE == $result) echo 'fail';
         else echo 'success';
@@ -53,7 +53,7 @@ class wechat_js extends pay_abstract {
     }
     public function getOpenid(){
         //触发微信返回code码
-        $redirectUrl = urlencode('http://'.$_SERVER['HTTP_HOST'].url('pay/index/wechat',array('showwxpaytitle'=>1,'trade_no'=>$this->product_info['trade_sn'],'pay_code'=>'wechat_js')));
+        $redirectUrl = urlencode((is_ssl() ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].url('pay/index/wechat',array('showwxpaytitle'=>1,'trade_no'=>$this->product_info['trade_sn'],'pay_code'=>'wechat_js')));
         $url_code = array();
         $url_code["appid"] = $this->config['appid'];
         $url_code["redirect_uri"] = $redirectUrl;
@@ -76,7 +76,7 @@ class wechat_js extends pay_abstract {
         $openid_info = json_decode($openid_info,TRUE);
         return $openid_info['openid'];
     }
-    
+
     public function getpreparedata() {
         $prepare_data=array();
         $prepare_data['appid'] = $this->config['appid'];
@@ -104,7 +104,7 @@ class wechat_js extends pay_abstract {
         $jsApiData['signType']='MD5';
         $jsApiData['paySign']=$this->getSign($jsApiData,$this->config['key']);;
         $jsApiData_json=json_encode($jsApiData);
-        return $jsApiData_json;      
+        return $jsApiData_json;
     }
     /**
      *  作用：格式化参数，签名过程需要使用
@@ -124,13 +124,13 @@ class wechat_js extends pay_abstract {
             $buff .= $k . "=" . $v . "&";
         }
         $reqPar;
-        if (strlen($buff) > 0) 
+        if (strlen($buff) > 0)
         {
             $reqPar = substr($buff, 0, strlen($buff)-1);
         }
         return $reqPar;
     }
-    
+
     /**
      *  作用：生成签名
      */
@@ -161,4 +161,3 @@ class wechat_js extends pay_abstract {
         return $this->getpreparedata();
     }
 }
-    

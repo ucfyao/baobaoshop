@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'admin');
 class navigation_control extends init_control {
@@ -14,11 +14,21 @@ class navigation_control extends init_control {
 		$this->service = $this->load->service('navigation');
 	}
 	/**
-	 * [index 文章列表]
+	 * [index 导航设置]
  	 */
 	public function index(){
-		$navigation = $this->service->lists(array('order'=>'sort ASC'));
-		$this->load->librarys('View')->assign('navigation',$navigation)->display('navigation_index');
+		$navigation = $this->service->get_lists(array('order'=>'sort ASC'));
+		$lists = array(
+            'th' => array(
+                'sort' => array('title' => '排序','length' => 10,'style' => 'double_click'),
+                'name' => array('title' => '导航名称','length' => 10,'style' => 'double_click'),
+                'url'=>array('title' => '导航链接','length' => 60,'style' => 'double_click'),
+                'target' => array('title' => '新窗口打开','length' => 10,'style' => 'ico_up_rack'),
+            ),
+            'lists' => $navigation,
+            );
+
+		$this->load->librarys('View')->assign('lists',$lists)->display('navigation_index');
 	}
 	/**
 	 * [add 添加]

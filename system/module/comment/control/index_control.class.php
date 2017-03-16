@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'goods');
 class index_control extends init_control
@@ -13,8 +13,6 @@ class index_control extends init_control
 		parent::_initialize();
 		$this->goods_service = $this->load->service('order/order_sku');
 		$this->comment_service = $this->load->service('comment/comment');
-		$this->goods_db = $this->load->table('order/order_sku');
-		$this->comment_db = $this->load->table('comment/comment');
 		$this->load->helper('attachment');
 		$this->load->helper('order/function');
 	}
@@ -31,7 +29,7 @@ class index_control extends init_control
 		$nocomment = $this->member['counts']['load_comment'];
 		extract($result);
 		$pages = pages($count, 10);
-		$iscomment = $this->goods_db->where(array('buyer_id'=>$this->member['id'],'iscomment'=>1))->count();
+		$iscomment = $this->goods_service->count(array('buyer_id'=>$this->member['id'],'iscomment'=>1));
 		$iscomment = $iscomment ? $iscomment : 0;
 		$attachment_init = attachment_init(array('module' => 'member','path' => 'member', 'mid' => $this->member['id'],'allow_exts'=>array('bmp','jpg','jpeg','gif','png')));
 		$SEO = seo('待评价交易 - 会员中心');
@@ -51,7 +49,7 @@ class index_control extends init_control
 				showmessage($this->comment_service->error,'',0);
 			}
 			$this->load->service('attachment/attachment')->attachment($_GET['imgs'], '',false);
-			showmessage(lang('comment/publish_estimate_success','comment/language'), url('index'), 1);
+			showmessage(lang('publish_estimate_success','comment/language'), url('index'), 1);
 		} else {
 			showmessage(lang('_error_action_'));
 		}
@@ -84,7 +82,7 @@ class index_control extends init_control
 		$sqlmap['mid'] = $this->member['id'];
 		$sqlmap['sku_id'] = $_GET['sku_id'];
 		$sqlmap['order_sn'] = $_GET['order_sn'];
-		$result = $this->comment_db->where($sqlmap)->select();
+		$result = $this->comment_service->fetch($sqlmap);
 		foreach ($result as $key => $value) {
 			$result[$key]['_datetime'] = date('Y-m-d H:i:s',$value['datetime']);
 		}
@@ -113,9 +111,9 @@ class index_control extends init_control
 		$sqlmap = array();
 		$sqlmap['sku_id'] = $goods['sku_id'];
 		$sqlmap['order_sn'] = $goods['order_sn'];
-		$result = $this->comment_db->where($sqlmap)->find();
+		$result = $this->comment_service->fetch($sqlmap);
 		$SEO = seo('评价详情 - 会员中心');
-		$this->load->librarys('View')->assign('goods',$goods)->assign('result',$result)->assign('SEO',$SEO)->display('comment_detail');
+		$this->load->librarys('View')->assign('goods',$goods)->assign('result',$result[0])->assign('SEO',$SEO)->display('comment_detail');
 	}
 
 	public function ajax_iscomment(){

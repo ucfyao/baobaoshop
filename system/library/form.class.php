@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class form {
 
@@ -12,7 +12,7 @@ class form {
 	    $attribute = self::_parseAttribute($attribute);
 		if($type == 'hidden'){
 			$string .= self::$type($name, $value, $attribute);
-		}else{	
+		}else{
 	        $string = '<div class="form-group"><span class="label">'.$label.'</span>';
 	        $string .= '<div class="box">'.(self::$type($name, $value, $attribute)).'</div>';
 	        if($description) {
@@ -234,7 +234,7 @@ class form {
         if(!defined('INIT_EDITOR')) {
             $string .= '<script type="text/javascript" charset="utf-8" src="'.__ROOT__.'statics/js/editor/umeditor.config.js"></script>';
             $string .= '<script type="text/javascript" charset="utf-8" src="'.__ROOT__.'statics/js/editor/umeditor.js"></script>';
-			$string .= '<script type="text/javascript" charset="utf-8" src="'.__ROOT__.'statics/js/editor/heyitag.js"></script>';
+			$string .= '<script type="text/javascript" charset="utf-8" src="'.__ROOT__.'statics/js/editor/haidaotag.js"></script>';
             $string .= '<script type="text/javascript" charset="utf-8" src="'.__ROOT__.'statics/js/editor/lang/zh-cn/zh-cn.js"></script>';
             $string .= '<link href="'.__ROOT__.'statics/js/editor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">';
             define('INIT_EDITOR', true);

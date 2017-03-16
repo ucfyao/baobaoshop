@@ -4,7 +4,6 @@ class brand_control extends init_control {
 	protected $service = '';
 	public function _initialize() {
 		parent::_initialize();
-		$this->db = $this->load->table('brand');
 		$this->service = $this->load->service('brand');
 		$this->attachment_service = $this->load->service('attachment/attachment');
 		helper('attachment');
@@ -13,12 +12,17 @@ class brand_control extends init_control {
 	 * [lists 品牌列表]
  	 */
 	public function index(){
-		$sqlmap = array();
+		$sqlmap = $info = array();
 		$limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 20;
-		$brand = $this->service->get_lists($_GET['page'],$limit);
-		$count = $this->db->where($sqlmap)->count();
+		$brands = $this->service->get_lists($_GET['page'],$limit);
+		$count = $this->service->count($sqlmap);
 		$pages = $this->admin_pages($count, $limit);
-		$this->load->librarys('View')->assign('brand',$brand)->assign('pages',$pages)->display('brand_list');
+		$lists = array(
+			'th' => array('name' => array('title' => '品牌名称','length' => 20,'style' => 'ident'),'descript' => array('title' => '品牌描述','length' => 50),'sort' => array('style' => 'double_click','length' => 10,'title' => '排序'),'isrecommend' => array('title' => '推荐','style' => 'ico_up_rack','length' => 10)),
+			'lists' => $brands,
+			'pages' => $pages,
+		);
+		$this->load->librarys('View')->assign('lists',$lists)->display('brand_list');
 	}
 	/**
 	 * [add 添加品牌]
@@ -57,7 +61,7 @@ class brand_control extends init_control {
 				}
 			}
 			$result = $this->service->edit_brand($_GET);
-			if(!$result){
+			if($result === FALSE){
 				showmessage($this->service->error);
 			}else{
 				$this->attachment_service->attachment($_GET['logo'], $info['logo'],false);

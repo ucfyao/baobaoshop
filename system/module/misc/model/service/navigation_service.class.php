@@ -1,11 +1,11 @@
 <?php
 /**
  *		导航服务层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 
 class navigation_service extends service {
@@ -28,6 +28,23 @@ class navigation_service extends service {
 		}
 		return $info;
 	}
+
+	public function get_lists($sqlmap){
+		$info = $this->lists($sqlmap); 
+		foreach ($info as $k => $v) {
+			$lists[] = array(
+				'id' => $v['id'],
+				'sort'=>$v['sort'],
+				'name'=>$v['name'],
+				'url'=>$v['url'],
+				'target'=>$v['target'],
+				'display'=>$v['display'],
+			);
+		}
+		return $lists;
+	}
+
+
 	private function build_map($data){
 		$sqlmap = array();
 		if($data['_string']) $sqlmap['_string'] = $data['_string'];

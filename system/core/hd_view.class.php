@@ -1,16 +1,16 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class hd_view {
 	//模版变量
 	private $data = array();
     protected static $_instance;
-    
+
     private function __construct(){}
 
     private function __clone(){}
@@ -63,10 +63,10 @@ class hd_view {
      * @param  string $type     [description]
      * @return [type]           [description]
      */
-    public function display($_display_template = ''){
+    public function display($_hd_display_template = '',$_hd_display_module = ''){
         // 视图开始
-        runhook('pre_output');
+        runhook('pre_output',$this->data);
         extract($this->data, EXTR_OVERWRITE);
-    	include template($_display_template);
+    	include template($_hd_display_template,$_hd_display_module);
     }
 }

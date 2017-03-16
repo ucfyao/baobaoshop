@@ -13,7 +13,6 @@
 					<div class="margin-big-top border">
 						<div class="padding-big-left padding-big-right border-bottom bg-gray-white text-lh-40">
 							<span>欢迎您：<?php echo $member['username']?></span>
-							{hook/account_header_left data}
 							<?php if($_config['balance_pay'] == 1):?>
 							<div class="fr">
 								账户余额：<span class="text-mix">￥ <?php echo $member['money']?> </span>元
@@ -198,6 +197,7 @@
 							rec_html += '</li>';
 						}
 						$('.rec_box').html(rec_html);
+						$('.rec_box').css("left","0");
 						loadSlider();
 					})
 
@@ -221,6 +221,7 @@
 					$(".member-slider").each(function(){
 						if($(this).find("li").length>3){
 							$(this).find(".slider-control").removeClass("hidden");
+							$(this).find(".slider-control.next").removeClass("disabled");
 						}
 					});
 				}

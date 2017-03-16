@@ -1,10 +1,10 @@
-<?php 
+<?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 defined('IN_PLUGIN') OR define('IN_PLUGIN', TRUE);
 hd_core::load_class('init', 'goods');
@@ -14,13 +14,12 @@ class index_control extends init_control {
 		$id = $_GET['id'];
 		list($id, $module) = explode(':', $id);
 		if (empty($id)) showmessage('参数错误');
-		$plugins = cache('plugins');
-		$appvars = cache('appvars');
+		$plugins = model('admin/app','service')->get_plugins();
 		$plugin = $plugins[$id];
-		$pluginvar = $pluginvars[$id];
-		if(!in_array('plugin.'.$id, array_keys($plugins))) {
+		$vars = $plugins[$id]['vars'];
+		if(!in_array($id, array_keys($plugins))) {
 			showmessage('插件不存在或未开启');
-		}		
+		}
 		$module = !$module ? $id : $module;
 		define('PLUGIN_ID', $id);
 		define('PLUGIN_MODULE', $module);

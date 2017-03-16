@@ -1,3 +1,0 @@
-<?php
-//000000000000a:10:{i:0;s:2:"id";i:1;s:3:"mid";i:2;s:6:"sku_id";i:3;s:9:"sku_price";i:4;s:8:"datetime";i:5;s:8:"clientip";i:6;s:8:"sku_name";s:8:"_autoinc";b:1;s:3:"_pk";s:2:"id";s:5:"_type";a:7:{s:2:"id";s:21:"mediumint(8) unsigned";s:3:"mid";s:21:"mediumint(8) unsigned";s:6:"sku_id";s:21:"mediumint(8) unsigned";s:9:"sku_price";s:22:"decimal(10,2) unsigned";s:8:"datetime";s:16:"int(10) unsigned";s:8:"clientip";s:8:"char(15)";s:8:"sku_name";s:12:"varchar(200)";}}
-?>

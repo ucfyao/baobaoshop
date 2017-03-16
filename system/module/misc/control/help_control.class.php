@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'admin');
 class help_control extends init_control {
@@ -12,6 +12,7 @@ class help_control extends init_control {
 	public function _initialize() {
 		parent::_initialize();
 		$this->service = $this->load->service('help');
+		$this->attachment_service = $this->load->service('attachment/attachment');
 	}
 	/**
 	 * [index 帮助列表]
@@ -30,7 +31,7 @@ class help_control extends init_control {
 			if(!$result){
 				showmessage($this->service->error);
 			}else{
-				$this->load->service('attachment/attachment', 'service')->attachment($_GET['content'],$info['content']);
+				$this->attachment_service->attachment($_GET['content'],$info['content']);
 				showmessage(lang('_operation_success_'),url('misc/help/index'),'1');
 			}
 		}else{

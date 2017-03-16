@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'admin');
 class category_control extends init_control {
@@ -20,7 +20,7 @@ class category_control extends init_control {
 		$sqlmap['parent_id'] = 0;
 		$_GET['limit'] = isset($_GET['limit']) ? $_GET['limit'] : 10;
 		$category = $this->load->table('article_category')->where($sqlmap)->page($_GET['page'])->limit($_GET['limit'])->order("sort ASC")->select();
-        $count = $this->load->table('article_category')->where($sqlmap)->count();
+        $count = $this->service->count($sqlmap);
         $pages = $this->admin_pages($count,$_GET['limit']);
         $this->load->librarys('View')->assign('category',$category)->assign('pages',$pages)->display('category_index');
 	}
@@ -55,7 +55,7 @@ class category_control extends init_control {
 				showmessage(lang('_operation_success_'),url('misc/category/index'),1);
 			}
 		}else{
-			$info = $this->service->get_category_by($_GET['id']);
+			$info = $this->service->get_category_by_id($_GET['id']);
 			$result =  $this->service->get_category_by_id($info['parent_id']);
 			$parent_name = $result['parent_name'];
 			$this->load->librarys('View')->assign('info',$info)->assign('result',$result)->assign('parent_name',$parent_name)->display('category_edit');
