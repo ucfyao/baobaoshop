@@ -15,7 +15,7 @@
 				</dl>
 				{/loop}
 				{/hd}
-				<dl class="fore last">
+				<dl class="fore last hidden">
 					<dt>&nbsp;</dt>
 					<!-- <dd>
 						<span><img class="footer-logo" src="{SKIN_PATH}statics/images/logo.png" width="158" /></span>
@@ -24,7 +24,8 @@
 			</div>
 			{hook/help_between_link data}
 			<div class="container copyright border-top border-gray-white padding-tb clearfix">
-				<p class="cop-left fl w50 text-lh-small"><?php echo SITE_AUTHORIZE == 0? COPYRIGHT:''?></p>
+				<!-- <p class="cop-left fl w50 text-lh-small"><?php echo SITE_AUTHORIZE == 0? COPYRIGHT:''?></p> -->
+				<p class="cop-left fl w50 text-lh-small">爱我商城 版权所有，并保留所有权利。<br>© 2017-2027   Inc.</p>
 				<div class="cop-right fr text-right w50">
 					<?php $cache = cache('setting');?>
 					<p class="text-lh-small"><!-- <a href="">手机版</a> |  -->

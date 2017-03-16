@@ -5,6 +5,9 @@
 	<title>{if isset($SEO['title']) && !empty($SEO['title'])}{$SEO['title']}{/if}{$SEO['site_title']}</title>
 	<meta name="Keywords" content="{$SEO['keywords']}" />
 	<meta name="Description" content="{$SEO['description']}" />
+	<!-- <link rel="shortcut icon" href="{__ROOT__}template/default/statics/images/favicon.ico" /> -->
+	<!-- <link rel="shortcut icon" href="/favicon.ico" /> -->
+	<link rel="shortcut icon" type="image/x-icon" href="{__ROOT__}template/default/statics/images/favicon.ico">
 	<link type="text/css" rel="stylesheet" href="{__ROOT__}template/default/statics/css/heyi.css?v={HD_VERSION}" />
 	<link type="text/css" rel="stylesheet" href="{__ROOT__}template/default/statics/css/public.css?v={HD_VERSION}" />
 	<script type="text/javascript" src="{__ROOT__}template/default/statics/js/jquery-1.7.2.min.js?v={HD_VERSION}"></script>
@@ -15,12 +18,15 @@
 	<script type="text/javascript" src="{__ROOT__}template/default/statics/js/cart.js?v={HD_VERSION}"></script>
 	<script type="text/javascript" src="{__ROOT__}statics/js/heyi.validate.js?v={HD_VERSION}"></script>
 	<script type="text/javascript"> hd_cart.init(); </script>
+	<!-- <script type="text/javascript" src="{__ROOT__}template/default/statics/js/jquery.min.js"></script> -->
+	<link rel="stylesheet" href="{__ROOT__}template/default/statics/css/zzsc.css"/>
 	{$site_rewrite_other}
 	<!--[if gte IE 8]> 
 		<link type="text/css" rel="stylesheet" href="{__ROOT__}template/default/statics/css/compatible.css" />
 	<![endif]-->
 </head>
 <body>
+	<div class="text-align"></div>
 	<!-- 顶部工具条 -->
 	<!--<div class="layout border-bottom bg-gray-white">-->
 	<div class="layout">
@@ -34,7 +40,8 @@
 			</ul>
 			-->
 			<div class="logo fl">
-				<span><a href="{__APP__}"><img width="190px" height="64px" src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></a></span>
+				<!-- <span><a href="{__APP__}"><img width="190px" height="64px" src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></a></span> -->
+				<span><a href="{__APP__}"><img width="190px" height="auto" src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></a></span>
 			</div>
 			{hook/mid_site_bar data}
 			<ul class="fr">
@@ -56,3 +63,39 @@
 			</ul>
 		</div>
 	</div>
+
+<script>
+
+$(document).ready(function(){
+    
+    $("#leftsead a").hover(function(){
+        if($(this).prop("className")=="youhui"){
+            $(this).children("img.hides").show();
+        }else{
+            $(this).children("div.hides").show();
+            $(this).children("img.shows").hide();
+            $(this).children("div.hides").animate({marginRight:'0px'},'0'); 
+        }
+    },function(){ 
+        if($(this).prop("className")=="youhui"){
+            $(this).children("img.hides").hide();
+        }else{
+            $(this).children("div.hides").animate({marginRight:'-163px'},0,function(){$(this).hide();$(this).next("img.shows").show();});
+        }
+    });
+
+    $("#top_btn").click(function(){if(scroll=="off") return;$("html,body").animate({scrollTop: 0}, 600);});
+
+	    //ÓÒ²àµ¼º½ - ¶þÎ¬Âë
+        $(".youhui").mouseover(function(){
+            $(this).children(".2wm").show();
+        })
+        $(".youhui").mouseout(function(){
+            $(this).children(".2wm").hide();
+        });
+
+
+});
+
+
+</script>
