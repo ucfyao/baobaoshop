@@ -99,7 +99,7 @@ img { display: block; }
 
 /***header***/
 .header { position: relative; height: 140px; }
-.logo { margin: 0px 0; height: 190px; position: relative; z-index: 99; }
+.logo { margin: 0px 0; height: 160px; position: relative; z-index: 99; }
 .search-wrap { position: absolute; z-index: 199; top: 110px; left: 184px; width: 511px; background: #fff;border-top-right-radius: 0;border-bottom-right-radius: 0;}
 .keyword { line-height: 12px; }
 .keyword li { float: left; }
@@ -708,7 +708,7 @@ img { display: block; }
 
 /*============  会员中心板块   =============*/
 .member-head .header { height: 85px; }
-.member-head .header .logo, .back-shop { height: 45px; }
+.member-head .header .logo, .back-shop { height: 45px; margin-top: 20px; }
 .member-head .header .logo img{height: 45px;}
 .back-shop { width: 95px; }
 .back-shop a { float: left; display: block; margin-top: 3px; padding: 0 5px; height: 20px; line-height: 18px; border: 1px solid #c9c9c9; border-radius: 2px; color: #c9c9c9; }
