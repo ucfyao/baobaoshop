@@ -5,7 +5,7 @@ return array(
 	'db_port'   =>'3306',
 	'db_name'   =>'25123',
 	'db_user'   =>'25123',
-	'db_pwd'    =>'123456',
-	'db_prefix' =>'hd_',
+	'db_pwd'    =>'25123baobaoshop',
+	'db_prefix' =>'ly_',
 	'db_fields_cache' => true,
 );
