@@ -1,4 +1,4 @@
-{template header member}		
+{template header member}
 <script type="text/javascript" src="{__ROOT__}statics/js/haidao.validate.js?v={HD_VERSION}"></script>
 <link type="text/css" rel="stylesheet" href="<?php echo __ROOT__;?>statics/js/upload/uploader.css?v={HD_VERSION}" />
 <script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/upload/uploader.js?v={HD_VERSION}"></script>
@@ -51,7 +51,7 @@
 						</ul>
 						<!--退货退款 结束-->
 					</div>
-					<?php $setting = cache('setting'); ?>
+					<?php $setting = model('admin/setting','service')->get(); ?>
 					<div class="margin-big-left margin-big-right margin-big-bottom tabs-scroll">
 						<div class="border border-sub padding-big bg-blue-gray">
 							<form class="double-line clearfix" action="{url('ajax_delivery')}" method="post" name="ajax_delivery">
@@ -70,7 +70,7 @@
 										<select name="delivery_name">
 											<option value="">请选择物流公司</option>
 											<?php foreach ($deliverys as $key => $delivery){?>
-											<option value="{$key}">{$delivery}</option>
+											<option value="{$delivery}">{$delivery}</option>
 											<?php }?>
 										</select>
 									</div>
@@ -139,7 +139,7 @@
 							callback:function() {
 								window.location.reload();
 							}
-						});					
+						});
 					}
 				}
 			})

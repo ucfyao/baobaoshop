@@ -69,7 +69,7 @@ class database{
      */
     public function create(){
         $sql  = "-- -----------------------------\n";
-        $sql .= "-- Heyi MySQL Data Transfer \n";
+        $sql .= "-- Haidao MySQL Data Transfer \n";
         $sql .= "-- author admin@nbnat.com \n";
         $sql .= "-- \n";
         $sql .= "-- Host     : " . config('DB_HOST') . "\n";

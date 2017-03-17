@@ -9,7 +9,7 @@
 			<div class="hr-gray"></div>
 		</div>
 		<div class="content content-tabs padding-big have-fixed-nav">
-			<p class="margin-top margin-bottom padding-left text-normal text-sub">URL 伪静态化可以提高搜索引擎抓取，开启本功能需要对 Web 服务器增加相应的 Rewrite 支持，且会轻微增加服务器负担。同时您还可以调整每个页面的静态格式，但不得删除其中的标记，重置静态格式请留空。注意，修改静态格式后您需要修改服务器的 Rewrite 规则设置 <a href="http://bbs.yaozihao.cn/thread-1148-1-1.html" class="text-red text-underline margin-big-left" target="_blank">配置教程</a></p>
+			<p class="margin-top margin-bottom padding-left text-normal text-sub">URL 伪静态化可以提高搜索引擎抓取，开启本功能需要对 Web 服务器增加相应的 Rewrite 支持，且会轻微增加服务器负担。同时您还可以调整每个页面的静态格式，但不得删除其中的标记，重置静态格式请留空。注意，修改静态格式后您需要修改服务器的 Rewrite 规则设置 <a href="http://bbs.haidao.la/thread-1148-1-1.html" class="text-red text-underline margin-big-left" target="_blank">配置教程</a></p>
 			<div class="table clearfix bg-none border-none">
 				<div class="tr border-none bg-none">
 					<div class="th bg-none w15">

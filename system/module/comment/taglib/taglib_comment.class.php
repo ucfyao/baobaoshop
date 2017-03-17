@@ -10,7 +10,7 @@ class taglib_comment
 	}
 
 	public function lists($sqlmap = array(), $options = array()) {
-		$result = $this->service->lists($sqlmap, $options['limit']);
+		$result = $this->service->getlists($sqlmap, $options['limit']);
 		extract($result);
 		$this->pages = pages($count, $options['limit']);
 		return $result['lists'];

@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class node_service extends service {
     protected $sqlmap = array();
@@ -45,6 +45,19 @@ class node_service extends service {
         foreach($data as $k => $v) {
             $v['url'] = $v['url'] ? $v['url'] : url($v['m'].'/'.$v['c'].'/'.$v['a'], $param);
             $result[$k] = $v;
+        }
+        return $result;
+    }
+    /**
+     * @param  string  获取的字段
+     * @param  array    sql条件
+     * @return [type]
+     */
+    public function getField($field = '', $sqlmap = array()) {
+        $result = $this->model->where($sqlmap)->getfield($field);
+        if($result === false){
+            $this->error = $this->model->getError();
+            return false;
         }
         return $result;
     }

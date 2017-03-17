@@ -1,11 +1,11 @@
 <?php
 /**
  * 		子订单模型
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class order_sub_table extends table {
 
@@ -45,6 +45,7 @@ class order_sub_table extends table {
         $sub['_status'] = $this->get_status($sub);
         $o_skus = $this->load->table('order/order_sku')->where(array('sub_sn' => $sub['sub_sn']))->order('id DESC')->select();
         foreach ($o_skus as $k => $val) {
+            $val['delivery_template_name'] = $this->load->table('order/delivery_template')->where(array('id' => $val['delivery_template_id']))->getField('name');
             $info[$val['delivery_id']][] = $val;
         }
         krsort($info);

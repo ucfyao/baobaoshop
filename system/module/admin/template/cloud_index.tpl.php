@@ -2,7 +2,7 @@
 		<div class="content padding-big">
 			<?php if(!isset($cloud)):?>
 			<div class="warn-info border bg-white margin-top padding-lr">
-				<i class="warn-info-ico ico_warn margin-right"></i>您还未绑定您的奕瑞平台，请先绑定账号后才可使用云平台功能！
+				<i class="warn-info-ico ico_warn margin-right"></i>您还未绑定您的海盗云平台，请先绑定账号后才可使用云平台功能！
 			</div>
 			<?php endif?>
 			<div class="margin-top">
@@ -13,7 +13,7 @@
 								<th class="text-left padding-big-left">系统状态</th>
 							</tr>
 							<tr class="border">
-								<td class="line-height-40 padding-big-left padding-big-right">
+								<td class="line-height-40 padding-big-left padding-big-right user">
 									<b class="cloud-label">绑定账号：</b>
 
 										<?php if(isset($cloud) && $cloud):?>
@@ -33,7 +33,7 @@
 								</td>
 							</tr>
 							<tr class="border">
-								<td class="line-height-40 padding-big-left">
+								<td class="line-height-40 padding-big-left plugin">
 									<!--<b class="cloud-label">插件系统：</b><i class="ico_error"></i> 失败-->
 									<b class="cloud-label">插件系统：</b><?php if(isset($cloud) && $cloud):?>
 									<i class="ico_right"></i> 正常
@@ -43,7 +43,7 @@
 								</td>
 							</tr>
 							<tr class="border">
-								<td class="line-height-40 padding-big-left">
+								<td class="line-height-40 padding-big-left module">
 									<!--<b class="cloud-label">模块系统：</b><i class="ico_right"></i> 正常-->
 									<b class="cloud-label">模块系统：</b><?php if(isset($cloud) && $cloud):?>
 									<i class="ico_right"></i> 正常
@@ -60,7 +60,7 @@
 								<th class="text-left padding-big-left">系统状态</th>
 							</tr>
 							<tr class="border">
-								<td class="line-height-40 padding-big-left padding-big-right">
+								<td class="line-height-40 padding-big-left padding-big-right domain">
 									<b class="cloud-label">站点URL：</b>
 									<?php if(isset($cloud) && $cloud):?>
 									<span class="text-normal"><?php echo $cloud['domain']?></span>
@@ -71,7 +71,7 @@
 								</td>
 							</tr>
 							<tr class="border">
-								<td class="line-height-40 padding-big-left">
+								<td class="line-height-40 padding-big-left identifier">
 									<b class="cloud-label">站点标识：</b>
 									<?php if(isset($cloud) && $cloud):?>
 									<?php echo cut_str($cloud['identifier'], 3, 0).'****'.cut_str($cloud['identifier'], 3, -3)?>  &emsp;（出于安全考虑，部分隐藏）
@@ -81,7 +81,7 @@
 								</td>
 							</tr>
 							<tr class="border">
-								<td class="line-height-40 padding-big-left">
+								<td class="line-height-40 padding-big-left site_isclosed">
 									<b class="cloud-label">关闭站点：</b><?php echo $site_isclosed == 1 ? '否' : '是' ?>
 								</td>
 							</tr>
@@ -96,7 +96,7 @@
 								</td>
 							</tr>
 							<tr class="border">
-								<td class="line-height-40 padding-big-left">
+								<td class="line-height-40 padding-big-left authorize">
 									<b class="cloud-label">授权状态：</b>
 									<?php if(isset($cloud) && $cloud):?>
 										<?php if($cloud['authorize'] == 0):?>
@@ -136,8 +136,29 @@
 					title: '云平台绑定',
 					width: 560,
 					onclose: function () {
-						if(this.returnValue){
-							window.location.reload(true);
+						ret = this.returnValue;
+						if(ret){
+							$('.user').html('<b class="cloud-label">绑定账号：</b>'+ret.username+'&emsp;&emsp;<a class="text-main" href="javascript:reBind();">重新绑定</a>');	
+							if(ret.cloud_status == true){
+								$('#cloud_status').html('<i class="ico_right"></i> 成功');		
+							}else{
+								$('#cloud_status').html('<i class="ico_error"></i> 失败');
+							}
+							$('.plugin').html('<b class="cloud-label">插件系统：</b><i class="ico_right"></i> 正常');	
+							$('.module').html('<b class="cloud-label">模块系统：</b><i class="ico_right"></i> 正常');
+							$('.domain').html('<b class="cloud-label">站点URL：</b><span class="text-normal">'+ret.domain+'</span>&emsp;&emsp;&emsp;');
+							identifier = ret.identifier.substring(0, 3)+'****'+ret.identifier.substring(ret.identifier.length-3);
+							$('.identifier').html('<b class="cloud-label">站点标识：</b>'+identifier+'&emsp;（出于安全考虑，部分隐藏）');
+							if(ret.authorize == 0){
+								$('.authorize').html('<b class="cloud-label">授权状态：</b><font color="#F74436">未授权</font>');	
+							}else{
+								$('.authorize').html('<b class="cloud-label">授权状态：</b><font color="#00BB9C">已授权</font>');	
+							}
+							if(ret.site_isclosed == 1){
+								$('.site_isclosed').html('<b class="cloud-label">关闭站点：</b>否');
+							}else{
+								$('.site_isclosed').html('<b class="cloud-label">关闭站点：</b>是');
+							}
 						}
 					}
 				})

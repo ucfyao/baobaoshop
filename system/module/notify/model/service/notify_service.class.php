@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class notify_service extends service
 {
@@ -44,7 +44,7 @@ class notify_service extends service
         $xmldata = xml2array($importtxt);
         return $xmldata;
 	}
-	
+
 	public function import($params){
 		$params['config'] = json_decode($params['config'],TRUE);
 		return $this->config($params['config'],$params['code']);
@@ -66,7 +66,7 @@ class notify_service extends service
 			$this->error = lang('config_operate_error','notify/language');
 			return false;
 		}
-		$this->get_fech_enable_code();
+		cache('notify_enable',NULL);
 		return true;
 	}
 
@@ -79,23 +79,19 @@ class notify_service extends service
 		}
 		return $result;
 	}
-	
+
 	//根据code获取启用的通知方式
 	public function get_fech_enable_code($code) {
-		$result = cache('notify_enable');
-		if(FALSE === $result || empty($code)){
-			$result = array();
-			$notifys = $this->load->table('notify')->where(array('enabled'=>1))->getField('code,enabled,config', TRUE);
-			foreach ($notifys as $key => $value) {
-				$value['configs'] = json_decode($value['config'], TRUE);
-				$result[$value['code']] = $value;
-			}
-			cache('notify_enable',$result);
-			$result = cache('notify_enable');
-		}
+		$result = $this->get();
 		return $result[$code];
 	}
-	
+	/**
+	 * 获取缓存
+	 */
+	public function get($key = NULL){
+		$notifys = $this->load->table('notify/notify')->cache('notify_enable',3600)->where(array('enabled'=>1))->select();
+		return is_string($key) ? $notifys[$key] : $notifys;
+	}
 	/**
 	 * [启用禁用支付方式]
 	 * @param string $pay_code 支付方式标识
@@ -105,7 +101,7 @@ class notify_service extends service
 		$result = $this->table->where(array('code' => $code))->save(array('enabled' => array('exp', '1-enabled'), 'dateline' => time()));
 		if ($result == 1) {
 			$result = TRUE;
-			$this->get_fech_enable_code();
+			cache('notify_enable',NULL);
 		} else {
 			$result = $this->table->getError();
 		}
@@ -119,7 +115,7 @@ class notify_service extends service
 		$hook_data = $this->load->service('notify/notify_template')->fetch_by_hook($type);
 		if(!$hook_data) return FALSE;
 		//组织模版内容替换
-		$setting = cache('setting', '', 'common');
+		$setting = model('admin/setting','service')->get();
 		$replace = array(
 			'{username}' => $member['username'] ? $member['username'] : ($member['member']['username'] ? $member['member']['username'] : ''),
 			'{site_name}' => $setting['site_name'],
@@ -169,7 +165,7 @@ class notify_service extends service
 		}
 		//遍历
 		foreach ($hook_data as $key => $value) {
-			
+
 			$enabled = $this->table->where(array('code' => $value['id']))->getField('enabled');
 			if($enabled == 0) continue;
 			$data = array();
@@ -180,7 +176,7 @@ class notify_service extends service
 					$data['to'] = $replace['{email}'];
 					$data['subject'] = str_replace(array_keys($replace), $replace, $value['template']['title']);
 					$data['body'] = str_replace(array_keys($replace), $replace, $value['template']['content']);
-					$data['body'] = str_replace('./uploadfile/','http://'.$_SERVER['HTTP_HOST'].'/uploadfile/',$data['body']);
+					$data['body'] = str_replace('./uploadfile/',(is_ssl() ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].'/uploadfile/',$data['body']);
 					break;
 				case 'message':
 					$data['mid'] = $member['member']['id'];
@@ -188,7 +184,7 @@ class notify_service extends service
 					$data['content'] = str_replace(array_keys($replace), $replace, $value['template']['content']);
 					break;
 				case 'wechat':
-					
+
 					break;
 				case 'sms':
 					$mobile = $member['mobile'] ? $member['mobile'] : $member['member']['mobile'];
@@ -210,7 +206,7 @@ class notify_service extends service
 			if(!empty($data)){
 				$params = unit::json_encode($data);
 				$this->load->service('notify/queue')->add($value['id'],'send',$params,$level);
-			} 
+			}
 		}
 		return TRUE;
 	}
@@ -248,5 +244,51 @@ class notify_service extends service
 			}
 		}
 		return $_data;
+	}
+	/**
+	* [删除]
+	* @param array $ids 主键id
+	*/
+	public function delete($code) {
+		if(empty($code)) {
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		$_map = array();
+		$_map['code'] = $code;
+		$result = $this->table->where($_map)->delete();
+		if($result === false) {
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return true;
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	条数
+	 * @param  integer 	页数
+	 * @param  string 	排序
+	 * @return [type]
+	 */
+	public function fetch($sqlmap = array(), $limit = 20, $page = 1, $order = "") {
+		$result = $this->table->where($sqlmap)->limit($limit)->page($page)->order($order)->select();
+		if($result===false){
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		return $result;
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	读取的字段
+	 * @return [type]
+	 */
+	public function find($sqlmap = array(), $field = "") {
+		$result = $this->table->where($sqlmap)->field($field)->find();
+		if($result===false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
 	}
 }

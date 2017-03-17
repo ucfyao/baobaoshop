@@ -8,10 +8,10 @@ if($url == -1) {
 	<head>
 		<meta charset="utf-8">
 		<title></title>
-		<link type="text/css" rel="stylesheet" href="<?php echo __ROOT__; ?>statics/css/heyi.css?v=<?php echo HD_VERSION ?>" />
+		<link type="text/css" rel="stylesheet" href="<?php echo __ROOT__; ?>statics/css/haidao.css?v=<?php echo HD_VERSION ?>" />
 		<link type="text/css" rel="stylesheet" href="<?php echo __ROOT__; ?>statics/css/admin.css?v=<?php echo HD_VERSION ?>" />
 		<script type="text/javascript" src="<?php echo __ROOT__; ?>statics/js/jquery-1.7.2.min.js?v=<?php echo HD_VERSION ?>"></script>
-		<script type="text/javascript" src="<?php echo __ROOT__; ?>statics/js/heyi.plug.js?v=<?php echo HD_VERSION ?>"></script>
+		<script type="text/javascript" src="<?php echo __ROOT__; ?>statics/js/haidao.plug.js?v=<?php echo HD_VERSION ?>"></script>
 	</head>
 	<body>
 		<div class="padding-big layout">

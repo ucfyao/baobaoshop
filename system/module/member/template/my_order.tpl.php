@@ -72,7 +72,7 @@
 										</div>
 									</div>
 								</div>
-								<div class="td column-narrow">子豪</div>
+								<div class="td column-narrow">董浩</div>
 								<div class="td column-narrow">
 									<b class="yahei">￥89.00</b><br />
 									<span class="text-gray songti text-small">在线支付</span>
@@ -122,7 +122,7 @@
 										</div>
 									</div>
 								</div>
-								<div class="td column-narrow">子豪</div>
+								<div class="td column-narrow">董浩</div>
 								<div class="td column-narrow">
 									<b class="yahei">￥89.00</b><br />
 									<span class="text-gray songti text-small">在线支付</span>
@@ -160,7 +160,7 @@
 										</div>
 									</div>
 								</div>
-								<div class="td column-narrow">子豪</div>
+								<div class="td column-narrow">董浩</div>
 								<div class="td column-narrow">
 									<b class="yahei">￥89.00</b><br />
 									<span class="text-gray songti text-small">在线支付</span>
@@ -241,16 +241,16 @@
 					</dd>
 				</dl>
 				<dl class="fore last">
-					<dt>手机访问：m.yaozihao.cn</dt>
+					<dt>手机访问：m.haidao.la</dt>
 					<dd>
 						<span><img src="../images/logo.png" width="158" /></span>
 					</dd>
 				</dl>
 			</div>
 			<div class="container copyright border-top border-gray-white padding-tb clearfix">
-				<p class="cop-left fl w50 text-lh-small">Powered by Heyi v1.5.0.150524_beta<br />© 2013-2015   Inc.</p>
+				<p class="cop-left fl w50 text-lh-small">Powered by Haidao v1.5.0.150524_beta<br />© 2013-2015 Dmibox Inc.</p>
 				<div class="cop-right fr text-right w50">
-					<p class="text-lh-small"><a href="">手机版</a> | <a href="">奕瑞</a> | <a href="">滇ICP备13005806号</a> | <a href="">站点统计</a></p>
+					<p class="text-lh-small"><a href="">手机版</a> | <a href="">海盗电商</a> | <a href="">滇ICP备13005806号</a> | <a href="">站点统计</a></p>
 					<p class="text-lh-small">PRC, 2015-05-24 15:55:53</p>
 				</div>
 			</div>

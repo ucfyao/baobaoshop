@@ -1,11 +1,11 @@
 <?php
 /**
  *		商品分类数据层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 
 class goods_category_table extends table {
@@ -20,8 +20,13 @@ class goods_category_table extends table {
     public function get_fields(){
         return $this->fields['_type'];
     }
-    public function detail($id,$field){
-        $this->result['category'] = $this->field($field)->find($id);
+    public function detail($id,$field = TRUE){
+        $exist = strpos($field, ',');
+        if($exist === false && is_string($field)){
+            $this->result['category'] = $this->where(array('id' => $id))->getField($field);
+        }else{
+            $this->result['category'] = $this->field($field)->find($id);
+        }
         return $this;
     }
     public function output(){

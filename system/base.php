@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 define('IN_APP', true);
 defined('APP_ROOT') 	OR 		define('APP_ROOT', str_replace("\\","/",substr(dirname(__FILE__), 0, -6)));
@@ -16,11 +16,11 @@ defined('TPL_PATH') 	OR 		define('TPL_PATH',  DOC_ROOT.'template/');
 defined('LANG_PATH') 	OR 		define('LANG_PATH',  APP_PATH.'language/');
 
 defined('APP_DEBUG') 	OR 		define('APP_DEBUG', false);
-/* ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ */
+/* Èë¿ÚÎÄ¼þ */
 defined('__APP__') 	    OR 		define('__APP__', $_SERVER['SCRIPT_NAME']);
-/* ï¿½ï¿½×°Ä¿Â¼ */
+/* °²×°Ä¿Â¼ */
 define('__ROOT__', str_replace(basename(__APP__), "", __APP__));
-/* ï¿½ï¿½ï¿½Ä¿Â¼ */
+/* ²å¼þÄ¿Â¼ */
 defined('PLUGIN_PATH') 	OR 		define('PLUGIN_PATH',  APP_PATH.'plugin/');
 
 define('IS_CGI',(0 === strpos(PHP_SAPI,'cgi') || false !== strpos(PHP_SAPI,'fcgi')) ? 1 : 0 );

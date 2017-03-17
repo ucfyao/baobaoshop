@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class cache {
 
@@ -37,7 +37,7 @@ class cache {
         if(class_exists($class))
             $cache = new $class($options);
         else
-            error::exception_error(lang('_cache_type_invalid_').':'.$type);
+            hd_error::exception_error(lang('_cache_type_invalid_').':'.$type);
         return $cache;
     }
 
@@ -77,7 +77,7 @@ class cache {
      * @param string $key 队列名
      * @return mixed
      */
-    // 
+    //
     protected function queue($key) {
         static $_handler = array(
             'file'  =>  array('F','F'),
@@ -101,13 +101,13 @@ class cache {
         }
         return $fun[1]($queue_name,$value);
     }
-    
+
     public function __call($method,$args){
         //调用缓存类型自己的方法
         if(method_exists($this->handler, $method)){
            return call_user_func_array(array($this->handler,$method), $args);
         }else{
-            error::exception_error(__CLASS__.':'.$method.lang('_method_not_exist_'));
+            hd_error::exception_error(__CLASS__.':'.$method.lang('_method_not_exist_'));
             return;
         }
     }

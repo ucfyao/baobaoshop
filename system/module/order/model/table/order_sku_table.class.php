@@ -1,11 +1,11 @@
 <?php
 /**
  * 		订单商品模型
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class order_sku_table extends table {
 
@@ -39,6 +39,7 @@ class order_sku_table extends table {
                 }
             }
             $sku['_sku_spec'] = $_spec;
+            $sku['_sku_url'] = url('goods/index/detail',array('sku_id' => $sku['sku_id']));
             if ($sku['promotion']) $sku['promotion'] = json_decode($sku['promotion'] ,TRUE);
             $skus[$k] = $sku;
         }

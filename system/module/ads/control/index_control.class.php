@@ -2,7 +2,7 @@
 class index_control extends control {
 	public function _initialize() {
 		parent::_initialize();
-		$this->model = $this->load->table('ads/adv');
+		$this->service = $this->load->service('ads/adv');
 	}
 	/**
 	 * 跳转广告链接 并统计次数
@@ -10,7 +10,7 @@ class index_control extends control {
 	public function adv_view(){
 		$id = $url = '';
 		extract($_GET,EXTR_IF_EXISTS);
-		$this->model->where(array('id'=>$id))->setInc('hist',1);
+		$this->service->setInc('hist',1,array('id'=>$id));
 		redirect($url);
 	}
 

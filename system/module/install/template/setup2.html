@@ -4,9 +4,9 @@
 		<meta charset="utf-8">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta http-equiv="x-ua-compatible" content="text/html;" />
-		<title>奕瑞(网店)系统-最灵活的企业级电子商务系统软件</title>
-		<meta name="Keywords" content="奕瑞,奕瑞,奕瑞系统,网店系统,商城系统,电子商务软件" />
-		<meta name="Description" content="奕瑞网店系统，国内专业电子商务系统方案解决服务商，最灵活的企业级网店系统，为中小企业级站长提供电商一站式解决方案。" />
+		<title>海盗电商(网店)系统-最灵活的企业级电子商务系统软件</title>
+		<meta name="Keywords" content="海盗电商,迪米盒子,海盗系统,网店系统,商城系统,电子商务软件" />
+		<meta name="Description" content="海盗网店系统，国内专业电子商务系统方案解决服务商，最灵活的企业级网店系统，为中小企业级站长提供电商一站式解决方案。" />
 		<link rel="shortcut icon"  href="<?php echo MODULE_PATH?>images/favicon.ico"/>
 		<link rel="stylesheet" type="text/css" href="<?php echo MODULE_PATH?>css/install_style.css"/>
 	</head>
@@ -117,7 +117,7 @@
 			</div>
 			</form>
 		</div>
-		<p class="copy">©2013-2015 yaozihao.cn (奕瑞科技旗下品牌)</p>
+		<p class="copy">©2013-2015 haidao.la (迪米盒子科技旗下品牌)</p>
 	</body>
 <iframe name='install_iframe' style='width:0px;height:0px;display:none' src='#'></iframe>
 </body>
@@ -183,7 +183,7 @@
 			sendData[val] = $('[name="'+val+'"]').val();
 		}
 
-		$.getJSON('<?php echo url('ajax_check_mysql')?>',sendData,function(content)
+		$.getJSON("<?php echo url('ajax_check_mysql');?>",sendData,function(content)
 		{
 			var dis_inputs = {'db_address':'','db_port':'','db_user':'','db_pwd':'','db_name':'','db_pre':''};
 			if(content.status == 1)
@@ -191,14 +191,18 @@
 				for(val in dis_inputs){
 					$('[name="'+val+'"]').attr('readonly','readonly');
 				}
-
-				db_info = true;
-				$('.checkmysql').removeAttr('onclick').removeClass('agree-btn2').addClass('db_disabled');
-				$('.next').removeAttr('disabled','').removeClass('disabled');
-				$('#error_p').hide();
-				$('#right_p').show().text(content.info);
-				//检测错误
-				$('[name="site_name"]').focus();
+				if(content.sql_mode == 2){
+					$('#error_p').show().text("当前数据库为严格模式，请更改为非严格模式再安装");
+					return false;
+				}else if(content.sql_mode == 1){
+					db_info = true;
+					$('.checkmysql').removeAttr('onclick').removeClass('agree-btn2').addClass('db_disabled');
+					$('.next').removeAttr('disabled','').removeClass('disabled');
+					$('#error_p').hide();
+					$('#right_p').show().text(content.info);
+					//检测错误
+					$('[name="site_name"]').focus();
+				}
 			}else{
 				for(val in dis_inputs){
 					$('[name="'+val+'"]').removeAttr('disabled');

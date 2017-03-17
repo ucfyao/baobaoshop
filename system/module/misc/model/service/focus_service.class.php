@@ -1,17 +1,17 @@
 <?php
 /**
  *		幻灯片服务层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 
 class focus_service extends service {
 		public function _initialize() {
-		$this->db = $this->load->table('misc/focus');	
-		$this->article_service = $this->load->service('misc/article');	
+		$this->db = $this->load->table('misc/focus');
+		$this->article_service = $this->load->service('misc/article');
 	}
 	/**
 	 * [lists 列表]
@@ -25,6 +25,28 @@ class focus_service extends service {
 		}
 		return $result;
 	}
+
+	public function get_lists($sqlmap,$page,$limit){
+		$focus = $this->db->where($sqlmap)->page($page)->limit($limit)->order("sort ASC")->select();
+		foreach ($focus as $k => $v) {
+			$lists[] = array(
+				'id' => $v['id'],
+				'sort'=>$v['sort'],
+				'title'=>$v['title'],
+				'url'=>$v['url'],
+				'target'=>$v['target'],
+				'description'=>$v['description'],
+				'display'=>$v['display'],
+				'thumb'=>$v['thumb'],
+				'width'=>$v['width'],
+				'height'=>$v['height'],
+			);
+		}
+		return $lists;
+	}
+
+
+
 		/**
 	 * [add 添加]
 	 * @return [type] [description]
@@ -135,12 +157,46 @@ class focus_service extends service {
 	 * [total 总记录数]
 	 * @return [type]     [返回查询结果结果]
 	 */
-	public function total(){		
+	public function total(){
 		$result = $this->db->count;
 		if(!$result){
     		$this->error = $this->db->getError();
     		return FALSE;
     	}
 		return $result;
+	}
+
+	/**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->db->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->db->getError();
+            return false;
+        }
+        return $result;
+    }
+
+	//标签调用
+	public function focus_lists($sqlmap, $options) {
+		$this->db->where($this->build_map($sqlmap));
+		if($options['limit']){
+			$this->db->limit($options['limit']);
+		}
+		if($sqlmap['order']){
+			$this->db->order($sqlmap['order']);
+		}
+		return $this->db->select();
+	}
+	public function build_map($data){
+		$sqlmap = array();
+		$sqlmap['display'] = 1;
+		if($data['_string']){
+			$sqlmap['_string'] = $data['_string'];
+		}
+		return $sqlmap;
 	}
 }

@@ -18,7 +18,7 @@
 					<p>- 导航设置仅针对主导航的设置，不包含顶部导航及会员中心导航的设置。</p>
 				</div>
 			</div>
-			<div class="hr-gray"></div> 
+			<div class="hr-gray"></div>
 			<div class="table-work border margin-tb">
 				<div class="border border-white tw-wrap">
 					<a href="<?php echo url('add')?>"><i class="ico_add"></i>添加</a>
@@ -32,51 +32,59 @@
 					<div class="th check-option" data-resize="false">
 						<input id="check-all" type="checkbox" />
 					</div>
-					<div class="th" data-width="10"><span class="td-con">排序</span></div>
-					<div class="th" data-width="10"><span class="td-con">导航名称</span></div>
-					<div class="th" data-width="60"><span class="td-con">导航链接</span></div>
-					<div class="th" data-width="10"><span class="td-con">新窗口打开</span></div>
+					<?php foreach ($lists['th'] AS $th) {?>
+						<span class="th" data-width="<?php echo $th['length']?>">
+							<span class="td-con"><?php echo $th['title']?></span>
+						</span>
+					<?php }?>
 					<div class="th" data-width="10"><span class="td-con">操作</span></div>
 				</div>
-				<?php foreach($navigation as $key => $value){?>
-				<div class="tr" data-tree-id="1">
-					<div class="td check-option"><input type="checkbox" name="id" value="<?php echo $value['id']?>" /></div>
-					<div class="td">
-						<div class="td-con">
+				<?php foreach ($lists['lists'] AS $list) {?>
+				<div class="tr">
+					<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $list['id']?>" /></span>
+					<?php foreach ($list as $key => $value) {?>
+					<?php if($lists['th'][$key]){?>
+					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
+					<span class="td">
+						<div class="double-click">
+							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
+							<input class="input double-click-edit text-ellipsis <?php if($key == 'sort'){?>text-center<?php }?>" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
+						</div>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'ident') {?>
+						<span class="td ident">
+							<span class="ident-show">
+								<em class="ico_pic_show"></em>
+								<div class="ident-pic-wrap">
+									<img src="<?php echo $list['logo'] ? $list['logo'] : '../images/default_no_upload.png'?>" />
+								</div>
+							</span>
 							<div class="double-click">
 								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input name="sort" class="input double-click-edit text-ellipsis text-center" type="text" value="<?php echo $value['sort']?>" />
+								<input class="input double-click-edit text-ellipsis" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" type="text" value="<?php echo $value?>" />
 							</div>
-						</div>
-					</div>
-					<div class="td">
-						<div class="td-con">
-							<div class="double-click">
-								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input name="name" class="input double-click-edit text-ellipsis text-center" type="text" value="<?php echo $value['name']?>" />
-							</div>
-						</div>
-					</div>
-					<div class="td">
-						<div class="td-con">
-							<div class="double-click">
-								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input name="url" class="input double-click-edit text-ellipsis" type="text" value="<?php echo $value['url']?>" />
-							</div>
-						</div>
-					</div>
-					<div class="td">
-					<?php if($value['target'] == 0){?>
-						<a class="ico_up_rack cancel" href="javascript:;" title="点击关闭"></a>
+						</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
+					<span class="td">
+						<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
+					<span class="td">
+						<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
+						<input type="hidden" name="id" value="<?php echo $value?>" />
 					<?php }else{?>
-						<a class="ico_up_rack" href="javascript:;" title="点击关闭"></a>
+					<span class="td">
+						<span class="td-con"><?php echo $value;?></span>
+					</span>
 					<?php }?>
-					</div>
-					<div class="td">
-						<span class="td-con"><span class="td-con">
-							<a href="<?php echo url('edit',array('id'=>$value['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;
-							<a href="<?php echo url('delete',array('id[]'=>$value['id']))?>" data-confirm="是否确认删除？">删除</a></span></span>
-					</div>
+					<?php }?>
+					<?php }?>
+					<span class="td">
+						<span class="td-con">
+						<a href="<?php echo url('edit',array('id'=>$list['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('delete', array('id[]' => $list['id'])); ?>">删除</a><?php echo $lists['option']?></span>
+					</span>
 				</div>
 				<?php }?>
 			</div>
@@ -125,7 +133,7 @@
 				}else{
 					$(this).attr('class','ico_up_rack cancel');
 				}
-				var id=$(this).parents(".tr").find("input[name=id]").val(); 
+				var id=$(this).parents(".tr").find("input[name=id]").val();
 				$.post(ajax_edit,{"id":id,"target":target},function(data){
 					if(data == 1){
 						return true;
@@ -135,7 +143,7 @@
 				})
 			})
 			$(".table-work .border a:last").bind('click',function(){
-				var ids = Array(); 
+				var ids = Array();
 				var delete_focus = '<?php echo url('delete')?>';
 				$("input[type=checkbox]").each(function(){
 					if($(this).attr("checked") == 'checked'){

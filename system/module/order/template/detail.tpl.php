@@ -106,7 +106,7 @@
 									<th class="text-left" colspan="3">
 										应付订单总额：￥<?php echo ($order['real_price']);?>
 										<!-- （商品退货总额：￥<?php echo $order['return_amount'];?>） -->
-										<?php if($order['status'] == 1 && $order['pay_status'] == 0): ?>
+										<?php if($order['status'] == 1 && $order['pay_status'] == 0 && $order['pay_type'] != 2): ?>
 											<a class="text-main"  onclick="order_action.update_real_price('<?php echo url("order/admin_order/update_real_price",array("sub_sn"=>$order['sub_sn'])); ?>');" href="javascript:;">修改订单应付总额</a>
 										<?php endif; ?>
 									</th>
@@ -137,6 +137,11 @@
 			<tbody>
 				<tr class="bg-gray-white line-height-40 border-bottom">
 					<th class="text-left padding-big-left">收货人信息</th>
+					<th class="text-right padding-big-right">
+						<?php if ($status !== 1): ?>
+			              <a id="add-address" class="bg-gray-edit" href="<?php echo url('address_edit',array("order_sn"=>$order['order_sn']));?>" data-iframe="true" data-iframe-width="680">编辑</a>
+			            <?php endif; ?>
+			        </th>
 				</tr>
 				<tr class="border">
 					<td class="padding-big-left padding-big-right">
@@ -171,14 +176,17 @@
 								<span class="th" data-width="40">
 									<span class="td-con">商品信息</span>
 								</span>
-								<span class="th" data-width="15">
+								<span class="th" data-width="10">
 									<span class="td-con">单价</span>
 								</span>
-								<span class="th" data-width="15">
+								<span class="th" data-width="10">
 									<span class="td-con">实付金额</span>
 								</span>
-								<span class="th" data-width="15">
+								<span class="th" data-width="10">
 									<span class="td-con">购买数量</span>
+								</span>
+								<span class="th" data-width="15" data-min="100">
+									<span class="td-con">运费模板名称</span>
 								</span>
 								<span class="th" data-width="15" data-min="100">
 									<span class="td-con">物流状态</span>
@@ -212,6 +220,8 @@
 											<div class="td"><span class="td-con">￥<?php echo $sku['sku_price'];?></span></div>
 											<div class="td"><span class="td-con">￥<?php echo $sku['real_price'];?></span></div>
 											<div class="td"><span class="td-con"><?php echo $sku['buy_nums'] ?></span></div>
+											<div class="td"><span class="td-con"><?php echo $sku['delivery_template_name'] ? $sku['delivery_template_name'] : '-' ?></span></div>
+										
 											<div class="td detail-logistics">
 												<?php if ($delivery_id > 0): ?>
 													<a class="button bg-sub text-ellipsis look-log" href="javascript:;" data-did="<?php echo $delivery_id; ?>">查看物流</a>
@@ -231,7 +241,7 @@
 
 		<!-- 订单日志 -->
 		<table cellpadding="0" cellspacing="0" class="border bg-white layout margin-top">
-			<tbody>
+			<tbody>	
 				<tr class="bg-gray-white line-height-40 border-bottom">
 					<th class="text-left padding-big-left">订单日志</th>
 				</tr>

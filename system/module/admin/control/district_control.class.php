@@ -1,22 +1,30 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class district_control extends init_control {
 	public function _initialize() {
 		parent::_initialize();
 		$this->service = $this->load->service('admin/district');
-		$this->model = $this->load->table('admin/district');
 	}
 
 	/* 地区管理 */
 	public function index() {
-		$districts = $this->service->get_children();
-		$this->load->librarys('View')->assign('districts',$districts)->display('district_index');
+		$districts = $this->service->get_lists();
+		 $lists = array(
+			'th' => array(
+				'sort' => array('title' => '排序','length' => 10,'style'=>'double_click'),
+				'name' => array('title' => '名称','length' => 80,'style'=>'data'),
+			),
+			'lists' => $districts,
+			);
+
+
+		$this->load->librarys('View')->assign('lists',$lists)->display('district_index');
 	}
 
 	/* 添加地区 */
@@ -70,9 +78,9 @@ class district_control extends init_control {
 	public function ajax_sort() {
 		$id = (int)$_GET['id'];
 		$sort = (int)$_GET['sort'];
-		$result = $this->model->where(array('id' => $id))->setField('sort', $sort);
+		$result = $this->service->setField(array('sort' => $sort),array('id' => $id));
 		if ($result === FALSE) {
-			showmessage($this->model->getError());
+			showmessage($this->service->error);
 		} else {
 			showmessage(lang('edit_sort_success','admin/language'), url('index'), 1);
 		}
@@ -88,9 +96,9 @@ class district_control extends init_control {
 		}
 		$pinyin = pinyin($params['name']);
 		$params['pinyin'] = implode($pinyin, '');
-		$result = $this->model->update($params);
+		$result = $this->service->setField($params);
 		if ($result === FALSE) {
-			showmessage($this->model->getError());
+			showmessage($this->service->error);
 		} else {
 			showmessage(lang('edit_region_success','admin/language'), url('index'), 1);
 		}
@@ -101,7 +109,7 @@ class district_control extends init_control {
 		$result = (array)$this->service->get_children($id);
 		if ($result) {
 			foreach ($result as $key => $value) {
-				$value['_child'] = $this->model->where(array('parent_id' => $value['id']))->count();
+				$value['_child'] = $this->service->count(array('parent_id' => $value['id']));
 				$result[$key] = $value;
 			}
 		}

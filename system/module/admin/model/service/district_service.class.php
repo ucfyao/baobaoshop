@@ -1,17 +1,17 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class district_service extends service
 {
     public function _initialize() {
         $this->model = $this->load->table('admin/district');
     }
-	
+
 	/**
 	 * 添加地址
 	 */
@@ -114,9 +114,42 @@ class district_service extends service
      * @return array
      */
     public function get_children($parent_id = 0 ,$order = '`sort` ASC,`id` ASC') {
-        return $this->model->where(array('parent_id' => $parent_id))->order($order)->select();
+       $data = $this->model->where(array('parent_id' => $parent_id))->order($order)->select();
+       $setting = model('admin/setting','service')->get();
+       if($setting['regional_classification']=='1'){
+            $list =array();
+            foreach ($data as $value) {
+            if($value['id']==100000){ $value['location']='省份,城市,区县';};
+                $list[] = $value;
+            }
+            return $list;
+        }else{
+            return $data;
+        }
     }
-    
+
+
+    public function get_lists($parent_id = 0,$order = '`sort` ASC,`id` ASC'){
+        $data = $data = $this->model->where(array('parent_id' => $parent_id))->order($order)->select();
+        $lists = array();
+        foreach ($data AS $v) {
+            $lists[] =array(
+                'id'=>$v['id'],
+                'sort'=>$v['sort'],
+                'name'=>$v['name'],
+                'parent_id' =>$v['parent_id'],
+                'zipcode'=>$v['zipcode'],
+                'pinyin'=>$v['pinyin'],
+                'lng'=>$v['lng'],
+                'lat'=>$v['lat'],
+                'level'=>$v['level'],
+                'location'=>$v['location'],
+                );
+
+        }
+        return $lists;
+    }
+
 
 
     /**
@@ -160,5 +193,30 @@ class district_service extends service
         }
         return $ids;
     }
-
+    /*修改*/
+    public function setField($data, $sqlmap = array()){
+        if(empty($data)){
+            $this->error = lang('_param_error_');
+            return false;
+        }
+        $result = $this->model->where($sqlmap)->save($data);
+        if($result === false){
+            $this->error = $this->model->getError();
+            return false;
+        }
+        return $result;
+    }
+    /**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->model->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->model->getError();
+            return false;
+        }
+        return $result;
+    }
 }

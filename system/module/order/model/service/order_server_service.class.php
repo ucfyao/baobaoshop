@@ -1,11 +1,11 @@
 <?php
 /**
  * 		订单售后服务层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class order_server_service extends service {
 
@@ -17,6 +17,7 @@ class order_server_service extends service {
 		$this->table_sub    = $this->load->table('order/order_sub');
 		$this->table_sku    = $this->load->table('order/order_sku');
 		$this->table_member = $this->load->table('member/member');
+		$this->admin_user_table = $this->load->table('admin/admin_user');
 
 		$this->table_return_log = $this->load->table('order/order_return_log');
 		$this->table_refund_log = $this->load->table('order/order_refund_log');
@@ -73,13 +74,23 @@ class order_server_service extends service {
 	 * @param  string  	$cause    原因 (必传)
 	 * @param  string  	$desc 	  描述
 	 * @param  array   	$images   上传截图
+	 * @param int   	$mid      操作者id
+	 * @param int   	$operator_type   操作者类型
 	 * @return [boolean]
 	 */
-	public function create_return ($o_sku_id ,$amount = 0 ,$cause , $desc = '',$images = array()) {
+	public function create_return ($o_sku_id ,$amount = 0 ,$cause , $desc = '',$images = array(), $mid = 0, $operator_type = 2) {
 		$o_sku_id = (int) $o_sku_id;
 		$amount   = (float)  remove_xss($amount);
 		$cause    = (string) remove_xss($cause);
 		$desc     = (string) remove_xss($desc);
+		if((int)$mid < 1){
+			$this->error = lang('user_id_not_empty','order/language');
+			return FALSE;
+		}
+		if((int)$operator_type < 1){
+			$this->error = lang('operate_type_error','order/language');
+			return FALSE;
+		}
 		if ($amount <= 0) {
 			$this->error = lang('refund_money_require','order/language');
 			return FALSE;
@@ -120,6 +131,13 @@ class order_server_service extends service {
 			return FALSE;
 		}
 		// 创建索引表记录
+		if($operator_type == 1){
+			$username = $this->admin_user_table->where(array('id' => $mid))->getField('username');
+			$_operator_type = '管理员';
+		}else{
+			$username = $this->table_member->where(array('id' => $mid))->getField('username');
+			$_operator_type = '会员';
+		}
 		$server['type'] = 1;
 		$server['order_sn']  = $o_sku['order_sn'];
 		$server['sub_sn']    = $o_sku['sub_sn'];
@@ -128,15 +146,14 @@ class order_server_service extends service {
 		$server['return_id'] = $result;
 		$this->table->update($server);
 		// 写入退货日志
-		$operator = get_operator();	// 获取操作者信息
 		$log['return_id']     = $result;
 		$log['order_sn']      = $o_sku['order_sn'];
 		$log['sub_sn']        = $o_sku['sub_sn'];
 		$log['o_sku_id']      = $o_sku_id;
 		$log['action']        = '申请退货并退款';
-		$log['operator_id']   = $operator['id'];
-		$log['operator_name'] = $operator['username'];
-		$log['operator_type'] = $operator['operator_type'];		
+		$log['operator_id']   = $mid;
+		$log['operator_name'] = $username;
+		$log['operator_type'] = $operator_type;
 		$log['msg']           = $desc;
 		$this->load->table('order/order_return_log')->update($log);
 		return $result;
@@ -151,14 +168,24 @@ class order_server_service extends service {
 	 * @param string 	$desc 退款描述
 	 * @param int   	$id 退款商品id (当type=1：退货主键id，type=2：订单商品id ，必传)
 	 * @param array 	$images 图片
+	 * @param int   	$mid      操作者id
+	 * @param int   	$operator_type   操作者类型
 	 * @return [boolean]
 	 */
-	public function create_refund ($type,$sub_sn ,$amount = 0 ,$cause ,$desc = '' ,$id ,$images = array()) {
+	public function create_refund ($type,$sub_sn ,$amount = 0 ,$cause ,$desc = '' ,$id ,$images = array(),$mid = 0, $operator_type = 2) {
 		$type   = (int) $type;
 		$sub_sn = (string) remove_xss($sub_sn);
 		$amount = (float)  remove_xss($amount);
 		$desc   = (string) remove_xss($desc);
 		$id     = (int) $id;
+		if((int)$mid < 1){
+			$this->error = lang('user_id_not_empty','order/language');
+			return FALSE;
+		}
+		if((int)$operator_type < 1){
+			$this->error = lang('operate_type_error','order/language');
+			return FALSE;
+		}
 		if (!in_array($type, array(1,2))) {
 			$this->error = lang('operate_type_error','order/language');
 			return FALSE;
@@ -262,28 +289,44 @@ class order_server_service extends service {
 			$this->table->update($server);
 		}
 		// 创建退款日志
-		$operator = get_operator();	// 获取操作者信息
+		if($operator_type == 1){
+			$username = $this->admin_user_table->where(array('id' => $mid))->getField('username');
+			$_operator_type = '管理员';
+		}else{
+			$username = $this->table_member->where(array('id' => $mid))->getField('username');
+			$_operator_type = '会员';
+		}
 		$log['refund_id']     = $result;
-		$log['operator_id']   = $operator['id'];
-		$log['operator_name'] = $operator['username'];
-		$log['operator_type'] = $operator['operator_type'];
+		$log['operator_id']   = $mid;
+		$log['operator_name'] = $username;
+		$log['operator_type'] = $operator_type;
 		$log['msg']           = $data['desc'];
 		$this->load->table('order/order_refund_log')->update($log);
 		return $result;
 	}
 
-	/** 
+	/**
 	 * 处理退货申请
 	 * @param int $id 	  订单退货表主键id (必传)
 	 * @param int $status 处理状态 (必传)
 	 * @param string $msg 操作备注 (默认空)
+	 * @param int   	$mid      操作者id
+	 * @param int   	$operator_type   操作者类型
 	 * @return [boolean]
 	 */
-	public function handle_return($id ,$status ,$msg = '') {
+	public function handle_return($id ,$status ,$msg = '',$mid = 0,$operator_type = 1) {
 		$id     = (int) $id;
 		$status = (int) $status;
 		$msg    = (string) remove_xss($msg);
 		$info   = $this->table_return->find($id);
+		if((int)$mid < 1){
+			$this->error = lang('user_id_not_empty','order/language');
+			return FALSE;
+		}
+		if((int)$operator_type < 1){
+			$this->error = lang('operate_type_error','order/language');
+			return FALSE;
+		}
 		if (!$info) {
 			$this->error = lang('operate_record_not_exist','order/language');
 			return FALSE;
@@ -298,7 +341,9 @@ class order_server_service extends service {
 		$data['admin_id'] = ADMIN_ID;
 		$data['admin_desc'] = $msg;
 		$data['admin_time'] = time();
+		runhook('before_return_update',$data);
 		$result = $this->table_return->update($data);
+		runhook('after_return_update',$data);
 		if (!$result) {
 			$this->error = $this->table_return->getError();
 			return FALSE;
@@ -309,35 +354,51 @@ class order_server_service extends service {
 			$this->table->where(array('return_id' => $id))->setField('status',1);
 		}
 		// 退货日志
-		$operator = get_operator();	// 获取操作者信息
+		if($operator_type == 1){
+			$username = $this->admin_user_table->where(array('id' => $mid))->getField('username');
+			$_operator_type = '管理员';
+		}else{
+			$username = $this->table_member->where(array('id' => $mid))->getField('username');
+			$_operator_type = '会员';
+		}
 		$log = array();
 		$log['return_id']   = $id;
 		$log['order_sn']    = $info['order_sn'];
 		$log['sub_sn']      = $info['sub_sn'];
 		$log['o_sku_id']    = $info['o_sku_id'];
 		$log['action']      = '处理退货';
-		$log['operator_id'] = $operator['id'];
-		$log['operator_name'] = $operator['username'];
-		$log['operator_type'] = $operator['operator_type'];
+		$log['operator_id'] = $mid;
+		$log['operator_name'] = $username;
+		$log['operator_type'] = $operator_type;
 		$str = '';
 		if (!empty($msg)) $str = '&nbsp;&nbsp; 操作日志：'.$msg;
-		$log['msg'] = $operator['_operator_type'].'处理退货单为'.$this->status[$status].$str;
+		$log['msg'] = $_operator_type.'处理退货单为'.$this->status[$status].$str;
 		$this->table_return_log->update($log);
 		return $result;
 	}
 
-	/** 
+	/**
 	 * 处理退款申请
 	 * @param int $id 	订单退款表主键id (必传)
 	 * @param int $status 处理状态 (默认0)
 	 * @param string $msg 操作备注 (默认空)
+	 * @param int   	$mid      操作者id
+	 * @param int   	$operator_type   操作者类型
 	 * @return [boolean]
 	 */
-	public function handle_refund($id ,$status = 0 ,$msg = '') {
+	public function handle_refund($id ,$status = 0 ,$msg = '',$mid = 0,$operator_type = 1) {
 		$id     = (int) $id;
 		$status = (int) $status;
 		$msg    = (string) remove_xss($msg);
 		$info   = $this->table_refund->find($id);
+		if((int)$mid < 1){
+			$this->error = lang('user_id_not_empty','order/language');
+			return FALSE;
+		}
+		if((int)$operator_type < 1){
+			$this->error = lang('operate_type_error','order/language');
+			return FALSE;
+		}
 		if (!$info) {
 			$this->error = lang('operate_record_not_exist','order/language');
 			return FALSE;
@@ -352,11 +413,13 @@ class order_server_service extends service {
 		$data['admin_id'] = ADMIN_ID;
 		$data['admin_desc'] = $msg;
 		$data['admin_time'] = time();
+		runhook('before_refund_update',$data);
 		$result = $this->table_refund->update($data);
 		if (!$result) {
 			$this->error = $this->table_refund->getError();
 			return FALSE;
 		}
+		runhook('after_refund_update',$data);
 		if ($status == 1) {
 			$this->load->service('member/member')->change_account($info['buyer_id'],'money',$info['amount'],'通过售后申请并已退款到账户余额');
 			$this->table->where(array('refund_id' => $id))->setField('status',2);
@@ -364,34 +427,50 @@ class order_server_service extends service {
 			$this->table->where(array('refund_id' => $id))->setField('status',-2);
 		}
 		// 退款日志
-		$operator = get_operator();	// 获取操作者信息
+		if($operator_type == 1){
+			$username = $this->admin_user_table->where(array('id' => $mid))->getField('username');
+			$_operator_type = '管理员';
+		}else{
+			$username = $this->table_member->where(array('id' => $mid))->getField('username');
+			$_operator_type = '会员';
+		}
 		$log = array();
 		$log['refund_id'] = $id;
 		$log['order_sn']  = $info['order_sn'];
 		$log['sub_sn']    = $info['sub_sn'];
 		$log['o_sku_id']  = $info['o_sku_id'];
 		$log['action']    = '处理退款';
-		$log['operator_id']   = $operator['id'];
-		$log['operator_name'] = $operator['username'];
-		$log['operator_type'] = $operator['operator_type'];
+		$log['operator_id']   = $mid;
+		$log['operator_name'] = $username;
+		$log['operator_type'] = $operator_type;
 		$str = '';
 		if (!empty($msg)) $str = '&nbsp;&nbsp; 操作日志：'.$msg;
-		$log['msg'] = $operator['_operator_type'].'处理退款单为'.$this->status[$status].$str;
+		$log['msg'] = $_operator_type.'处理退款单为'.$this->status[$status].$str;
 		$this->table_refund_log->update($log);
 		return $result;
 	}
 
-	/** 
+	/**
 	 * 买家退货
 	 * @param int 	 $id 	退货表主键id (必传)
 	 * @param string $name 	物流名称 (必传)
 	 * @param string $sn 	运单号 (必传)
+	 * @param int   	$mid      操作者id
+	 * @param int   	$operator_type   操作者类型
 	 * @return [boolean]
 	 */
-	public function return_goods($id ,$name ,$sn) {
+	public function return_goods($id ,$name ,$sn,$mid = 0,$operator_type = 2) {
 		$id = (int) $id;
 		$name = (string) trim($name);
 		$sn   = (string) trim($sn);
+		if((int)$mid < 1){
+			$this->error = lang('user_id_not_empty','order/language');
+			return FALSE;
+		}
+		if((int)$operator_type < 1){
+			$this->error = lang('operate_type_error','order/language');
+			return FALSE;
+		}
 		if (empty($name)) {
 			$this->error = lang('logistics_name_empty','order/language');
 			return FALSE;
@@ -416,7 +495,7 @@ class order_server_service extends service {
 			return FALSE;
 		}
 		// 生成退款单记录
-		$this->create_refund(1 ,$return['sub_sn'] ,$return['amount'] ,$return['cause'] ,$return['desc'],$return['id'],json_decode($return['images'],TRUE));
+		$this->create_refund(1 ,$return['sub_sn'] ,$return['amount'] ,$return['cause'] ,$return['desc'],$return['id'],json_decode($return['images'],TRUE),$mid,$operator_type);
 		return $result;
 	}
 
@@ -445,10 +524,24 @@ class order_server_service extends service {
 		$limit = isset($options['limit']) ? (int) $options['limit'] : 10;
 		$infos = $result = array();
 		$result = $this->table_return->where($sqlmap)->page($page)->limit($limit)->order('id DESC')->select();
+		$lists = array();
 		foreach ($result as $k => $v) {
 			$result[$k] = $this->_more($v);
+			$lists[] = array(
+				'id' => $v['id'],
+				'sku_name' => $result[$k]['_sku']['sku_name'],
+				'username' => $result[$k]['_buyer']['username'],
+				'amount'  => $v['amount'],
+				'dateline' => $v['dateline'],
+				'status' => $v['status'],
+				'_status' => $result[$k]['_status'],
+				'delivery_name' => $v['delivery_name'],
+				'delivery_sn' => $v['delivery_sn'],
+				'specs' => $result[$k]['_sku']['sku_spec'],
+				'sku_thumb' => $result[$k]['_sku']['sku_thumb']
+			);
 		}
-		$infos['lists'] = $result;
+		$infos['lists'] = $lists;
 		$infos['count'] = $this->table_return->where($sqlmap)->count();
 		return $infos;
 	}
@@ -464,11 +557,24 @@ class order_server_service extends service {
 		$limit = isset($options['limit']) ? (int) $options['limit'] : 10;
 		$infos = $result = array();
 		$result = $this->table_refund->where($sqlmap)->page($page)->limit($limit)->order('id DESC')->select();
+		$lists = array();
 		foreach ($result as $k => $v) {
 			$result[$k] = $this->_more($v);
 			$result[$k]['_type'] = ($v['type'] == 1) ? '退货并退款' : '仅退款';
+			$lists[] = array(
+				'id' => $v['id'],
+				'sku_name' => $result[$k]['_sku']['sku_name'],
+				'_type' => $result[$k]['_type'],
+				'username' => $result[$k]['_buyer']['username'],
+				'amount'  => $v['amount'],
+				'dateline' => $v['dateline'],
+				'_status' => $result[$k]['_status'],
+				'specs' => $result[$k]['_sku']['sku_spec'],
+				'status' => $v['status'],
+				'sku_thumb' => $result[$k]['_sku']['sku_thumb']
+			);
 		}
-		$infos['lists'] = $result;
+		$infos['lists'] = $lists;
 		$infos['count'] = $this->table_refund->where($sqlmap)->count();
 		return $infos;
 	}
@@ -576,5 +682,31 @@ class order_server_service extends service {
 			}
 		}
 		return $sqlmap;
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	读取的字段
+	 * @return [type]
+	 */
+	public function find($sqlmap = array(), $field = "") {
+		$result = $this->table->where($sqlmap)->field($field)->find();
+		if($result===false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
+	}
+	/*修改*/
+	public function setField($data, $sqlmap = array()){
+		if(empty($data)){
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		$result = $this->table->where($sqlmap)->save($data);
+		if($result === false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
 	}
 }

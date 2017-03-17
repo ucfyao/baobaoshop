@@ -1,11 +1,11 @@
 <?php
 /**
  * 		子订单服务层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class order_sub_service extends service {
 
@@ -15,6 +15,7 @@ class order_sub_service extends service {
 		$this->table_order = $this->load->table('order/order');
 		$this->table_sku   = $this->load->table('order/order_sku');
 		$this->table_delivery = $this->load->table('order/order_delivery');
+		$this->table_trade = $this->load->table('order/order_trade');
 		/* 实例化服务层 */
 		$this->service_track  = $this->load->service('order/order_track');
 		$this->service_parcel = $this->load->service('order/order_parcel');
@@ -189,6 +190,7 @@ class order_sub_service extends service {
 		$data = array();
 		$data['pay_status'] = 1;
 		$data['pay_time']   = time();
+		
 		// 设置子订单表
 		$result = $this->table->where(array('order_sn' => $order['sn']))->save($data);
 		if (!$result) return FALSE;
@@ -206,6 +208,24 @@ class order_sub_service extends service {
 		}
 		$result = $this->table_order->where(array('sn' => $order['sn']))->save($data);
 		if (!$result) return FALSE;
+		
+		if (isset($options['paid_amount']) && isset($options['pay_method']) && isset($options['pay_sn'])) {
+			$_map = array();
+			$_map['order_sn'] = $order['sn'];
+			$_map['trade_no'] = date('Ymd') . substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 12);
+			$_map['total_fee'] = $options['paid_amount'];
+			$_map['status'] = 1;
+			$_map['time'] = time();
+			$_map['method'] = $options['pay_method'];
+			$_map['pay_sn'] = $options['pay_sn'];
+			$set_pay_sn = $this->table_trade->add($_map);			
+		}else{
+			$set_pay_sn = $this->table_trade->where(array('order_sn' => $order['sn']))->setField('pay_sn',$data['pay_sn']);
+		}
+		if ($set_pay_sn === FALSE){
+			$this->error = $this->table_trade->getError();
+			return FALSE;
+		}
 		// 获取主订单号下的所有子订单号
 		$sub_sns = $this->table->where(array('order_sn' => $order['sn']))->getField('sub_sn' ,TRUE);
 		foreach ($sub_sns as $sub_sn) {
@@ -266,7 +286,7 @@ class order_sub_service extends service {
 		$is_choise     = (int) $options['is_choise'];	// 是否选择物流
 		$delivery_id   = (int) $options['delivery_id'];
 		$delivery_sn   = (string) trim($options['delivery_sn']);
-		$sub_sn 	   = (string) trim($options['sub_sn']);		
+		$sub_sn 	   = (string) trim($options['sub_sn']);
 		$o_sku_ids = array_filter(explode(',', $options['o_sku_ids']));	// 要发货的订单商品ids
 		if ($is_choise === 1) {
 			if ($delivery_id < 1) {
@@ -320,7 +340,7 @@ class order_sub_service extends service {
 			$pay_info['logistics_name'] = $delivery_name;//物流公司名称
 			$pay_info['invoice_no'] = $delivery_sn;//物流发货单号
 			$pay_factory->set_productinfo($pay_info)->gateway();
-			$pay_factory->_delivery();			
+			$pay_factory->_delivery();
 		}
 		/* 标记订单商品为已发货状态，并关联订单物流id */
 		$sqlmap['id'] = array('IN' , $o_sku_ids);
@@ -362,15 +382,14 @@ class order_sub_service extends service {
 		} else {	// 部分发货
 			$data['delivery_status'] = 1;
 		}
-		$data['system_time'] = time();
 		$result = $this->table_order->where(array('sn' => $order['order_sn']))->save($data);
 		if (!$result) {
 			$this->error = $this->table_order->getError();
 			return FALSE;
 		}
 		// 如果后台设置发货减库存 => 减库存
-		$stock_change = $this->service_setting->get_setting('stock_change');
-		if ($stock_change != NULL && $stock_change == 1) {
+		$stock_change = $this->service_setting->get('stock_change');
+		if ($stock_change != NULL && $stock_change == 2) {
 			foreach ($o_sku_ids as $k => $id) {
 				$o_sku = $this->table_sku->where(array('id' => $id))->field($id ,'sku_id,buy_nums')->find();
 				$this->load->service('goods/goods_sku')->set_dec_number($o_sku['sku_id'],$o_sku['buy_nums']);
@@ -378,7 +397,7 @@ class order_sub_service extends service {
 		}
 		// 物流跟踪
 		$string = '';
-		if ($order['delivery_name'] == $delivery_name) {
+		if ($order['delivery_name'] == $delivery_name || empty($order['delivery_name'])) {
 			$string = '快递单号：'.$delivery_sn;
 		} else {
 			$string = '从「'.$order['delivery_name'].'」修改到「'.$delivery_name.'」';
@@ -389,6 +408,7 @@ class order_sub_service extends service {
 		$this->service_track->add($order['order_sn'] ,$order['sub_sn'] , '您的订单配货完毕，已经发货。'.$string,0,$addid);
 		// 钩子：订单商品已发货
 		$order['delivery_sn'] = $delivery_sn;
+		$order['delivery_name'] = $delivery_name;
 		runhook('skus_delivery',$order);
 		return '订单发货';
 	}
@@ -400,7 +420,7 @@ class order_sub_service extends service {
 	 * @return [string]
 	 */
 	private function _finish($options = array()) {
-		$site_name = $this->load->service('admin/setting')->get_setting('site_name');
+		$site_name = $this->load->service('admin/setting')->get('site_name');
 		$order = $this->order;
 		if ($order['finish_status'] == 2 || $order['delivery_status'] == 0) {
 			$this->error = lang('_valid_access_');
@@ -543,6 +563,16 @@ class order_sub_service extends service {
 						}
 						$string = '您的订单已取消，已退款到您的账户余额，请查收';
 					}
+					/* 未发货&未付款的&是否退款到账户余额 ==> 退款到账户余额 */
+					if ($order['delivery_status'] == 0 && $order['pay_status'] == 0 && $options['isrefund'] == 1) {
+
+						$this->load->service('member/member')->change_account($order_main['buyer_id'],'money',$order_main['balance_amount'],'取消订单退款,订单号:'.$order['order_sn']);
+						// 解冻余额支付的金额
+						if ($order_main['balance_amount'] > 0) {
+							$this->load->service('member/member')->action_frozen($order_main['buyer_id'],$order_main['balance_amount'],false);
+						}
+						$string = '您的订单已取消，已退款到您的账户余额，请查收';
+					}
 				} else {
 					// 标记当前子订单为已取消
 					$this->table->where(array('sub_sn' => $order['sub_sn']))->save($data);
@@ -564,7 +594,7 @@ class order_sub_service extends service {
 					}
 				}
 				/* 后台设置为下单减库存 ==> goods_sku加上库存 */
-				$stock_change = $this->service_setting->get_setting('stock_change');
+				$stock_change = $this->service_setting->get('stock_change');
 				if (isset($stock_change) && $stock_change == 0) {
 					$skuids = array();
 					if ($order['pay_type'] == 1) {
@@ -810,5 +840,46 @@ class order_sub_service extends service {
         $result['delivery'] = $sub['delivery_time'];
         $result['finish'] = $sub['finish_time'];
         return $result;
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	条数
+	 * @param  integer 	页数
+	 * @param  string 	排序
+	 * @return [type]
+	 */
+	public function fetch($sqlmap = array(), $limit = 20, $page = 1, $order = "", $field = "") {
+		$result = $this->table->where($sqlmap)->limit($limit)->page($page)->order($order)->field($field)->select();
+		if($result===false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	读取的字段
+	 * @return [type]
+	 */
+	public function find($sqlmap = array(), $field = "") {
+		$result = $this->table->where($sqlmap)->field($field)->find();
+		if($result===false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
+	}
+	/**
+	 * @param  string  获取的字段
+	 * @param  array 	sql条件
+	 * @return [type]
+	 */
+	public function getField($field = '', $sqlmap = array()) {
+		$result = $this->table->where($sqlmap)->getfield($field);
+		if($result === false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
 	}
 }

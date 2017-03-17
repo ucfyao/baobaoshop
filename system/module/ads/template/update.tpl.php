@@ -34,7 +34,7 @@
 				
 				<?php echo form::input('file', 'content_pic', $content, '广告图片：','请选择广告图片',array('preview'=>$content));?>	
 				<?php echo form::input('text', 'content_text', $content, '广告文字：', '请输入广告文字'); ?>	
-				<?php echo form::input('text', 'link', $link, '链接地址：', '请输入链接地址(http://www.yaozihao.cn)',array('datatype' => 'url','ignore'=>'ignore')); ?>	
+				<?php echo form::input('text', 'link', $link, '链接地址：', '请输入链接地址(http://www.haidao.la)',array('datatype' => 'url','ignore'=>'ignore')); ?>	
 
 			</div>
 			<div class="padding">

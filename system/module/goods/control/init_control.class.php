@@ -9,7 +9,7 @@ class init_control extends control
 		define('SKIN_PATH', __ROOT__.(str_replace(DOC_ROOT, '', TPL_PATH)).config('TPL_THEME').'/');
 		$cloud =  unserialize(authcode(config('__cloud__','cloud'),'DECODE'));
 		define('SITE_AUTHORIZE', (int)$cloud['authorize']);
-		define('COPYRIGHT', 'Powered by <a href="http://www.yaozihao.cn/" target="_blank">Heyi</a> '.HD_VERSION.'<br/>© 2013-2016   Inc.');
+		define('COPYRIGHT', 'Powered by <a href="http://www.haidao.la/" target="_blank">Haidao</a> '.HD_VERSION.'<br/>© 2013-2016 Dmibox Inc.');
 		/* 检测商城运营状态 */
 		runhook('site_isclosed');
 	}

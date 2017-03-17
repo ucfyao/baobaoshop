@@ -29,45 +29,65 @@
 			</div>
 			<div class="table resize-table treetable border clearfix">
 				<div class="tr border-none">
-					<div class="th" data-width="10"><span class="td-con">排序</span></div>
-					<div class="th" data-width="55"><span class="td-con">名称</span></div>
-					<div class="th" data-width="15"><span class="td-con">关联属性</span></div>
-					<div class="th" data-width="10"><span class="td-con">启用</span></div>
+					<?php foreach ($lists['th'] AS $th) {?>
+					<span class="th" data-width="<?php echo $th['length']?>">
+						<span class="td-con"><?php echo $th['title']?></span>
+					</span>
+					<?php }?>
 					<div class="th" data-width="10"><span class="td-con">操作</span></div>
 				</div>
-				<?php foreach ($result as $key => $value) {?>
-				<div class="tr" data-tree-id="<?php echo $value['id']?>" data-tree-parent-id='0'>
-					<div class="td">
-						<div class="tree-indenter <?php if($value['level'] != 1){?>no-tree-status<?php }?>">
-							<a class="<?php if($value['level']==1){?>tree-ind-status close<?php }?>" data-level='1' data-id="<?php echo $value['id']?>" data-open="false" href="javascript:;"></a>
+				<?php foreach ($lists['lists'] AS $list) {?>
+				<div class="tr" data-tree-id="<?php echo $list['id']?>" data-tree-parent-id='0'>
+					<?php foreach ($list as $key => $value) {?>
+					<?php if($lists['th'][$key]){?>
+					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
+					<span class="td">
+						<div class="double-click">
+							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
+							<input class="input double-click-edit text-ellipsis text-center" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
+						</div>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'level_sort') {?>
+						<span class="td">
+							<div class="tree-indenter <?php if($list['level'] != 1){?>no-tree-status<?php }?>">
+							<a class="<?php if($list['level']==1){?>tree-ind-status close<?php }?>" data-level='1' data-id="<?php echo $list['id']?>" data-open="false" href="javascript:;"></a>
 							<div class="double-click">
 								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis" data-id="<?php echo $value['id']?>" name="sort" type="text" value="<?php echo $value['sort']?>" />
+								<input class="input double-click-edit text-ellipsis" data-id="<?php echo $list['id']?>" name="sort" type="text" value="<?php echo $value?>" />
 							</div>
 						</div>
-					</div>
-					<div class="td">
+						</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'level_name') {?>
+					<span class="td">
 						<div class="tree-edit-input">
 							<div class="double-click">
 								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis" type="text" data-id="<?php echo $value['id']?>" name="name" value="<?php echo $value['name']?>" />
+								<input class="input double-click-edit text-ellipsis" type="text" data-id="<?php echo $list['id']?>" name="name" value="<?php echo $value?>" />
 							</div>
-							<a class="tree-add-button" data-id="<?php echo $value['id']?>" href="javascript:;"><em class="ico_add"></em>添加下级分类</a>
+							<a class="tree-add-button" data-id="<?php echo $list['id']?>" href="javascript:;"><em class="ico_add"></em>添加下级分类</a>
 						</div>
-					</div>
-					<div class="td">
-						<span class="td-con text-left"><?php echo $value['type_name']?></span>
-					</div>
-					<div class="td">
-					<?php if($value['status']==0){?>
-						<a class="ico_up_rack cancel" data-id="<?php echo $value['id']?>" href="javascript:;" title="点击关闭"></a>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
+					<span class="td">
+						<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
+					<span class="td">
+						<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
+						<input type="hidden" name="id" value="<?php echo $value?>" />
 					<?php }else{?>
-					    <a class="ico_up_rack" data-id="<?php echo $value['id']?>" href="javascript:;" title="点击关闭"></a>
+					<span class="td">
+						<span class="td-con text-left"><?php echo $value;?></span>
+					</span>
 					<?php }?>
-					</div>
-					<div class="td">
-						<span class="td-con"><span class="td-con"><a href="<?php echo url('edit',array('id'=>$value['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('ajax_del',array('id'=>$value['id']))?>">删除</a></span></span>
-					</div>
+					<?php }?>
+					<?php }?>
+					<span class="td">
+						<span class="td-con">
+						<a href="<?php echo url('edit',array('id'=>$list['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('ajax_del', array('id' => $list['id'])); ?>">删除</a><?php echo $lists['option']?></span>
+					</span>
 				</div>
 				<?php }?>
 			</div>
@@ -139,11 +159,11 @@
 						level = 4;
 						className = "tree-three";
 					}
-					
+
 					/*
 					 * 点击加号触发AJAX事件，加载下级分类
 					 * 通过传递当前点击的地区的ID通过ajax获取它的下一级地区然后循环输出
-					 * 
+					 *
 					 * */
 					$.hdLoad.start();
 					$.ajax({

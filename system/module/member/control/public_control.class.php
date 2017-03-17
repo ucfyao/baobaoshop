@@ -8,15 +8,16 @@ class public_control extends init_control
 			redirect(url('index/index'));
 		}
 		$this->service = $this->load->service('member/member');
-		$this->vcode_table = $this->load->table('vcode');
+		$this->notify_service = $this->load->service('notify/notify');
+		$this->notify_template_service = $this->load->service('notify/notify_template');
 	}
 
 	public function index() {
-		error::system_error('_data_type_invalid_');
+		hd_error::system_error('_data_type_invalid_');
 	}
 
 	public function register() {
-		$setting = cache('setting', '', 'common');
+		$setting = model('admin/setting','service')->get();
 		if(!$setting['reg_allow']) {
 			showmessage($setting['reg_closedreason']);
 		}
@@ -30,16 +31,16 @@ class public_control extends init_control
 			$SEO = seo('会员注册');
 
             $sms_reg = false;
-            $sms_enabled = model('notify')->where(array('code'=>'sms','enabled'=>1))->find();
+            $sms_enabled = $this->notify_service->find(array('code'=>'sms','enabled'=>1));
             if($sms_enabled){
                 $sqlmap['id'] = 'sms';
                 $sqlmap['enabled'] = array('like','%register_validate%');
-                $sms_reg = model('notify_template')->where($sqlmap)->find();
+                $sms_reg = $this->notify_template_service->find($sqlmap);
             }
             $this->load->librarys('View')->assign('SEO',$SEO)->assign('sms_reg',$sms_reg)->display('register');
 		}
 	}
-	
+
 	public function login() {
 		if(checksubmit('dosubmit')) {
 			if(!$this->service->login($_GET['username'], $_GET['password'])) {
@@ -87,7 +88,7 @@ class public_control extends init_control
             if($result){
                 showmessage('验证短信已经发送，请注意查收。','',1);
             }
-            
+
 		}else{
 			$SEO = seo('忘记密码');
 			$this->load->librarys('View')->assign('SEO',$SEO)->display('forget_password');
@@ -101,7 +102,7 @@ class public_control extends init_control
 	        $mid=$_GET['mid'];
 	        $encrypt=$this->service->fetch_by_id($mid);
 	        $vcode=authcode(base64_decode($_GET['vcode']), 'DECODE', $encrypt['encrypt']) ;
-	        $key=$this->load->table('vcode')->where("mid='$mid' AND vcode='$vcode'")->getField('vcode');
+	        $key = $this->service->get_vcode_field('vcode', "mid='$mid' AND vcode='$vcode'");
 	        if($key == $vcode){
     	        if($pwd !=$repwd){
     	            showmessage(lang('second_password_different','member/language'));
@@ -109,7 +110,7 @@ class public_control extends init_control
     	            $data['password']=md5(md5($pwd).$encrypt['encrypt']);
     	            $re=$this->service->setNpwd($_POST['mid'],$data);
     	            if($re){
-						$this->load->table('vcode')->where(array('mid' => $mid,'vcode' => $vcode))->delete();
+    	            	$this->service->vcode_delete(array('mid' => $mid,'vcode' => $vcode));
     	                showmessage(lang('_operation_success_'));
 					}else{
     	                showmessage(lang('_operation_fail_'));
@@ -130,7 +131,7 @@ class public_control extends init_control
     public function valid_email()
     {
         $email = $_GET['email'];
-        $result = $this->service->valid_email($email);
+        $result = $this->service->_valid_email($email);
         if(!$result){
             showmessage($this->service->error,'',0);
         }else{
@@ -173,7 +174,7 @@ class public_control extends init_control
             $this->load->librarys('View')->assign('SEO',$SEO)->display('repwd');
         }
     }
-	
+
 	public function ajax_register_check() {
 		$result = $this->service->valid($_GET['name'],$_GET['param']);
 		if($result === false){
@@ -199,14 +200,14 @@ class public_control extends init_control
 		$sqlmap['action'] = 'resetemail';
 		$sqlmap['vcode'] = $vcode;
 		$sqlmap['dateline'] = array('EGT',time()-1800);
-		$_vcode = $this->load->table('vcode')->where($sqlmap)->getField('vcode');
+		$_vcode = $this->service->get_vcode_field('vcode', $sqlmap);
 
 		if ($_vcode !== $vcode) showmessage(lang('captcha_error','member/language'),'',0);
 
 		$data['id'] = $mid;
 		$data['email'] = $email;
 
-		$r = $this->load->table('member/member')->update($data,FALSE);
+		$r = $this->service->update($data,FALSE);
 		if($r){
 			showmessage(lang('edit_email_success','member/language'),url('member/index/index'),1);
 		}else{
@@ -215,7 +216,7 @@ class public_control extends init_control
 	}
 	/* 手机验证 */
 	public function register_validate(){
-		$this->load->table('vcode')->where(array('mobile' => $_GET['mobile'],'action' =>'register_validate','dateline'=>array('LT',TIMESTAMP)))->delete();
+		$this->service->vcode_delete(array('mobile' => $_GET['mobile'],'action' =>'register_validate','dateline'=>array('LT',TIMESTAMP)));
 		$result = $this->service->post_vcode($_GET,'register_validate');
 		if($result){
 			showmessage(lang('send_success','member/language'),'',1);

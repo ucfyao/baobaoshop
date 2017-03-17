@@ -29,13 +29,13 @@ class hd_config {
 
 		$this->header = '<?php'.PHP_EOL.PHP_EOL.
 		'/**'.PHP_EOL.
-		' * [HeYi] (C)2013-2099 HeYi Science and technology Yzh.'.PHP_EOL.
+		' * [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.'.PHP_EOL.
 		' * '.PHP_EOL.
 		' * This is NOT a freeware, use is subject to license terms'.PHP_EOL.
 		' * '.PHP_EOL.
 		' * '.PHP_EOL.
-		' * http://www.yaozihao.cn'.PHP_EOL.
-		' * tel:18519188969'.PHP_EOL.
+		' * http://www.haidao.la'.PHP_EOL.
+		' * tel:400-600-2042'.PHP_EOL.
 		' */'.PHP_EOL.PHP_EOL
 		;
 		return $this;

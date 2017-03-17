@@ -1,11 +1,11 @@
 <?php
 /**
  *		文章服务层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 
 class article_service extends service {
@@ -14,6 +14,29 @@ class article_service extends service {
         $this->category_db = $this->load->table('misc/article_category');
 		$this->category_service = $this->load->service('misc/article_category');
 	}
+
+
+	/**
+	 * 获取文章信息
+	 */
+	public function get_lists($sqlmap,$page,$limit){
+		$article = $this->db->where($sqlmap)->page($page)->limit($limit)->order("sort ASC")->select();
+		foreach($article as $key => $value){
+		   $article[$key]['category'] = $this->category_db->where(array('id' =>array('eq',$value['category_id'])))->getField('name');
+		   $article[$key]['dataline'] = date('Y-m-d H:i:s',$value['dataline']);
+		   $lists[] =array(
+				'id'=>$value['id'],
+				'sort' => $value['sort'],
+				'title'=>$value['title'],
+				'category'=>$article[$key]['category'],
+				'dataline'=>$article[$key]['dataline'],
+				'display' =>$value['display'],
+				'recommend'=>$value['recommend'],
+				);
+	    }
+		return $lists;
+	}
+
 	/**
 	 * [get_article_by_id 根据id获取文章信息]
 	 * @param  [type] $id [查询单条文章id]
@@ -32,7 +55,7 @@ class article_service extends service {
 		}
 		return $result;
 	}
-	
+
 	/**
 	 * [edit 编辑文章]
 	 * @param [array] $params [规格信息]
@@ -191,5 +214,71 @@ class article_service extends service {
 	*/
 	public function hits($id){
 		return $this->db->where(array('id' => $id))->setInc('hits');
+	}
+
+	/**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->db->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->db->getError();
+            return false;
+        }
+        return $result;
+    }
+	//标签数据调用
+	public function article_lists($sqlmap, $options) {
+		if($sqlmap['category_id'] == 'all') unset($sqlmap['category_id']);
+		$count = $this->db->where($this->build_map($sqlmap))->count();
+		$this->db->where($this->build_map($sqlmap));
+		if(isset($sqlmap['order'])){
+			$this->db->order($sqlmap['order']);
+		}
+		if(isset($options['limit'])){
+			$this->db->limit($options['limit']);
+		}
+		if($options['page']) {
+			$this->db->page($options['page']);
+		}
+		$lists = $this->db->select();
+		if($lists){
+			foreach ($lists as $k => $v) {
+				$lists[$k]['category'] = $this->category_db->where(array('id'=>$v['category_id']))->getField('name');
+			}
+			return array('lists'=>$lists,'count'=>$count);
+		}
+	}
+
+	public function build_map($data){
+		$sqlmap = array('display' => 1);
+		if(isset($data['_string'])){
+			$sqlmap['_string'] = $data['_string'];
+		}
+
+		if(isset($data['category_id'])){
+			$sqlmap['category_id'] = $this->get_category_by_id($data['category_id']);
+			$sqlmap['category_id'] = array('IN',implode(',', $sqlmap['category_id']));
+		}
+		return $sqlmap;
+	}
+	public function category($data){
+		foreach($data as $key => $value){
+		  $data[$key]['category'] = $this->category_db->where(array('id' =>array('eq',$value['category_id'])))->getField('name');
+	   }
+	   return $data;
+	}
+	public function get_category_by_id($id){
+		$category_id = array();
+		$category_id[] = $id;
+		$row = model('article_category')->where(array('parent_id'=>array('eq',$id)))->select();
+		if($row){
+			foreach($row as $v){
+				$category_id[] = $v['id'];
+			}
+		}
+		return $category_id;
 	}
 }

@@ -1,11 +1,11 @@
 <?php
 /**
  * 		前台购物车控制器
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'goods');
 class cart_control extends init_control {
@@ -31,7 +31,7 @@ class cart_control extends init_control {
 	 * @return result
 	 */
 	public function get_carts($group = FALSE) {
-		if ($_GET['group'] == TRUE) $group = TRUE;		
+		if ($_GET['group'] == TRUE) $group = TRUE;
 		$result = $this->service->get_cart_lists((int) $this->member['id'] ,'',$group);
 		if (!$result) showmessage($this->service->error);
 		$this->load->librarys('View')->assign('result',$result);
@@ -99,7 +99,7 @@ class cart_control extends init_control {
 	public function success() {
 		$carts = $this->service->get_cart_lists((int) $this->member['id'] ,'',false);
 		// 加入购物车后跳转设置
-		$cart_jump = $this->load->service('admin/setting')->get_setting('cart_jump');
+		$cart_jump = $this->load->service('admin/setting')->get('cart_jump');
 		$SEO = seo('加入购物车成功');
 		$this->load->librarys('View')->assign('carts',$carts)->assign('cart_jump',$cart_jump)->assign('SEO',$SEO)->display('cart_success');
 	}

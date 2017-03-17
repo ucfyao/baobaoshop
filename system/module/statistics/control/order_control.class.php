@@ -37,22 +37,7 @@ class order_control extends init_control {
 
 	/* 后台首页获取统计数据 */
 	public function ajax_home() {
-		$datas = array();
-		/* 订单提醒 */
-		$datas['orders'] = $this->load->table('order/order')->out_counts();
-		/* 商品管理 */
-		$datas['goods']['goods_in_sales'] = $this->load->service('goods/goods_spu')->count_spu_info(1);
-		$datas['goods']['goods_load_online'] = $this->load->service('goods/goods_spu')->count_spu_info(0);
-		$datas['goods']['goods_number_warning'] = $this->load->service('goods/goods_spu')->count_spu_info(2);
-		/* 待处理咨询 */
-		$datas['consult_load_do'] = $this->load->service('goods/goods_consult')->handle();
-		/* 资金管理 */
-		$datas['sales'] = $this->service_order->output('sales');
-		/* 注册会员总数 */
-		$datas['member_total'] = $this->load->table('member/member')->count();
-		/* 数据库大小 */
-		$querysql = "select round(sum(DATA_LENGTH/1024/1024)+sum(DATA_LENGTH/1024/1024),2) as db_length from information_schema.tables where table_schema='".config('DB_NAME')."'";
-		$datas['dbsize'] = $this->load->table('member/member')->query($querysql);
+		$datas = $this->service_order->get_data();
 		$this->load->librarys('View')->assign('datas',$datas);
         $datas = $this->load->librarys('View')->get('datas');
 		echo json_encode($datas);

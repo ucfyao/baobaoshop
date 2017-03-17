@@ -1,7 +1,7 @@
 <?php
 class market {
     public function __construct() {
-        $this->api = 'market.yaozihao.cn/api.php';
+        $this->api = 'market.haidao.la/api.php';
         $this->cloud = unserialize(authcode(config('__cloud__','cloud'),'DECODE'));
         $this->data['timestamp'] = TIMESTAMP;
         $this->data['token'] = $this->cloud['token'];

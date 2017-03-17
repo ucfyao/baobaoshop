@@ -1,11 +1,11 @@
 <?php
 /**
  *      广告设置服务层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 
 class adv_service extends service {
@@ -28,6 +28,25 @@ class adv_service extends service {
         return ($field !== NULL) ? $r[$field] : $r;
     }
 
+
+    public function get_lists($sqlmap,$page,$limit){
+    	$ads = $this->model->where($sqlmap)->page($page)->limit($limit)->select();
+    	foreach ($ads as $k => $v) {
+    		$lists[] = array(
+				'id' => $v['id'],
+				'title'=>$v['title'],
+				'position_name'=>$v['position_name'],
+				'type_text'=>$v['type_text'],
+				'startime_text'=>$v['startime_text'],
+				'endtime_text'=>$v['endtime_text'],
+				'hist'=>$v['hist'],
+			);
+    		
+    	}
+    	return $lists;
+
+    }
+
 	/**
 	 * [更新广告]
 	 * @param array $data 数据
@@ -44,5 +63,58 @@ class adv_service extends service {
 		return $result;
 	}
 
+	/**
+	 * 编辑广告title
+	 */
+	public function save_title($data) {
+		$result = $this->model->save($data);
+		if(!$result){
+			return false;
+		}
+		return $result;
+	}
+	/**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->model->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->model->getError();
+            return false;
+        }
+        return $result;
+    }
+    /**
+	* [删除]
+	* @param array $ids 主键id
+	*/
+	public function delete($ids) {
+		if(empty($ids)) {
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		$_map = array();
+		if(is_array($ids)) {
+			$_map['id'] = array("IN", $ids);
+		} else {
+			$_map['id'] = $ids;
+		}
+		$result = $this->model->where($_map)->delete();
+		if($result === false) {
+			$this->error = $this->model->getError();
+			return false;
+		}
+		return true;
+	}
+	/**
+	 * @param [值]
+	 * @param [数]
+	 * @param [sql条件]
+	 */
+	public function setInc($val, $num, $sqlmap){
+		return $this->model->where($sqlmap)->setInc($val,$num);
+	}
 
 }

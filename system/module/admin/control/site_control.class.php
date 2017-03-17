@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class site_control extends init_control{
     public function _initialize() {
@@ -32,9 +32,9 @@ class site_control extends init_control{
 			}
 			showmessage(lang('_operation_success_'),url('base'),1);
 		} else {
-			$setting = $this->load->table('setting')->getField('key, value', TRUE);
+			$setting = $this->service->get();
 			// 获取所有已开启的支付方式
-			$payment = cache('payment_enable');
+			$payment = model('pay/payment','service')->get();
 			foreach ($payment as $k => $pay) {
 				$payment[$k] = $pay['pay_name'];
 			}
@@ -52,7 +52,7 @@ class site_control extends init_control{
 			if(!$result) showmessage($this->service->error);
 			showmessage(lang('_operation_success_'),url('reg'),1);
 		}else{
-			$setting = $this->load->table('setting')->getField('key, value', TRUE);
+			$setting = $this->service->get();
 			$this->load->librarys('View')->assign('setting',$setting)->display('site_reg');
 		}
     }
@@ -65,7 +65,7 @@ class site_control extends init_control{
 			if(!$result) showmessage($this->service->error);
 			showmessage(lang('_operation_success_'),url('seo'),1);
 		} else {
-			$seos = $this->service->get_setting('seos');
+			$seos = $this->service->get('seos');
 			$this->load->librarys('View')->assign('seos',$seos)->display('site_seo');
 		}
     }

@@ -65,7 +65,7 @@
             return this;
         },
         close: function ($img) {
-        	
+
             $img.css({
                 top: ($img.parent().height() - $img.height()) / 2,
                 left: ($img.parent().width()-$img.width())/2
@@ -105,7 +105,7 @@
                 var $img = $("<img src='" + editor.options.imagePath + json.result.url + "' class='edui-image-pic' />"),
                     $item = $("<div class='edui-image-item edui-image-upload-item'><div class='edui-image-close'></div></div>").append($img);
 
-                if ($(".edui-image-upload2", $w).length < 1) {
+                if ($(".edui-image-upload2", $w).length < 1 ) {
                     $(".edui-image-content", $w).append($item);
 
                     Upload.render(".edui-image-content", 2)
@@ -119,6 +119,7 @@
                     Base.queue($(".edui-image-content"));
                     Base.close($(this));
                     $(".edui-image-content", $w).focus();
+                    $(".edui-imgSpace-content", $w).focus();
                 });
 
             } else {
@@ -359,8 +360,6 @@
 
                     $("<img src='" + url + "' class='edui-image-pic' />").on("load", function () {
 
-
-
                         var $item = $("<div class='edui-image-item'><div class='edui-image-close'></div></div>").append(this);
 
                         $(".edui-image-searchRes", me.dialog).append($item);
@@ -368,9 +367,9 @@
                         Base.scale(this, 118);
 
                         $item.width(120);//$(this).width()
-                        
+
                         Base.queue($(".edui-image-searchRes"));
-                        
+
                         Base.close($(this));
 
                         $ele.val("");
@@ -382,7 +381,12 @@
                 });
         }
     };
+    /*
+    * 图片空间
+    * */
+    var imgSpace = {
 
+    }
     var $tab = null,
         currentDialog = null;
 
@@ -392,12 +396,18 @@
             "<ul class=\"edui-tab-nav\">" +
             "<li class=\"edui-tab-item edui-active\"><a data-context=\".edui-image-local\" class=\"edui-tab-text\"><%=lang_tab_local%></a></li>" +
             "<li  class=\"edui-tab-item\"><a data-context=\".edui-image-JimgSearch\" class=\"edui-tab-text\"><%=lang_tab_imgSearch%></a></li>" +
+            "<li  class=\"edui-tab-item\"><a data-context=\".edui-image-imgSpace\" class=\"edui-tab-text\"><%=lang_tab_imgSpace%></a></li>" +
             "</ul>" +
             "<div class=\"edui-tab-content\">" +
             "<div class=\"edui-image-local edui-tab-pane edui-active\">" +
             "<div class=\"edui-image-content\"></div>" +
             "<div class=\"edui-image-mask\"></div>" +
             "<div class=\"edui-image-dragTip\"><%=lang_input_dragTip%></div>" +
+            "</div>" +
+            "<div class=\"edui-image-imgSpace edui-tab-pane\">" +
+            "<div class=\"edui-imgSpace-content \"><div class=\"edui-image-icon open-img-space\"></div></div>" +
+            "<div class=\"edui-image-mask\"></div>" +
+            "<div class=\"edui-imgSpace-dragTip\">点击查看图片空间</div>" +
             "</div>" +
             "<div class=\"edui-image-JimgSearch edui-tab-pane\">" +
             "<div class=\"edui-image-searchBar\">" +
@@ -440,11 +450,14 @@
                 exec: function (editor, $w) {
                     var sel = "",
                         index = $tab.activate();
-
+                    console.log($w);
                     if (index == 0) {
                         sel = ".edui-image-content .edui-image-pic";
+
                     } else if (index == 1) {
                         sel = ".edui-image-searchRes .edui-image-pic";
+                    }else if(index == 2){
+                        sel = ".edui-imgSpace-content .edui-imgSpace-pic";
                     }
 
                     var list = Base.getAllPic(sel, $w, editor);
@@ -460,6 +473,56 @@
         height: 408
     }, function (editor, $w, url, state) {
         Base.callback(editor, $w, url, state)
+    })
+    var data = {};
+    var imgUmber = 0;
+    // $('.edui-imgSpace-content').sortable();
+    $(".open-img-space").live('click',function(){
+        top.dialog({
+                url: '?m=attachment&c=admin&a=picture_space',                
+                title: '加载中...',
+                data:data,
+                width: 980,
+                onclose: function () {
+                    var imgdata = this.returnValue;
+                if(imgdata.length>0){
+                    $('.open-img-space').addClass('add-img-space');
+                    $('.edui-imgSpace-dragTip').hide();
+                }
+
+                for (var i=0 ; i<imgdata.length;i++){
+                    imgUmber++;
+                    var $img = $("<img src='" + imgdata[i] + "' class='edui-imgSpace-pic' />"),
+                            $item = $("<div class='edui-image-item edui-image-upload-item'><div class='edui-imgSpace-close'></div></div>").append($img);
+                    $(".edui-imgSpace-content .open-img-space").before($item);
+                    if($img.width()>118&&$img.height()>118){
+                        if($img.width()>$img.height()){
+                            $img.width('118px');
+                        }else{
+                        $img.height('118px');
+                        }
+                    }else if($img.width()>118){
+                        $img.width('118px');
+                    }else if($img.height()>118){
+                        $img.height('118px');
+                    }
+                    $img.css({
+                        top: ($img.parent().height() - $img.height()) / 2,
+                        left: ($img.parent().width()-$img.width())/2
+                    })
+                }
+                $('.edui-imgSpace-content').sortable();
+                }
+    })
+        .showModal();
+    });
+    $(".edui-imgSpace-close").live('click',function () {
+        $(this).parent().remove();
+        imgUmber--;
+        if (imgUmber == 0){
+            $('.open-img-space').show().removeClass('add-img-space');
+            $('.edui-imgSpace-dragTip').show();
+        }
     })
 })();
 

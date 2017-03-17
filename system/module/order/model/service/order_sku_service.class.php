@@ -1,11 +1,11 @@
 <?php
 /**
  * 		订单商品服务层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class order_sku_service extends service {
 
@@ -150,22 +150,20 @@ class order_sku_service extends service {
 		} else {
 			$sqlmap['spu_id'] = $sid;
 		}
-		$result['count'] = $this->table->where($sqlmap)->count();
-		$result['lists'] = $this->table->where($sqlmap)->page($options['page'])->limit($options['limit'])->order('id DESC')->select();
-		foreach ($result['lists'] as $key => $value) {
-			$sku_str = '';
-			$sku_spec = json_decode($value['sku_spec'],TRUE);
-			foreach ($sku_spec as $k => $v) {
-				$sku_str .= $v['name'].":".$v['value'].' ';
-			}
+		$lists = array();
+		$lists['count'] = $this->table->where($sqlmap)->count();
+		$result = $this->table->where($sqlmap)->page($options['page'])->limit($options['limit'])->order('id DESC')->select();
+		foreach ($result as $key => $value) {
 			$name = $this->load->table('member/member')->where(array('id'=>$value['buyer_id']))->getfield('username');
-			$result['lists'][$key]['dateline'] = date('Y-m-d H:i:s',$value['dateline']);
-			$result['lists'][$key]['spec_str'] = $sku_str;
+			$lists['lists'][$key]['dateline'] = date('Y-m-d H:i:s',$value['dateline']);
+			$lists['lists'][$key]['_sku_spec'] = $value['_sku_spec'];
+			$lists['lists'][$key]['sku_price'] = $value['sku_price'];
+			$lists['lists'][$key]['buy_nums'] = $value['buy_nums'];
 			if(!$name) continue;
-			$result['lists'][$key]['username'] = cut_str($name, 1, 0).'**'.cut_str($name, 1, -1);
+			$lists['lists'][$key]['username'] = cut_str($name, 1, 0).'**'.cut_str($name, 1, -1);
 		}
-		runhook('order_sku_records',$result);
-		return $result;
+		runhook('order_sku_records',$lists);
+		return $lists;
 	}
 
 	public function add($params){
@@ -180,5 +178,64 @@ class order_sku_service extends service {
 		$data = $this->table->create($params);
 		$this->table->add($data);
 		return true;
+	}
+
+	/**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->table->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->table->getError();
+            return false;
+        }
+        return $result;
+    }
+    /**
+	 * @param  array 	sql条件
+	 * @param  integer 	条数
+	 * @param  integer 	页数
+	 * @param  string 	排序
+	 * @return [type]
+	 */
+	public function fetch($sqlmap = array(), $limit = 20, $page = 1, $order = "") {
+		$result = $this->table->where($sqlmap)->limit($limit)->page($page)->order($order)->select();
+		if($result===false){
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		return $result;
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	读取的字段
+	 * @return [type]
+	 */
+	public function find($sqlmap = array(), $field = "") {
+		$result = $this->table->where($sqlmap)->field($field)->find();
+		if($result===false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
+	}
+	/**
+	 * @param  string  获取的字段
+	 * @param  array 	sql条件
+	 * @return [type]
+	 */
+	public function getField($field = '', $sqlmap = array()) {
+		if(substr_count($field, ',') < 2){
+			$result = $this->table->where($sqlmap)->getfield($field);
+		}else{
+			$result = $this->table->where($sqlmap)->field($field)->select();
+		}
+		if($result === false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
 	}
 }

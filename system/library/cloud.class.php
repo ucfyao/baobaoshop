@@ -12,7 +12,7 @@ class cloud {
 	
 
     //服务器地址
-    const server_url = 'http://www.yaozihao.cn/api/v2/';
+    const server_url = 'http://www.haidao.la/api/v2/';
 	
 	public function __construct() {
         $this->config =  unserialize(authcode(config('__cloud__','cloud'),'DECODE'));

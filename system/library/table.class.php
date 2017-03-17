@@ -1493,6 +1493,10 @@ class table extends hd_base {
      * @return Model
      */
     public function limit($offset,$length=null){
+        if(strpos($offset, ',') && is_null($length)){
+            $offset_arr = explode(',', $offset);
+            $offset = (int)$offset_arr[0].','.(int)$offset_arr[1];
+        }
         $this->options['limit'] =   is_null($length)?$offset:$offset.','.$length;
         return $this;
     }
@@ -1505,6 +1509,10 @@ class table extends hd_base {
      * @return Model
      */
     public function page($page,$listRows=null){
+        if(strpos($page, ',') && is_null($listRows)){
+            $page_arr = explode(',', $page);
+            $page = (int)$page_arr[0].','.(int)$page_arr[1];
+        }
         $this->options['page'] =   is_null($listRows) ? $page : $page.','.$listRows;
         return $this;
     }

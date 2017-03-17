@@ -18,7 +18,7 @@
 	        }
 	    });
 	    var map = jQuery.parseJSON('{json_encode($_GET)}');
-	    var page = "<?php echo $_GET['page'] ?>";
+	    var page = "<?php echo $_GET['page']+1 ?>";
 		var url = "<?php echo url('member/order/get_orders')?>";
 	    function add_more(){
 	    	if($(".user-list-none").length>0) return false;
@@ -50,7 +50,7 @@
     				$.each(ret.orders,function(i,item){
     					_html += '<li class="order-list list-col-10">';
 						_html += '<div class="order-stuats padding-tb lh-icon-15 list-item">';
-						_html += '	<span class="icon icon-15"><img src="./statics/images/ico_17.png" /></span>';
+						_html += '	<span class="icon icon-15"><img src="{SKIN_PATH}statics/images/ico_17.png" /></span>';
 						_html += '	<span>订单号：'+ item.sn +'</span>';
 						_html += '	<span class="mui-pull-right text-org">';
 							if (item._showsubs == 'true') {

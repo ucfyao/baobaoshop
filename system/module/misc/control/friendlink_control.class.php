@@ -1,16 +1,17 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'admin');
 class friendlink_control extends init_control {
 	public function _initialize() {
 		parent::_initialize();
 		$this->service = $this->load->service('friendlink');
+		$this->attachment_service = $this->load->service('attachment/attachment');
 		$this->load->helper('attachment');
 	}
 	/**
@@ -19,10 +20,21 @@ class friendlink_control extends init_control {
 	public function index(){
 		$sqlmap = array();
 		$_GET['limit'] = isset($_GET['limit']) ? $_GET['limit'] : 10;
-		$friendlink = $this->load->table('misc/friendlink')->where($sqlmap)->page($_GET['page'])->limit($_GET['limit'])->order("sort ASC")->select();
-        $count = $this->load->table('friendlink')->where($sqlmap)->count();
+		$friendlink = $this->service->get_lists($sqlmap,$_GET['page'],$_GET['limit']);
+        $count = $this->service->count($sqlmap);
         $pages = $this->admin_pages($count, $_GET['limit']);
-        $this->load->librarys('View')->assign('friendlink',$friendlink)->assign('pages',$pages)->display('friendlink_index');
+        $lists = array(
+            'th' => array(
+                'sort' => array('title' => '排序','length' => 10,'style' => 'double_click'),
+                'name' => array('title' => '链接名称','length' => 20,'style' => 'ident'),
+                'url'=>array('title' => '链接地址','length' => 50,'style' => 'double_click'),
+                'target' => array('title' => '新窗口打开','length' => 10,'style' => 'ico_up_rack'),
+            ),
+            'lists' => $friendlink,
+            'pages' => $pages,
+            );
+
+        $this->load->librarys('View')->assign('lists',$lists)->display('friendlink_index');
 	}
 	/**
 	 * [add 添加]
@@ -31,16 +43,16 @@ class friendlink_control extends init_control {
 		if(checksubmit('dosubmit')){
 			if(!empty($_FILES['logo']['name'])) {
 				$code = attachment_init(array('module'=>'common','path'=>'common','mid'=>$this->admin['id'],'allow_exts'=>array('bmp','jpg','png','jpeg','gif')));
-				$_GET['logo'] = $this->load->service('attachment/attachment')->setConfig($code)->upload('logo');
+				$_GET['logo'] = $this->attachment_service->setConfig($code)->upload('logo');
 				if(!$_GET['logo']){
-					showmessage($this->load->service('attachment/attachment')->error);
+					showmessage($this->attachment_service->error);
 				}
 			}
 			$result = $this->service->add($_GET);
 			if(!$result){
 				showmessage($this->service->error);
 			}else{
-				$this->load->service('attachment/attachment')->attachment($_GET['logo'],'',false);
+				$this->attachment_service->attachment($_GET['logo'],'',false);
 				showmessage(lang('_operation_success_'),url('misc/friendlink/index'),'1');
 			}
 		}else{
@@ -55,11 +67,11 @@ class friendlink_control extends init_control {
 		if(checksubmit('dosubmit')){
 			if(!empty($_FILES['logo']['name'])) {
 				$code = attachment_init(array('module'=>'article','path'=>'article','mid'=>$this->admin['id'],'allow_exts'=>array('bmp','gif','jpg','jpeg','png')));
-				$_GET['logo'] = $this->load->service('attachment/attachment')->setConfig($code)->upload('logo');
+				$_GET['logo'] = $this->attachment_service->setConfig($code)->upload('logo');
 				if(!$_GET['logo']){
-					showmessage($this->load->service('attachment/attachment')->error);
+					showmessage($this->attachment_service->error);
 				}
-				$this->load->service('attachment/attachment')->attachment($_GET['logo'],$info['logo'],false);
+				$this->attachment_service->attachment($_GET['logo'],$info['logo'],false);
 			}
 			$result = $this->service->edit($_GET);
 			if(!$result){

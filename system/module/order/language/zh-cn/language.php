@@ -1,11 +1,11 @@
 <?php
 /**
  *      订单语言包
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 return array(
 	// -----   订单
@@ -50,6 +50,7 @@ return array(
 	'order_address_district_error'    => '收货人地区ID只能为正整数',
 	
 	'order_address_address_not_null'  => '收货人详细地址不能为空',
+	'delivery_template_error'		  => '您所选择的收货地址暂时无法配送',
 
     'order_pay_sn_not_null'            => '订单支付号不能为空',
     'order_pay_sn_already_exist'      => '订单支付号已经存在',
@@ -98,7 +99,7 @@ return array(
 	'operator_type_not_null'		=> '操作者类型不能为空',
 	'operator_type_numbre'			=> '操作者类型为大于零的正整数',
 	'user_id_not_empty'				=> '操作者ID不能为空',
-	'user_naem_not_null'			=> '操作者名称不能为空',
+	'user_name_not_null'			=> '操作者名称不能为空',
 	'user_id_require'     			=> '操作者ID为大于零的正整数',
 	'order_parame_empty'			=> '订单参数不能为空',
 	'order_logistics_not_exist'		=> '订单物流信息不存在',
@@ -179,5 +180,11 @@ return array(
 	'buy_nums_number'				=> '购买数量必须是正整数',
 	'content_require' 				=> '发货单模版内容不能为空',
 	'msg_require'					=> '订单跟踪内容不能为空',
+
+	'name_empty'					=> '运费模板名称不能为空',
+	'template_type_error'			=> '请选择运费模板计费类型',
+	'template_empty'				=> '地区模板信息不能为空',
+	'delivery_template_not_exist' 	=> '运费模板不存在或者未开启',
+	'delivery_default_cannot_delete' => '默认运费模板不能删除'
 	
 );

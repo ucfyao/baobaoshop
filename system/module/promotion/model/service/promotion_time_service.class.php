@@ -1,11 +1,11 @@
 <?php
 /**
  *      限时营销服务层
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 
 class promotion_time_service extends service {
@@ -30,6 +30,33 @@ class promotion_time_service extends service {
 		}
 		return $result;
 	}
+
+	public function lists($sqlmap = array()){
+		$time = $this->get_lists($sqlmap);
+			$lists = array();
+			foreach ($time AS $value) {
+				$start_time = date('Y-m-d H:i', $value['start_time']);
+    			$end_time =  date('Y-m-d H:i', $value['end_time']);
+    				if($value['status'] == 1){
+    					$status = '未开始'; 
+    				}elseif($value['status'] == 2){
+    					$status = '已结束';
+    				}else{
+    					$status = '进行中';
+    				}
+				$lists[] =array(
+					'id'=>$value['id'],
+					'name'=>$value['name'],
+					'time' => $start_time.'~'.$end_time,
+					'status' =>$status,
+					);
+				
+			}
+			return array('lists'=>$lists);
+
+	}
+
+
 	/**
 	 * [fetch_by_id 查询单条数据]
 	 * @param  [type] $id [description]
@@ -142,4 +169,17 @@ class promotion_time_service extends service {
 		}
 		return TRUE;
 	}
+	/**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->table->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->table->getError();
+            return false;
+        }
+        return $result;
+    }
 }

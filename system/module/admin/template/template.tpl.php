@@ -14,7 +14,7 @@
 			<a id="show-tip" data-open="true" href="javascript:;">关闭操作提示</a>
 		</div>
 		<div class="tips-txt padding-small-top layout">
-			<p>- 奕瑞的每套模板均为独立，如有多套模板，可任意切换使用</p>
+			<p>- 海盗云商的每套模板均为独立，如有多套模板，可任意切换使用</p>
 		</div>
 	</div>
 	<div class="hr-gray"></div>

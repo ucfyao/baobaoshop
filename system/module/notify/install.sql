@@ -4,7 +4,7 @@ Navicat MySQL Data Transfer
 Source Server         : localhost_3306
 Source Server Version : 50540
 Source Host           : localhost:3306
-Source Database       : com. .pro.heyi_v2
+Source Database       : com.dmibox.pro.haidao_v2
 
 Target Server Type    : MYSQL
 Target Server Version : 50540

@@ -1,7 +1,7 @@
 {template toper common}
-<?php $setting = cache('setting');?>
+<?php $setting = model('admin/setting','service')->get();?>
 		<!-- 头部 -->
-		<div class="login-header container">
+		<div class="header container">
 			<div class="logo fl">
 				<span><a href="/"><img src="{SKIN_PATH}statics/images/logo.png" /></a></span>
 			</div>
@@ -59,9 +59,11 @@
 				} else {
 					$.tips({
 						icon:'success',
-						content:ret.message
+						content:ret.message,
+						callback:function() {
+							window.location.href = ret.referer;
+						}
 					});
-					window.location.href = ret.referer;
 				}
 			}
 		})

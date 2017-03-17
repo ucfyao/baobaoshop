@@ -1,10 +1,10 @@
 <?php
 /**
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 class cloud_control extends init_control
 {
@@ -16,7 +16,7 @@ class cloud_control extends init_control
 	public function index() {
 		$this->service->update_site_userinfo();
 		$cloud = $this->service->get_account_info();
-		$site_isclosed = (int)$this->load->service('admin/setting')->get_setting('site_isclosed');
+		$site_isclosed = (int)$this->load->service('admin/setting')->get('site_isclosed');
 		include $this->admin_tpl('cloud_index');
 	}
 	public function bulid(){
@@ -43,7 +43,7 @@ class cloud_control extends init_control
 	public function bind(){
 		$result = $this->service->site_bind($_GET['identifier']);
 		if($result){
-			showmessage('绑定成功','',1);
+			showmessage('绑定成功','',1,$result);
 		}else{
 			showmessage($this->service->error,'',0);
 		}

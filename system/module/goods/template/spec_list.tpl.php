@@ -31,58 +31,64 @@
 					<span class="th check-option" data-resize="false">
 						<span><input id="check-all" type="checkbox" /></span>
 					</span>
-					<span class="th" data-width="20">
-						<span class="td-con">规格名称</span>
+					<?php foreach ($lists['th'] AS $th) {?>
+					<span class="th" data-width="<?php echo $th['length']?>">
+						<span class="td-con"><?php echo $th['title']?></span>
 					</span>
-					<span class="th" data-width="50">
-						<span class="td-con">规格属性</span>
-					</span>
-					<span class="th" data-width="10">
-						<span class="td-con">排序</span>
-					</span>
-					<span class="th" data-width="10">
-						<span class="td-con">启用</span>
-					</span>
+					<?php }?>
 					<span class="th" data-width="10">
 						<span class="td-con">操作</span>
 					</span>
 				</div>
-				<?php foreach ($spec as $r) {?>
+				<?php foreach ($lists['lists'] AS $key => $list) {?>
 				<div class="tr">
-					<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $r['id']?>" /></span>
+					<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $list['id']?>" /></span>
+					<?php foreach ($list as $key => $value) {?>
+					<?php if($lists['th'][$key]){?>
+					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
 					<span class="td">
-						<div class="td-con">
-							<div class="double-click">
-								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis" type="text" name="name" data-id="<?php echo $r['id']?>" value="<?php echo $r['name']?>" />
-							</div>
+						<div class="double-click">
+							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
+							<input class="input double-click-edit text-ellipsis" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
 						</div>
 					</span>
-					<span class="td">
-						<span class="td-con text-left"><?php echo $r['value']?></span>
-					</span>
-					<span class="td">
-						<div class="td-con">
+					<?php }elseif ($lists['th'][$key]['style'] == 'ident') {?>
+						<span class="td ident">
+							<span class="ident-show">
+								<em class="ico_pic_show"></em>
+								<div class="ident-pic-wrap">
+									<img src="<?php echo $list['logo'] ? $list['logo'] : '../images/default_no_upload.png'?>" />
+								</div>
+							</span>
 							<div class="double-click">
 								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis text-center" name="sort" data-id="<?php echo $r['id']?>" type="text" value="<?php echo $r['sort']?>" />
+								<input class="input double-click-edit text-ellipsis" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" type="text" value="<?php echo $value?>" />
 							</div>
-						</div>
-					</span>
+						</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
 					<span class="td">
-					<?php if($r['status'] == 1){ ?>
-						<a class="ico_up_rack" href="javascript:;" data-id="<?php echo $r['id']?>" title="点击关闭"></a>
+						<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
+					<span class="td">
+						<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
+					</span>
+					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
+						<input type="hidden" name="id" value="<?php echo $value?>" />
 					<?php }else{?>
-						<a class="ico_up_rack cancel" href="javascript:;" data-id="<?php echo $r['id']?>" title="点击开启"></a>
-					<?php }?>
+					<span class="td">
+						<span class="td-con text-left"><?php echo $value;?></span>
 					</span>
+					<?php }?>
+					<?php }?>
+					<?php }?>
 					<span class="td">
 						<span class="td-con">
-							<a href="<?php echo url('edit',array('id'=>$r['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('ajax_del',array('id[]'=>$r['id']))?>">删除</a>
-						</span>
+						<a href="<?php echo url('edit',array('id'=>$list['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('ajax_del', array('id[]' => $list['id'])); ?>">删除</a><?php echo $lists['option']?></span>
 					</span>
 				</div>
 				<?php }?>
+
 				<div class="paging padding-tb body-bg clearfix">
 					<?php echo $pages;?>
 					<div class="clear"></div>

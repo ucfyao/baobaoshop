@@ -2,17 +2,17 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>后台管理登陆 - 奕瑞</title>
-		<link type="text/css" rel="stylesheet" href="<?php echo __ROOT__;?>statics/css/heyi.css" />
+		<title>后台管理登陆 - 海盗云商</title>
+		<link type="text/css" rel="stylesheet" href="<?php echo __ROOT__;?>statics/css/haidao.css" />
 		<link type="text/css" rel="stylesheet" href="<?php echo __ROOT__;?>statics/css/admin.css" />
 		<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/jquery-1.7.2.min.js" ></script>
-		<!--<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/heyi.form.js" ></script>-->
+		<!--<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/haidao.form.js" ></script>-->
 	</head>
 	<body>
 		<div class="login-wrapper">
 			<div class="left fl">
-				<span class="logo"><img src="<?php echo __ROOT__;?>statics/images/logo.png" /></span>
-				<p class="margin-big-top"><a class="text-sub" href="http://www.yaozihao.cn/">奕瑞系统</a> 是 <a class="text-sub" href="http://www.yaozihao.cn/">奕瑞</a>公司旗下以电子商务为基础的专业网店建站系统，专注电子商务运营服务。</p>
+				<span class="logo"><img src="<?php echo __ROOT__;?>statics/images/login_logo.png" /></span>
+				<p class="margin-big-top"><a class="text-sub" href="http://www.haidao.la/">海盗云商系统</a> 是 <a class="text-sub" href="http://www.haidao.la/">迪米盒子</a>公司旗下以电子商务为基础的专业网店建站系统，专注电子商务运营服务。</p>
 			</div>
 			<div class="right fr">
                 <form action="<?php echo url('login');?>" onsubmit="return submit_check()" method="POST" data-layout="rank">

@@ -1,23 +1,20 @@
 <?php
 /**
  * 		后台订单 控制器
- *      [HeYi] (C)2013-2099 HeYi Science and technology Yzh.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
- *      http://www.yaozihao.cn
- *      tel:18519188969
+ *      http://www.haidao.la
+ *      tel:400-600-2042
  */
 hd_core::load_class('init', 'admin');
 class admin_order_control extends init_control {
 
 	public function _initialize() {
 		parent::_initialize();
-		/* 数据层 */
-		$this->table = $this->load->table('order/order');
-		$this->table_sub = $this->load->table('order/order_sub');
-		$this->table_o_delivery = $this->load->table('order/order_delivery');
 		/* 服务层 */
 		$this->service = $this->load->service('order/order');
+		$this->service_p_delivery = $this->load->service('order/delivery');
 		$this->service_sub = $this->load->service('order/order_sub');
 		$this->service_order_log = $this->load->service('order/order_log');
 		$this->service_tpl_parcel = $this->load->service('order/order_tpl_parcel');
@@ -29,22 +26,67 @@ class admin_order_control extends init_control {
 		// 查询条件
 		$sqlmap = array();
 		$sqlmap = $this->service->build_sqlmap($_GET);
-		$limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 10;
-		$orders = $this->table->page($_GET['page'])->where($sqlmap)->limit($limit)->order('id DESC')->select();
-		$count  = $this->table->where($sqlmap)->count();
+		$limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 20;
+		$orders = $this->service->get_order_lists($sqlmap,$_GET['page'],$limit);
+		$count  = $this->service->count($sqlmap);
 		$pages  = $this->admin_pages($count, $limit);
-		$this->load->librarys('View')->assign('orders',$orders)->assign('pages',$pages)->display('index');
+		$lists = array(
+			'th' => array(
+				'sn' => array('title' => '订单号','length' => 15),
+				'username' => array('title' => '会员帐号','length' => 10),
+				'address_name' => array('length' => 10,'title' => '收货人'),
+				'address_mobile' => array('title' => '收货电话','length' => 9),
+				'system_time' => array('length' => 12,'title' => '下单时间','style'=>'date'),
+				'real_amount' => array('length' => 8,'title' => '订单金额'),
+				'_pay_type' => array('length' => 7,'title' => '支付方式'),
+				'source' => array('length' => 8,'title' => '订单类型','style' => 'source'),
+				'seller_ids' => array('length' => 8,'title' => '商家名称','style' => 'seller'),
+				'_status' => array('length' => 7,'title' => '订单状态','style'=>'_status')
+			),
+			'lists' => $orders,
+			'pages' => $pages,
+		);
+		$this->load->librarys('View')->assign('lists',$lists)->assign('pages',$pages)->display('index');
 	}
 
 	/* 订单详细页面 */
 	public function detail() {
-		$order = $this->table_sub->where(array('sub_sn' => $_GET['sub_sn']))->find();
+		$order = $this->service_sub->find(array('sub_sn' => $_GET['sub_sn']));
 		if (!$order) showmessage(lang('order_not_exist','order/language'));
-		$order['_member'] = $this->load->table('member/member')->find($order['buyer_id']);
-		$order['_main'] = $this->table->where(array('sn' => $order['order_sn']))->find();
+		// $order['_member'] = $this->load->service('member/member')->find($order['buyer_id']);
+		$order['_member'] = $this->service->member_data($order['buyer_id']);
+		$order['_main'] = $this->service->find(array('sn' => $order['order_sn']));
+		foreach ($order['_skus'] as $key => $value) {
+			if($key > 0){
+				$status = 1;
+			}
+		}
 		// 日志
 		$order_logs = $this->service_order_log->get_by_order_sn($order['sub_sn'],'id DESC');
-		$this->load->librarys('View')->assign('order',$order)->assign('order_logs',$order_logs)->display('detail');
+		$this->load->librarys('View')->assign('order',$order)->assign('order_logs',$order_logs)->assign('status',$status)->display('detail');
+	}
+
+	public function address_edit(){
+		if(checksubmit('dosubmit')){
+			$result = $this->service->edit_address($_GET);
+			if($result===false){
+				showmessage('修改订单收货信息失败');
+			}
+			showmessage(lang('修改订单收货信息成功'),'',1,'json');
+		}else{
+			$order = array();
+			$order_sn = $_GET['order_sn'];
+			$order['_main'] = $this->service->find(array('sn' =>$order_sn));
+			$address_detail = end(explode(" ",$order['_main']['address_detail']));
+			$cids = explode(",",$order['_main']['address_district_ids']);
+		    array_pop($cids);
+			$cid = end($cids);
+			$order['cids']=$cids;
+			$order['cid']=$cis;
+			$order['sn']=$order_sn;
+			$order['_main']['address_detail'] = $address_detail;
+			$this->load->librarys('View')->assign('order',$order)->display('address');
+		}
 	}
 
 	/* 发货单模版 */
@@ -76,12 +118,12 @@ class admin_order_control extends init_control {
 			showmessage(lang('pay_success','order/language'),'',1,'json');
 		} else {
 			// 获取所有已开启的支付方式
-			$pays = cache('payment_enable');
+			$pays = model('pay/payment','service')->get();
 			foreach ($pays as $k => $pay) {
 				$pays[$k] = $pay['pay_name'];
 			}
 			$pays['other'] = '其它付款方式';
-			$order = $this->table->where(array('sn' => $_GET['order_sn']))->find();
+			$order = $this->service->find(array('sn' => $_GET['order_sn']));
 			$this->load->librarys('View')->assign('pays',$pays)->assign('order',$order)->display('alert_pay');
 		}
 	}
@@ -115,7 +157,7 @@ class admin_order_control extends init_control {
 			// 获取已开启的物流
 			$sqlmap = $deliverys = array();
 			$sqlmap['enabled'] = 1;
-			$deliverys = $this->load->table('order/delivery')->where($sqlmap)->getField('id,name' ,TRUE);
+			$deliverys = $this->load->service('order/delivery')->getField('id,name' ,$sqlmap);
 			// 获取子订单下的skus
 			$o_skus = $this->service_sub->sub_delivery_skus($_GET['sub_sn']);
 			if (!$o_skus) {
@@ -139,14 +181,14 @@ class admin_order_control extends init_control {
 	/* 取消订单 */
 	public function cancel() {
 		if (checksubmit('dosubmit')) {
-			$order_sn = model('order/order_sub')->where(array('sub_sn'=>$_GET['sub_sn']))->getField('order_sn');
-			model('order/order_trade')->where(array('order_sn'=>$order_sn))->setField('status',-1);
+			$order_sn = $this->load->service('order/order_sub')->getField('order_sn', array('sub_sn'=>$_GET['sub_sn']));
+			$this->load->service('order/order_trade')->setField(array('status'=>-1), array('order_sn'=>$order_sn));
 
-			$result = $this->service_sub->set_order($_GET['sub_sn'] ,'order' ,2,array('msg'=>$_GET['msg'],'isrefund' => (int) $_GET['isrefund']));
+			$result = $this->service_sub->set_order($_GET['sub_sn'] ,'order' ,2,array('msg'=>$_GET['msg'],'isrefund' => 1));
 			if (!$result) showmessage($this->service_sub->error,'',0,'json');
 			showmessage(lang('cancel_order_success','order/language'),'',1,'json');
 		} else {
-			$order = $this->table_sub->where(array('sub_sn' => $_GET['sub_sn']))->find();
+			$order = $this->service_sub->find(array('sub_sn' => $_GET['sub_sn']));
 			$this->load->librarys('View')->assign('order',$order)->display('alert_cancel');
 		}
 	}
@@ -182,7 +224,7 @@ class admin_order_control extends init_control {
 			}
 			showmessage(lang('修改订单应付总额成功'),'',1,'json');
 		} else {
-			$order = $this->table_sub->where(array('sub_sn' => $_GET['sub_sn']))->find();
+			$order = $this->service_sub->find(array('sub_sn' => $_GET['sub_sn']));
 			$this->load->librarys('View')->assign('order',$order)->display('alert_update_real_price');
 		}
 	}
@@ -197,10 +239,22 @@ class admin_order_control extends init_control {
 			$sqlmap['order_sn|member_name|address_mobile'] = array('LIKE','%'.$_GET['keyword'].'%');
 		}
 		$limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 10;
-		$parcels = $this->load->table('order/order_parcel')->page($_GET['page'])->limit($limit)->order('id DESC')->where($sqlmap)->select();
-		$count  = $this->load->table('order/order_parcel')->count();
+		$parcels = $this->service_parcel->get_lists($sqlmap,$_GET['page'],$_GET['limit']);
+		$count  = $this->load->service('order/order_parcel')->count();
 		$pages  = $this->admin_pages($count, $limit);
-		$this->load->librarys('View')->assign('parcels',$parcels)->assign('pages',$pages)->display('parcel');
+		$lists = array(
+			'th' => array(
+				'order_sn' => array('title' => '订单号','length' => 15),
+				'member_name' => array('title' => '会员账号','length' => 10),
+				'address_name' => array('length' => 10,'title' => '收货人姓名'),
+				'address_detail' => array('title' => '联系地址','length' => 30,'style'=>'left_text'),
+				'address_mobile' => array('length' => 10,'title' => '联系电话'),
+				'status' => array('length' => 10,'title' => '配送状态','style' => 'status'),
+			),
+			'lists' => $parcels,
+			'pages' => $pages,
+		);
+		$this->load->librarys('View')->assign('lists',$lists)->assign('pages',$pages)->display('parcel');
 	}
 
 	/*确认配送*/
@@ -213,7 +267,7 @@ class admin_order_control extends init_control {
 			}
 			showmessage(lang('_operation_success_'),url('parcel'),1);
 		}else{
-			$parcelinfo = $this->load->table('order/order_parcel')->fetch_by_id($_GET['id']);
+			$parcelinfo = $this->load->service('order/order_parcel')->fetch_by_id($_GET['id']);
 			$this->load->librarys('View')->assign('parcelinfo',$parcelinfo)->display('alert_complete_parcel');
 		}
 	}
@@ -233,12 +287,13 @@ class admin_order_control extends init_control {
 		if((int)$_GET['id'] < 1) showmessage(lang('_error_action_'));
 		$info = $this->service_tpl_parcel->get_tpl_parcel_by_id(1);
 		//订单信息
-		$sub_sn = $this->load->table('order/order_parcel')->fetch_by_id($_GET['id'],'sub_sn');
+		$sub_sn = $this->load->service('order/order_parcel')->fetch_by_id($_GET['id'],'sub_sn');
+		$order_sn = $this->load->service('order/order_parcel')->fetch_by_id($_GET['id'],'order_sn');
 		//收货人信息
-		$userinfo = $this->load->table('order/order_parcel')->where(array('sub_sn'=>$sub_sn))->find();
+		$userinfo = $this->load->service('order/order_parcel')->find(array('sub_sn'=>$sub_sn));
 		//商品信息
-		$goods = $this->load->table('order/order_sku')->where(array('sub_sn'=>$sub_sn))->select();
-		$info['content'] = str_replace('{order_sn}',$sub_sn,$info['content']);
+		$goods = $this->load->service('order/order_sku')->fetch(array('sub_sn'=>$sub_sn));
+		$info['content'] = str_replace('{order_sn}',$order_sn,$info['content']);
 		$info['content'] = str_replace('{address}',$userinfo['address_detail'],$info['content']);
 		$info['content'] = str_replace('{print_time}',date('Y-m-d H:i:s',time()),$info['content']);
 		$info['content'] = str_replace('{accept_name}',$userinfo['address_name'],$info['content']);
@@ -250,7 +305,8 @@ class admin_order_control extends init_control {
 		$total_price = 0;
 		foreach($goods as $k => $v){
 			$str = str_replace('{sort_id}',$k+1,$field_end);
-			$str = str_replace('{products_sn}',$v['sku_barcode'],$str);
+			$sku = $this->load->service('goods/goods_sku')->fetch_by_id($v['sku_id']);
+			$str = str_replace('{products_sn}',$sku['sn'],$str);
 			$str = str_replace('{goods_name}',$v['sku_name'],$str);
 			$str = str_replace('{goods_spec}',$v['_sku_spec'],$str);
 			$str = str_replace('{shop_price}',$v['sku_price'],$str);
@@ -281,17 +337,23 @@ class admin_order_control extends init_control {
 		} else {
 			$sqlmap['print_time'] = array("EQ" , 0);
 		}
-		// if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
-		// 	$sqlmap['order_sn|member_name|address_mobile'] = array('LIKE','%'.$_GET['keyword'].'%');
-		// }
 		$limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 10;
-		$o_deliverys = $this->table_o_delivery->page($_GET['page'])->order('id DESC')->limit($limit)->where($sqlmap)->select();
-		foreach ($o_deliverys as $k => $v) {
-			$o_deliverys[$k]['_sub_order'] = $this->table_sub->where(array('sub_sn' => $v['sub_sn']))->find();
-		}
-		$count = $this->table_o_delivery->where($sqlmap)->count();
+		$o_deliverys = $this->service_p_delivery->get_lists($sqlmap,$page,$limit);
+		$count = $this->service->order_delivery_count($sqlmap);
 		$pages = $this->admin_pages($count, $limit);
-		$this->load->librarys('View')->assign('o_deliverys',$o_deliverys)->assign('pages',$pages)->display('deliverys');
+		$lists = array(
+			'th' => array(
+				'order_sn' => array('title' => '订单号','length' => 15),
+				'delivery_name' => array('title' => '物流名称','length' => 15),
+				'delivery_sn' => array('length' => 20,'title' => '物流编号'),
+				'delivery_time' => array('title' => '发货时间','length' => 20,'style'=>'date'),
+				'receive_time' => array('length' => 10,'title' => '是否收货'),
+				'print_time' => array('length' => 10,'title' => '打印状态'),
+			),
+			'lists' => $o_deliverys,
+			'pages' => $pages,
+		);
+		$this->load->librarys('View')->assign('lists',$lists)->assign('pages',$pages)->display('deliverys');
 	}
 
 	/* 打印快递单 */
@@ -299,14 +361,14 @@ class admin_order_control extends init_control {
 		if (checksubmit('dosubmit')) {
 			/* 标记快递单为已打印 */
 			$o_id = (int) $_GET['o_id'];
-			$this->table_o_delivery->where(array('id' => $_GET['o_id']))->setField('print_time' ,time());
+			$this->service->order_delivery_update(array('print_time' => time()), array('id' => $_GET['o_id']));
 			return TRUE;
 		} else {
-			$o_delivery = $this->table_o_delivery->where(array('id' => $_GET['o_id']))->find();
+			$o_delivery = $this->service->order_delivery_find(array('id' => $_GET['o_id']));
 			$sub_order = $this->load->service('order/order_sub')->sub_detail($o_delivery['sub_sn']);
-			$main_order = $this->table->where(array('sn' => $sub_order['order_sn']))->find();
-			$setting = $this->load->service('admin/setting')->get_setting();
-			$_delivery = $this->load->table('order/delivery')->where(array('id' => $o_delivery['delivery_id']))->find();
+			$main_order = $this->service->find(array('sn' => $sub_order['order_sn']));
+			$setting = $this->load->service('admin/setting')->get();
+			$_delivery = $this->load->service('order/delivery')->find(array('id' => $o_delivery['delivery_id']));
 			// 替换值
 			if ($_delivery['tpl']) {
 				$_delivery['tpl'] = json_decode($_delivery['tpl'] ,TRUE);
