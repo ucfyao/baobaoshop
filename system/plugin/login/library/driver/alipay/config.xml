@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<root>
+	<item id="code"><![CDATA[alipay]]></item>
+	<item id="name"><![CDATA[支付宝登录]]></item>
+	<item id="description"><![CDATA[支付宝登录是一种快捷的登录方式，更方便操作更简单。]]></item>
+	<item id="dataline"><![CDATA[2015-5-5 11:55:44]]></item>
+	<item id="version"><![CDATA[1.0]]></item>
+	<item id="config">
+		<item id="account">
+			<item id="name"><![CDATA[账户]]></item>
+			<item id="type"><![CDATA[text]]></item>
+			<item id="value"><![CDATA[]]></item>
+			<item id="tips"><![CDATA[支付宝接口账户]]></item>
+		</item>
+		<item id="partner">
+			<item id="name"><![CDATA[合作者身份(parterID)]]></item>
+			<item id="type"><![CDATA[text]]></item>
+			<item id="value"><![CDATA[]]></item>
+			<item id="tips"><![CDATA[支付宝提供的合作者身份编码(以2088开头)]]></item>
+		</item>
+		<item id="key">
+			<item id="name"><![CDATA[交易安全校验码(key)]]></item>
+			<item id="type"><![CDATA[text]]></item>
+			<item id="value"><![CDATA[]]></item>
+			<item id="tips"><![CDATA[支付宝提供的交易安全校验码]]></item>
+		</item>
+	</item>
+</root>

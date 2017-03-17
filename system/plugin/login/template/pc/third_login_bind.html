@@ -1,0 +1,85 @@
+ <?php include template('header','member');?>
+		<div class="margin-big-top layout">
+			<div class="container border border-gray-white member clearfix">
+				<div class="left padding-big">
+					<div class="user-head margin-big-left margin-big-top">
+						<img src="<?php echo $this->member['avatar'];?>" height="148" />
+						<span><a href="<?php echo url('member/account/avatar'); ?>">修改头像</a></span>
+					</div>
+					<div class="margin-top text-center text-default"><p><?php echo $this->member['_group']['name'] ?></p></div>
+					<dl class="margin-big-top member-memu clearfix">
+					 <?php include template('menu_account','member');?>
+					</dl>
+				</div>
+				<div class="right padding-big-left padding-big-right">
+					<div class="member-order-top margin-top margin-bottom small-search clearfix">
+						<div class="fl padding-small-top">
+							<div class="border-left border-middle border-sub padding-left">全部消息</div>
+						</div>
+					</div>
+					<div class="hot-tip margin-big-top padding radius border">
+						<em class="ico-tip"></em>
+						<span>特别提示: 每个社交网站仅能绑定一个账号，如果需要更改，请先解除绑定！</span>
+					</div>
+                    <!--<div class="hot-tip margin-big-top padding radius border">
+                        <em class="ico-tip"></em>
+                        <span>特别提示: 微信手机登录绑定只针对手机微信客户端与网页版微信登录无关.</span>
+                    </div>-->
+
+					<ul class="binding-lists margin-big-top clearfix">
+					<?php foreach ($logins AS $login) {?>
+					<?php if($login['login_code'] != 'wechat_wap'){?>
+						<li>
+							<span class="pic-center"><img src="<?php echo __ROOT__.'system/plugin/'.PLUGIN_ID?>/statics/images/logo_<?php echo $login['login_code']?>.png" /></span>
+							<?php if($login['account_name']){?>
+							<span class="margin-right">绑定信息：<?php echo $login['account_name']?></span>
+							<a class="btn default third_login_cancel" login-code="<?php echo $login['login_code']?>" href="javascript:;">解除绑定</a>
+							<?php }else{?>
+							<a class="btn third_login" login-code="<?php echo $login['login_code']?>" href="javascript:;">点击绑定</a>
+							<?php }?>
+						</li>
+					<?php }?>
+					<?php }?>
+					</ul>
+				</div>
+			</div>
+		</div>
+ <?php include template('footer','common');?>
+<script type="text/javascript">
+	$(".third_login").bind("click",function(){
+		var login_code = $(this).attr("login-code");
+		$.post("<?php echo url('plugin/index/index',array('id' => 'login:third_login_bind'))?>",{login_code : login_code},function(ret){
+		if (ret.status != 1) {
+			$.tips({
+				icon:'error',
+				content:ret.message,
+				callback:function() {
+					return false;
+				}
+			});
+		} else {
+			window.location.href = ret.referer;
+		}},"json")
+	})
+	$(".third_login_cancel").bind("click",function(){
+		var login_code = $(this).attr("login-code");
+		$.post("<?php echo url('plugin/index/index',array('id' => 'login:cancel_bind'))?>",{login_code : login_code},function(ret){
+		if (ret.status != 1) {
+			$.tips({
+				icon:'error',
+				content:ret.message,
+				callback:function() {
+					return false;
+				}
+			});
+		} else {
+			$.tips({
+				icon:'success',
+				content:'解除绑定成功',
+				callback:function() {
+					window.location.reload();
+				}
+			});
+		}},"json")
+	})
+</script>
