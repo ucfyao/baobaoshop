@@ -3,8 +3,6 @@
 	<head>
 		<meta charset="utf-8">
 		<title>{if isset($SEO['title']) && !empty($SEO['title'])}{$SEO['title']}{/if}{$SEO['site_title']}</title>
-		<meta name="renderer" content="webkit">
-		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
 		<meta name="Keywords" content="{$SEO['keywords']}" />
 		<meta name="Description" content="{$SEO['description']}" />
 		<link type="text/css" rel="stylesheet" href="{SKIN_PATH}statics/css/haidao.css?v={HD_VERSION}" />
@@ -16,7 +14,7 @@
 		<script type="text/javascript"> hd_cart.init(); </script>
 		<script type="text/javascript" src="{SKIN_PATH}statics/js/member.order.js?v={HD_VERSION}"></script>
 		<script type="text/javascript" src="{__ROOT__}statics/js/haidao.validate.js?v={HD_VERSION}"></script>
-		<!--[if gte IE 8]>
+		<!--[if gte IE 8]> 
 			<link type="text/css" rel="stylesheet" href="template/default/statics/css/compatible.css" />
 		<![endif]-->
 		<link rel="stylesheet" type="text/css" href="{__ROOT__}statics/js/dialog/ui-dialog.css?v={HD_VERSION}" />

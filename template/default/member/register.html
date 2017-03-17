@@ -1,16 +1,16 @@
 {template toper common}
 <script type="text/javascript" src="template/default/statics/js/jquery.cookie.js?v={HD_VERSION}"></script>
 <!-- 头部 -->
-<div class="header container">
-	<div class="logo fl">
+<div class="login-header container">
+	<!-- <div class="logo fl">
 		<span><a href="/"><img src="{SKIN_PATH}statics/images/logo.png" /></a></span>
-	</div>
+	</div> -->
 	<div class="fr">
 		<span class="text-default login-tips">已注册的会员请 <a class="text-sub" href="<?php echo url('login',array('url_forward'=>$_GET['url_forward']));?>">登录</a></span>
 	</div>
 </div>
 <?php
-	$setting = model('admin/setting','service')->get();
+	$setting = cache('setting');
 ?>
 	<!-- 登录 -->
 	<div class="layout border-top">
@@ -114,7 +114,7 @@
 				}
 			}
 		})
-
+	
 			/*仿刷新：检测是否存在cookie*/
 			if($.cookie("reg_captcha")){
 				reget($.cookie("reg_captcha"));

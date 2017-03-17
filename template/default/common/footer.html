@@ -1,5 +1,5 @@
-	<div class="layout border-top border-gray-white global-footer margin-big-top">
-		<div class="layout border border-main"></div>
+	<div class="layout @border-top @border-gray-white global-footer margin-big-top">
+		<!-- <div class="layout border border-main"></div> -->
 			<div class="container hd-service clearfix">
 				{hd:misc method="lists" num="5" tagfile="help" id="0" order="sort asc"}
 				{loop $data $r}
@@ -15,24 +15,25 @@
 				</dl>
 				{/loop}
 				{/hd}
-				<dl class="fore last">
-					<dt>&nbsp;<!-- 海盗云商：www.haidao.la --></dt>
-					<dd>
+				<dl class="fore last hidden">
+					<dt>&nbsp;</dt>
+					<!-- <dd>
 						<span><img class="footer-logo" src="{SKIN_PATH}statics/images/logo.png" width="158" /></span>
-					</dd>
+					</dd> -->
 				</dl>
 			</div>
-			{hook/help_between_link}
+			{hook/help_between_link data}
 			<div class="container copyright border-top border-gray-white padding-tb clearfix">
-				<p class="cop-left fl w50 text-lh-small"><?php echo SITE_AUTHORIZE == 0? COPYRIGHT:''?></p>
+				<!-- <p class="cop-left fl w50 text-lh-small"><?php echo SITE_AUTHORIZE == 0? COPYRIGHT:''?></p> -->
+				<p class="cop-left fl w50 text-lh-small">爱我商城 版权所有，并保留所有权利。<br>© 2017-2027   Inc.</p>
 				<div class="cop-right fr text-right w50">
-					<?php $cache = model('admin/setting','service')->get();?>
+					<?php $cache = cache('setting');?>
 					<p class="text-lh-small"><!-- <a href="">手机版</a> |  -->
 					{if $cache[com_name]}
-					<a target="_blank" href="{$cache[site_url]}">{$cache[com_name]}</a>
+					<a target="_blank" href="{$cache[site_url]}">{$cache[com_name]}</a>  
 					{/if}
 					{if $cache[icp]}
-					|<a target="_blank" href="http://www.miitbeian.gov.cn/">{$cache[icp]}</a>
+					|<a target="_blank" href="http://www.miitbeian.gov.cn/">{$cache[icp]}</a> 
 					{/if}
 					{if $cache[site_statice]}
 					|<a href="">{$cache[site_statice]}</a></p>
@@ -44,22 +45,22 @@
 	</body>
 </html>
 	<script>
-		function current(){
-			var d = new Date();
-			var year = d.getFullYear(),
+		function current(){ 
+			var d = new Date(); 
+			var year = d.getFullYear(), 
 			month = d.getMonth() < 10 ? '0'+(d.getMonth() + 1) : d.getMonth() + 1,
 			date = d.getDate() < 10 ? '0'+d.getDate() : d.getDate(),
 			hours = d.getHours() < 10 ? '0'+d.getHours() : d.getHours(),
 			minutes = d.getMinutes() < 10 ? '0'+d.getMinutes() : d.getMinutes(),
 			seconds = d.getSeconds() < 10 ? '0'+d.getSeconds() : d.getSeconds();
-			return  year+'-'+month+'-'+date+' '+hours+':'+minutes+':'+seconds;
-		}
+			return  year+'-'+month+'-'+date+' '+hours+':'+minutes+':'+seconds; 
+		} 
 		setInterval(function(){$("#time").html(current)},1000);
 		var url = "{url('goods/index/html_load')}";
 		$(function(){
 			$.ajax(url, {}, function(ret){});
 		})
-	</script>
+	</script>  
 	{hook/global_footer}
 
 

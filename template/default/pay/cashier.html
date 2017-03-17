@@ -3,7 +3,7 @@
 <?php redirect($gateway['gateway_url']); ?>
 <?php endif ?>
 <div class="header container">
-	<div class="logo fl"><span><a href="{__APP__}"><img width="190" height="64"  src="<?php $cache = model('admin/setting','service')->get(); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></a></span></div>
+	<div class="logo fl"><span><a href="{__APP__}"><img src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></a></span></div>
 	<div class="step fr"></div>
 </div>
 <!--坐标位置-->

@@ -18,6 +18,7 @@
 						<a class="margin-large-left margin-large-right obtn obtn1" href="{url('member/money/pay')}">立即充值</a>
 						<span class="margin-big-left text-gray">冻结余额：{$member['frozen_money']}</span>
 						<?php endif;?>
+						{hook/money_extra_info data}
 					</div>
 					<div class="margin-top table border-td text-center border border-gray-white text-lh-40">
 						<div class="tr">
@@ -42,7 +43,7 @@
 			</div>
 		</div>
 		{template footer common}
-
+		
 		<script>
 			$(function(){
 				//点击到指定页
@@ -53,9 +54,9 @@
 				$(".paging input[name=page]").live('keyup',function(e){
 					if(e.keyCode == 13){
 						jump_to_page(this);
-					}
+					} 
 				});
 			})
 		</script>
-
+		
 

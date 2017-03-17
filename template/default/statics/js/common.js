@@ -208,8 +208,8 @@ $(function(){
 					width: 280,
 					okValue: '确定',
 					ok: function(){
-						_this.html('<em class="text-gray">已收藏</em>');
-						_this.removeClass('collect-btn');
+						_this.remove();
+						_parent.append('<span class="button"><em class="text-gray">已收藏</em></span>');
 					}
 				})
 				.showModal();
@@ -218,14 +218,16 @@ $(function(){
 				$.tips({
 					icon:'error',
 					content:data.message,
-					callback:function() {}
+					callback:function() {
+						window.location.href = data.referer;
+					}
 				});
 			}
 		},'json');
 	});
-
-
-
+	
+	
+	
 })
 
 function jump_to_page(that){
@@ -237,7 +239,7 @@ function jump_to_page(that){
 	if($page>$max_page){
 		$page=$max_page;
 	}
-
+	
 	if($page && $page>0 && url){
 		if(url.indexOf("page")!=-1){
 			var page="page="+$page;
@@ -251,7 +253,7 @@ function jump_to_page(that){
 				window.location.href=url+"?page="+$page;
 			}
 		}
-
+		
 	}
 }
-
+	

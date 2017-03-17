@@ -199,7 +199,7 @@
 						<li class="ui-switchtab-item current"><a href="javascript:;">商品详情</a></li>
 						<li class="ui-switchtab-item"><a href="javascript:;" class="total-comment">商品评价(0)</a></li>
 						<li class="ui-switchtab-item" id="consult"><a href="javascript:;">商品咨询(0)</a></li>
-						<?php $cache = model('admin/setting','service')->get();?>
+						<?php $cache = cache('setting');?>
 						{if $cache[invoice_vat_enabled] == 1}
 						{hd:order method="records" tagfile="order" sid="$_GET[sku_id]" isspu="false" page="$_GET[page]" num="8"}
 						<li class="ui-switchtab-item"><a href="javascript:;">销售记录({$data[count]})</a></li>
@@ -324,7 +324,7 @@
 					<div class="layout consult-lists">
 						<div class="padding clearfix">
 							{loop $data $r}
-							<div class="list">
+							<div class="list">       
 								<p class="clearfix"><span class="user-name"><?php echo $r['username'] ? $r['username'] : '游客'?></span><span class="fr text-gray">{date("Y-m-d H:i:s",$r['dateline'])}</span></p>
 								<p>咨询内容：<span class="text-sub">{$r['question']}</span></p>
 								{if $r['reply_content']}
@@ -368,7 +368,7 @@
 							<div class="paging margin-top padding-tb clearfix record-pages">
 							</div>
 						</div>
-
+						
                         <!--<p class="goods-item-no-info">暂无购买记录</p>-->
 					</div>
 				</div>
@@ -415,7 +415,7 @@
 			$(".fr li a").attr('data-ajax','true');
 			var $a=$("#comment_tab").find('a').eq(0);
 			ajax_record(1);
-			ajax_comment(1,$a);
+			ajax_comment(1,$a);			
 		})
 			function ajax_comment(page,that){
 				var page = page || 1;
@@ -471,7 +471,7 @@
 									+			reply_content
 									+		'</div>'
 									+	'</li>';
-							})
+							})	
 							switch(mood){
 									case 'positive':
 										$('.positive').find('.goods-item-no-info').remove();
@@ -572,7 +572,7 @@
 				$(this).addClass('current').siblings('li').removeClass('current');
 				$('.group_list[data-id = "' + $(this).data('id') + '"]').removeClass('hidden').siblings('.group_list').addClass('hidden');
 			});
-
+			
 			$(".group_list").each(function(){
 				if($(this).find(".lh .parts-item").length<=4){
 					$(this).find(".slider-control").addClass("hidden");
@@ -593,7 +593,7 @@
 							number += 1;
 							market_price +=  parseFloat($(this).find(".text-mix em").data("market"));
 							total_price +=  parseFloat($(this).find(".text-mix em").html());
-							skuids += ',' + $(this).find(".text-mix em").attr("data-id");
+							skuids += ',' + $(this).find(".text-mix em").attr("data-id"); 
 						}
 					});
 
@@ -604,7 +604,7 @@
 				});
 			}
 			getPrice();
-
+			
 			$('.fitting-suit-items .check-item').bind('click',function(){
 				getPrice();
 			})

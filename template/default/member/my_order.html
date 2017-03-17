@@ -74,7 +74,7 @@
 					        <div class="td order-time">支付方式：{$r[_pay_type]}</div>
 					        <div class="td order-num">订单总额：￥{$r[real_amount]}</div>
 					        <div class="td w30">运费总额：￥{$r[delivery_amount]}</div>
-					        <div class="td">订单状态：{if ($r[_showsubs] == TRUE) || (count($r[_subs][0][_group]) > 1)}已拆分{else}{ch_status($r[_status][wait])}{/if}</div>
+					        <div class="td">订单状态：{if ($r[_showsubs] == TRUE)}已拆分{else}{ch_status($r[_status][wait])}{/if}</div>
 					    </div>
 					    <!-- 促销样式 -->
 					    <!-- 循环子订单 -->
@@ -121,7 +121,7 @@
 													{/if}
 													{if ($setting[return_time] == 2 && $sku[delivery_status] == 2)}
 								                     <a class="apply-btn"  href="{url('member/service/return_refund',array('id' => $sku[id]))}" target="_blank">申请售后</a>
-													{/if}
+													{/if}	
 								                </div>
 								            </div>
 								        {/loop}
@@ -335,7 +335,7 @@
 		$(".paging input[name=page]").live('keyup',function(e){
 			if(e.keyCode == 13){
 				jump_to_page(this);
-			}
+			} 
 		});
 	})
 	$(window).load(function(){

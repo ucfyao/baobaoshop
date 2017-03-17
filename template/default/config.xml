@@ -3,8 +3,8 @@
 	<item id="name"><![CDATA[默认模板]]></item>
 	<item id="version"><![CDATA[v1.0.0]]></item>
 	<item id="time"><![CDATA[2014-08-25 17:22]]></item>
-	<item id="author"><![CDATA[海盗开发团队]]></item>
-	<item id="copyright"><![CDATA[海盗开发团队]]></item>
+	<item id="author"><![CDATA[奕瑞开发团队]]></item>
+	<item id="copyright"><![CDATA[奕瑞开发团队]]></item>
 	<item id="template">
 		<item id="common">
 			<item id="header"><![CDATA[全站头部]]></item>

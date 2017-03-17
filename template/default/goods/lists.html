@@ -1,16 +1,18 @@
 <?php include template('toper','common');?>
 <?php include template('header','common');?>
 		<!--面包屑-->
-		<div class="container crumbs clearfix">
+		<div class="container crumbs border-bottom clearfix">
 			<p class="fl layout">
 			<i class="icon-crumbs"></i>
 				{catpos($_GET['id'])}
 			</p>
 		</div>
+		{hook/lists_crumbs}
 		<!--list-->
-		<div class="item-two-column container clearfix">
+		<div class="item-two-column container margin-large-top clearfix">
 			<div class="left fl">
-				<div class="list-category border border-gray-white">
+				<div class="list-category bg-white border radius margin-big-bottom border-gray-white">
+				<!-- <div class="list-category "> -->
 					<div class="item-title">{$category['top_parentid']['name']}</div>
 					<div class="layout sp-category">
 						{hd:goods tagfile="category" catid="$category[top_parentid][id]" method="lists"}
@@ -38,14 +40,14 @@
 						{/hd}
 					</div>
 				</div>
-				<div class="layout margin-top border border-gray-white clearfix">
+				<div class="layout bg-white margin-top border radius margin-big-bottom border-gray-white clearfix">
 					<div class="item-title">看了又看</div>
 					<div class="ext-content padding clearfix">
 						<div class="ext-show">
 							<div class="ext-con-wrap clearfix">
 								{hd:goods tagfile="goods" method="lists" num="6" order="rand()"}
 									{loop $data $r}
-										<div class="ext-con-box">
+										<div class="ext-con-box margin-bottom">
 											<a href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}" title="{$r['sku_name']}"><img class="lazy" src="{SKIN_PATH}statics/images/lazy.gif" data-original="<?php echo thumb($r['thumb'],500,500)?>" width="90" height="90" /></a>
 											<p>￥<?php echo $r['prom_price']?></p>
 										</div>
@@ -102,9 +104,11 @@
 				</div>
 				{/if}
 				{/hd}
+				{hook/lists_recommend_between_lists}
 				<!--属性选择-->
-				<div class="border border-gray-white item-blue-top selected-type">
-					<div class="item-title padding-left"><span class="text-sub">{$category['name']}</span>-商品筛选<a class="fr margin-big-right text-sub" href="{url('lists',array('id'=>$_GET[id]))}">重置筛选</a></div>
+				<!--<div class="border border-gray-white item-blue-top selected-type">-->
+				<div class="item-blue-top margin-large-bottom text-default">
+					<div class="item-title padding-left margin-big-bottom text-default"><span class="text-sub">{$category['name']}</span> - 商品筛选<a class="fr margin-big-right text-sub" href="{url('lists',array('id'=>$_GET[id]))}"> 重置筛选</a></div>
 					<div class="list-type-selected clearfix">
 					{if !empty($brands)}
 						<dl class="item-type hidden">
@@ -215,7 +219,8 @@
 					</div>
 				</div>
 				<!--筛选-->
-				<div class="margin-top border border-gray-white item-blue-top filter">
+				<!-- <div class="margin-top border border-gray-white item-blue-top filter"> -->
+				<div class="margin-top text-default filter">
 					<dl>
 						<dt>排序方式：</dt>
 						<dd {if $result['sort'] == 'comper'} class="selected" {/if}><a href="{create_url('sort','comper,')}">综合</a></dd>
@@ -251,14 +256,14 @@
 								<a href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}">{if isset($r['prom_time']) && $r['prom_time'] > 0}<span class="padding-small-left padding-small-right radius-small bg-mix text-white margin-small-right">限时促销</span>{/if}{$r['sku_name']}</a>
 							</div>
 							<div class="p-price">
-								<span class="text-mix">￥<?php echo $r['prom_price']?></span>
+								<span class="text-mix">￥<?php echo $r['prom_price']?><!-- <i>￥{$r['market_price']}</i> --></span>
 							</div>
 							<div class="p-hand text-right">
 								<div class="short-share">
 									{if $r[number] > 0}
 									<a class="cart-btn fl" data-event="cart_add" data-skuids="{$r['sku_id']}">加入购物车</a>
 									{else}
-									<span class="fl">商品已售罄</span>
+									<span class="fl text-gray">商品已售罄</span>
 									{/if}
 									{if is_favorite($member['id'],$r['sku_id'])}
 									<span class="button"><em class="text-gray">已收藏</em></span>
@@ -292,7 +297,7 @@
 				$(".paging input[name=page]").live('keyup',function(e){
 					if(e.keyCode == 13){
 						jump_to_page(this);
-					}
+					} 
 				});
 
 				loadAfterAction();

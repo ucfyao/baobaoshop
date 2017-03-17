@@ -15,10 +15,11 @@
 			</div>
 		</div>
 		<!--Banner end-->
+		{hook/banner_between_content}
 		<!--content-->
-		<div class="container border-bottom border-gray-white clearfix">
+		<div class="container #border-bottom #border-gray-white clearfix">
 			<div class="fl index-activity">
-				<ul class="tab layout border-bottom border-gray-white clearfix goods_lists">
+				<ul class="tab layout text-big #border-bottom #border-gray-white clearfix goods_lists">
 				{hd:goods tagfile="goods" method="page" statusext="3" num="5"}
 				{if $data['count'] > 0}
 					<li class="current" data-id="3">
@@ -57,39 +58,42 @@
 			</div>
 			<div class="fr margin-top notice">
 				<div class="news-plate">
-					<div class="title border-bottom border-gray-white">
-						<div class="border-left border-small border-sub padding-left text-sub">文章资讯
-						<em style="float:right;"><a href="{url('misc/index/article_lists',array('category_id'=>'all'))}">更多</a></em>
+					<div class="title #border-bottom #border-gray-white">
+						<div class="padding-left text-sub">文章资讯
+						<em style="float:right;"><a href="{url('misc/index/article_lists',array('category_id'=>'all'))}" class="text-default">更多</a></em>
 						</div>
 					</div>
-					<ul class="content margin-small-top">
-						{hd:misc method="lists" num="5" where="recommend=1" tagfile="article" order="sort ASC"}
+					<ul class="content margin-big-top">
+						{hd:misc method="lists" num="8" where="recommend=1" tagfile="article" order="sort ASC"}
 						{loop $data $k $r}
 						<li><em>·</em><a {if $k < 2 }class="hot"{/if} target="_blank" href="{url('misc/index/article_detail',array('id'=>$r['id']))}" title="{$r[title]}">{$r[title]}</a></li>
 						{/loop}
 						{/hd}
 					</ul>
 				</div>
-				<div class="brand-text">
-					<div class="title padding-bottom padding-top">
-						<div class="border-left border-small border-sub padding-left text-sub">推荐品牌</div>
-					</div>
-					<ul>
-					{hd:goods tagfile="brand" method="lists" num="4"}
-					{loop $data $r}
-						<li><a href="{url('goods/index/brand_list',array('id'=>$r['id']))}">{$r[name]}</a></li>
-					{/loop}
-					{/hd}
-					</ul>
-				</div>
 			</div>
 		</div>
+		<!--
+		<div class="container brand-text news-plate">
+			<div class="title padding-bottom padding-top">
+				<div class="text-sub">推荐品牌</div>
+			</div>
+			<ul>
+			{hd:goods tagfile="brand" method="lists" num="10"}
+			{loop $data $r}
+				<li><a href="{url('goods/index/brand_list',array('id'=>$r['id']))}">{$r[name]}</a></li>
+			{/loop}
+			{/hd}
+			</ul>
+		</div>
+		-->
+		{hook/misc_between_like}
 		<!--猜您喜欢-->
-		<div class="container padding-big-top">
-			<div class="layout border border-gray-white item-blue-top pro-border-top-gray">
+		<div class="container padding-large-top">
+			<div class="layout #border #border-gray-white #item-blue-top #pro-border-top-gray">
 				<ul class="tab p-tab-trigger-wrap">
 					<li class="ui-switchtab-item current"><a href="javascript:;">猜您喜欢</a></li>
-					<div class="fr margin-big-right text-lh-30"><span>换一批<b class="margin-left refresh change_goods"></b></span>
+					<div class="fr refresh-bottom border #margin-big-right text-lh-30 margin-top margin-right"><span>换一批<b class="margin-left refresh change_goods"></b></span>
 					</div>
 				</ul>
 
@@ -101,7 +105,7 @@
 							<div class="img"><a href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}"><img class="lazy" src="{SKIN_PATH}statics/images/lazy.gif" data-original="<?php echo thumb($r['thumb'],500,500)?>" width="150" height="150" /></a></div>
 							<div class="text">
 								<div class="title text-ellipsis"><a href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}">{$r[sku_name]}</a></div>
-								<div class="price">￥<?php echo $r['prom_price']?></div>
+								<div class="price">￥<?php echo $r['prom_price']?><!-- <i class="text-gray h6">￥{$r['market_price']}</i> --></div>
 							</div>
 						</li>
 						{/loop}
@@ -114,7 +118,7 @@
 		{hd:goods tagfile="category" method="lists" catid="0"}
 		{loop $data $k $r}
 		<?php $catid = $r['id']?>
-		<div class="floor container padding-big-top clearfix">
+		<div class="floor container padding-large-top clearfix">
 			<div class="floor-info tab">
 				<div class="floor-logo"><?php echo $k+1?>F</div>
 				<h3>{$r[name]}</h3>
@@ -140,7 +144,7 @@
 							<div class="img"><a href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}"><img class="lazy" src="{SKIN_PATH}statics/images/lazy.gif" data-original="<?php echo thumb($r['thumb'],500,500)?>" width="218" height="218" /></a></div>
 							<div class="text">
 								<div class="title"><a href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}">{$r[sku_name]}</a></div>
-								<div class="price">￥{$r[prom_price]}</div>
+								<div class="price">￥{$r[prom_price]}<!-- <i class="text-gray h6">￥{$r['market_price']}</i> --></div>
 							</div>
 						</li>
 						{/loop}
@@ -197,7 +201,49 @@
 			<div class="hd-toolbar-tab hd-tbar-tab-top margin-bottom">
 				<a href="#"><i class="tab-ico"></i></a>
 			</div>
+			<div id="leftsead" class="hd-toolbar-footer">
+				<ul>
+					<li>
+						<a href="javascript:void(0)" class="youhui">
+							<img src="{SKIN_PATH}statics/images/l02.png" width="47" height="49" class="shows" />
+							<img src="{SKIN_PATH}statics/images/a.png" width="57" height="49" class="hides" />
+							<img src="{SKIN_PATH}statics/images/weixin.jpg" width="145" class="2wm" style="display:none;margin:-100px 55px 0 0" />
+						</a>
+					</li>
+					<li>
+						<a href="http://wpa.qq.com/msgrd?v=3&uin=54134724&site=qq&menu=yes" target="_blank">
+							<div class="hides" style="width:161px;display:none;" id="qq">
+								<div class="hides" id="p1"><img src="{SKIN_PATH}statics/images/ll04.png"></div>
+								<!-- <div class="hides" id="p2"><span style="color:#FFF;font-size:13px">54134724</span></div> -->
+								<div class="hides" id="p2"><span style="color:#FFF;font-size:13px">54134724</span></div>
+							</div>
+							<img src="{SKIN_PATH}statics/images/l04.png" width="47" height="49" class="shows" />
+						</a>
+					</li>
+			        <li id="tel">
+				        <a href="javascript:void(0)">
+				            <div class="hides" style="width:161px;display:none;" id="tels">
+				                <div class="hides" id="p1">
+				                    <img src="{SKIN_PATH}statics/images/ll05.png">
+				                </div>
+				                <div class="hides" id="p3"><span style="color:#FFF;font-size:12px">13581931317</span>
+				                </div>
+				            </div>
+				        <img src="{SKIN_PATH}statics/images/l05.png" width="47" height="49" class="shows" />
+				        </a>
+			        </li>
+			        <!-- <li id="btn">
+				        <a id="top_btn">
+				            <div class="hides" style="width:161px;display:none">
+				                <img src="{SKIN_PATH}statics/images/ll06.png" width="161" height="49" />
+				            </div>
+				            <img src="{SKIN_PATH}statics/images/l06.png" width="47" height="49" class="shows" />
+				        </a>
+			    	</li> -->
+				    </ul>
+				</div>
 		</div>
+
 		<!--floor nav-->
 		<div class="floor-nav">
 			<ul>
@@ -216,8 +262,9 @@
 				<a href="#"><i class="tab-ico"></i></a>
 			</div>
 		</div>
-		<div class="layout border-top border-gray-white global-footer margin-big-top">
-		<div class="layout border border-main"></div>
+		<!--<div class="layout #border-top #border-gray-white #global-footer #margin-big-top">-->
+		<div class="layout global-footer ">
+			<div class="layout border border-main"></div>
 			<div class="container hd-service clearfix">
 				{hd:misc method="lists" num="5" tagfile="help" id="0" order="sort asc"}
 				{loop $data $r}
@@ -233,12 +280,15 @@
 				</dl>
 				{/loop}
 				{/hd}
+				
 				<dl class="fore last fr">
-					<dt>&nbsp;<!-- 海盗云商：www.haidao.la --></dt>
+					<dt>&nbsp;</dt>
 					<dd>
-						<span><img src="{SKIN_PATH}statics/images/logo.png" width="158" /></span>
+						<!-- <span><img src="{SKIN_PATH}statics/images/logo.png" width="158" /></span> -->
+						<span><img width="190px" height="auto" src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></span>
 					</dd>
 				</dl>
+				
 			</div>
 			<div class="friend-link padding-large-top container">
 				<dl class="clearfix">
@@ -252,10 +302,17 @@
 					</dd>
 				</dl>
 			</div>
-			<div class="container copyright border-top border-gray-white padding-tb clearfix">
-				<p class="cop-left fl w50 text-lh-small"><?php echo SITE_AUTHORIZE == 0? COPYRIGHT:''?></p>
-				<div class="cop-right fr text-right w50">
-					<?php $cache = model('admin/setting','service')->get();?>
+			<div class="container copyright border-top border-gray-white padding-big-top padding-big-bottom clearfix">
+				<!-- <p class="cop-left fl w50 text-lh-small"><?php echo SITE_AUTHORIZE == 0? COPYRIGHT:''?></p> -->
+				<p class="cop-left fl w20 text-lh-small">爱我商城 版权所有，并保留所有权利。<br>© 2016-2027 Inc.</p>
+				<p class="fl w50">
+					<img class="fl margin-right" src="{SKIN_PATH}statics/images/di-ico1.gif">
+					<img class="fl margin-right" src="../template/default/statics/images/di-ico2.gif">
+					<img class="fl margin-right" src="../template/default/statics/images/di-ico3.gif">
+					<img class="fl" src="../template/default/statics/images/di-ico4.gif">
+				</p>
+				<div class="cop-right fr text-right w30">
+					<?php $cache = cache('setting');?>
 					<p class="text-lh-small"><!-- <a href="">手机版</a> |  -->
 					{if $cache[com_name]}
 					<a target="_blank" href="{$cache[site_url]}">{$cache[com_name]}</a>
