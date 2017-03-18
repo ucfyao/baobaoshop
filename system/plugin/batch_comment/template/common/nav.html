@@ -1,0 +1,23 @@
+<div class="fixed-nav layout">
+    <ul>
+        <li class="first">虚拟评论<a id="addHome" title="添加到首页快捷菜单">[+]</a></li>
+        <li class="spacer-gray"></li>
+        <li><a class="labelbox <?php if (!$_GET['action'] or $_GET['action'] == 'index' or $_GET['action'] == 'list') echo 'current'; ?>"
+               href="<?php echo url('admin/app/module', array('mod' => 'batch_comment')); ?>">评论列表</a></li>
+
+        <li><a class="labelbox <?php if ($_GET['action'] == 'recycle') echo 'current'; ?>"
+               href="<?php echo url('admin/app/module', array('mod' => 'batch_comment', 'action' => 'recycle')); ?>">回收站</a>
+        </li>
+
+        <?php if ($_GET['action'] == 'edit' && is_numeric($_GET['cid'])) { ?>
+            <li><a class="labelbox current"
+                   href="javascript:;">编辑评论</a>
+            </li>
+        <?php } ?>
+
+        <li><a class="labelbox <?php if ($_GET['action'] == 'edit' && empty($_GET['cid'])) echo 'current'; ?>"
+               href="<?php echo url('admin/app/module', array('mod' => 'batch_comment', 'action' => 'edit')); ?>">添加评论</a>
+        </li>
+    </ul>
+    <div class="hr-gray"></div>
+</div>

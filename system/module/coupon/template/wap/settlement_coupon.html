@@ -1,0 +1,77 @@
+{template header common}
+<link type="text/css" rel="stylesheet" href="{__ROOT__}system/module/coupon/statics/css/haidao.mobile.css?v={HD_VERSION}" />
+<div class="mui-row hd-grid filter-items bg-white">
+	<div class="mui-col-xs-3">
+		<a href="<?php echo url('coupon/get_coupon/cart_coupon', array('status' => 1,'skuids'=>$skuids,'real_amount'=>$num))?>" class="filter-item{if ($_GET[status] == 1|| !$_GET[status])} current{/if}">可用优惠券</a>
+	</div>
+	<div class="mui-col-xs-3">
+		<a href="<?php echo url('coupon/get_coupon/cart_coupon', array('status' => 4,'skuids'=>$skuids,'real_amount'=>$num))?>" class="filter-item{if ($_GET[status] == 4)} current{/if}">不可用优惠券</a>
+	</div>
+</div>
+<div class="mui-content">
+	<div class="use-coupon-lists has-scorll-top">
+		
+		{if $coupons}
+		<ul class="pay-lists list-col-10 mui-clearfix use-coupon-list">
+		<?php foreach ($coupons as $k => $v) { ?>
+			<li class="pay-list">
+				<label class="mui-block">
+					{if $_GET['status'] != 4}
+					<div class="hd-checkbox">
+	    				<input name="checkbox" value="<?php echo $v['code'];?>" data-condition="<?php echo $v['condition'];?>" data-discount="<?php echo $v['discount'];?>" type="checkbox">
+	    			</div>
+	    			{/if}
+					<span class="hd-h5">优惠券金额：￥<?php echo $v['discount'];?></span>
+					<?php if($v['condition'] == -1){ ?>
+						<p class="lh-18">使用规则：不限金额</p>
+					<?php }else{ ?>
+						<p class="lh-18">使用规则：满<?php echo $v['condition'];?>元可用</p>
+					<?php } ?>
+					<p class="lh-18 ">使用期限：<?php echo date('Y-m-d',$v['start_time'])?>~<?php echo date('Y-m-d',$v['end_time'])?></p>
+				</label>
+			</li>
+		<?php } ?>
+		</ul>
+		<div class="margin padding-small" data-id="coupon">
+    		<a href="javascript:;" class="mui-btn mui-btn-blue full hd-h4">确认</a>
+    	</div>
+		{else}
+		<div class="user-list-none mui-text-center">
+			<img src="{__ROOT__}system/module/coupon/statics/images/bg_3.png">
+			<p class="margin-top text-black hd-h5">您还没有相关的优惠券</p>
+		</div>
+		{/if}
+		
+	</div>
+</div>
+</body>
+<script>
+		var hd_key = window.localStorage.getItem('hdkey');
+		var hd_datas = JSON.parse(window.localStorage.getItem('hddatas'));
+		if(hd_datas[hd_key].coupon){
+			$('[name=checkbox]').each(function(){
+				if($(this).val() == hd_datas[hd_key].coupon._coupon_code_){
+					$(this).attr("checked","checked");
+				}
+			})	
+		}
+
+		$(".hd-checkbox input[type=checkbox]").on('change',function(){
+			if($(this).is(":checked")){
+				$(this).closest(".pay-list").siblings(".pay-list").find("input[type=checkbox]").removeAttr("checked");
+				$(this).closest(".pay-list").siblings(".pay-list").find("input[type=checkbox]").removeClass("checked");
+			}
+		});
+		$("[data-id='coupon']").on("tap",function() {
+			var coupon = {};
+			if($('input:checked') != null){
+				coupon._coupon_code_ = $('input:checked').val();
+				coupon._coupon_condition_ = $('input:checked').data('condition');
+				coupon._coupon_discount_ = $('input:checked').data('discount');
+			}
+			hd_datas[hd_key].coupon = coupon;
+			window.localStorage.setItem('hddatas', JSON.stringify(hd_datas));
+			window.location.href = hd_datas[hd_key].referer;
+		})
+	</script>
+</html>

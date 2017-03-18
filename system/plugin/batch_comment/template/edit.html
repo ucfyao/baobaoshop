@@ -1,0 +1,75 @@
+<?php include template('header', 'admin'); ?>
+<?php include template('#common/nav'); ?>
+<div class="content padding-big have-fixed-nav">
+    <?php include template('#common/tip'); ?>
+    <form action="<?php echo url('admin/app/module', array('mod' => 'batch_comment', 'action' => 'edit')); ?>"
+          method="post" enctype="multipart/form-data">
+        <div class="form-group ruler-goods">
+            <span class="label">评论商品：</span>
+            <div class="box ">
+                <input class="goods-class-text input input-readonly"
+                       value="<?php echo $comment['sku_name'];?>" readonly="readonly" type="text"
+                       data-title="" data-pic="" data-price="" data-spec="" data-number="" data-id="0" data-sku="true"/>
+                <input type="hidden" name="sku_id" value="<?php echo $comment['sku_id']; ?>" data-type="id">
+                <input class="goods-class-btn" type="button" value="选择"/>
+            </div>
+        </div>
+
+        <?php echo form::input('radio', 'mood', $comment['mood']?:1, '评论星级：', '', array('items' => array(1 => '好评', 2 =>
+        '中评', 3 => '差评'), 'colspan' => 3)); ?>
+
+
+        <?php echo form::input('text', 'name', $comment['name'] ?: random(8), '会员名称：','默认8位长度随机字符串。'); ?>
+        <?php echo form::input('file', 'avatar', $comment['avatar'] ?: '', '会员头像：'); ?>
+        <?php echo form::input('calendar', 'time', $comment['time'] ? date('Y-m-d H:i:s', $comment['time']) : date('Y-m-d H:i:s', time()), '评论时间：', '默认为当前时间。'); ?>
+
+        <?php echo form::input('file', 'imgs[]', $comment['imgs'][0] ?: '', '评论相册1：', '限制最多5张。'); ?>
+        <?php echo form::input('file', 'imgs[]', $comment['imgs'][1] ?: '', '评论相册2：'); ?>
+        <?php echo form::input('file', 'imgs[]', $comment['imgs'][2] ?: '', '评论相册3：'); ?>
+        <?php echo form::input('file', 'imgs[]', $comment['imgs'][3] ?: '', '评论相册4：'); ?>
+        <?php echo form::input('file', 'imgs[]', $comment['imgs'][4] ?: '', '评论相册5：'); ?>
+
+        <?php echo form::input('textarea', 'content', $comment['content'] ?: '', '评论内容：'); ?>
+
+        <div class="form-group">
+            <input type="hidden" name="cid" value="<?php echo $comment['id']; ?>">
+            <input type="submit" class="button bg-main" value="保存"/>
+            <a class="button margin-left bg-gray" href="">返回</a>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="./statics/js/goods/goods_publish.js?v=<?php echo HD_VERSION ?>"></script>
+<script type="text/javascript">
+    // 选择商品
+    $(".ruler-goods .goods-class-btn").live('click', function () {
+        var params = {
+            id: $("input[data-sku]").attr('data-id'),
+            title: $("input[data-sku]").attr('data-title'),
+            pic: $("input[data-sku]").attr('data-pic'),
+            spec: $("input[data-sku]").attr('data-spec'),
+            price: $("input[data-sku]").attr('data-price'),
+            number: $("input[data-sku]").attr('data-number')
+        }
+        top.dialog({
+            url: "<?php echo url('goods/sku/select', array('multiple' => 0)) ?>",
+            title: '选择评论商品',
+            width: 980,
+            selected: params,
+            onclose: function () {
+                if ($.isEmptyObject(this.returnValue) === false) {
+                    $("input[data-type='id']").attr("value", this.returnValue.id);
+                    $("input[data-sku]").attr("data-id", this.returnValue.id);
+                    $("input[data-sku]").attr("data-title", this.returnValue.title).attr("value", this.returnValue.title);
+                    $("input[data-sku]").attr("data-pic", this.returnValue.pic);
+                    $("input[data-sku]").attr("data-spec", this.returnValue.spec);
+                    $("input[data-sku]").attr("data-price", this.returnValue.price);
+                    $("input[data-sku]").attr("data-number", this.returnValue.number);
+                } else {
+                    $("input[data-sku]").attr('data-id', 0).attr('data-title', '').attr('data-pic', '').attr('data-spec', '').attr('data-price', '').attr('data-number', '').attr('value', '');
+                    $("input[type='hidden']").attr('value', 0);
+                }
+            }
+        })
+            .showModal();
+    })
+</script>

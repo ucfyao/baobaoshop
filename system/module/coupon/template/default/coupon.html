@@ -1,0 +1,190 @@
+{template header member}
+<link type="text/css" rel="stylesheet" href="{__ROOT__}system/module/coupon/statics/css/coupon.css?v={HD_VERSION}" />
+		<!-- 顶部工具条 -->
+		<div class="margin-big-top layout">
+			<div class="container border border-gray-white member clearfix">
+				<div class="left padding-big">
+					<div class="user-head margin-big-left margin-big-top">
+						<img src="<?php echo $member['avatar'];?>" height="148" />
+						<span><a href="{url('member/account/avatar')}">修改头像</a></span>
+					</div>
+					<div class="margin-top text-center text-default"><p><?php echo $this->member['_group']['name'] ?></p></div>
+					{template menu_index member}
+				</div>
+				<div class="right padding-big-left padding-big-right check-fun">
+					<div class="member-order-top margin-top margin-bottom small-search clearfix">
+						<div class="fl padding-small-top">
+							<div class="border-left border-middle border-sub padding-left">我的优惠券</div>
+						</div>
+					</div>
+					<div class="padding border round  bg-gray-white">
+						<a  class="margin-left margin-right {if (!in_array($_GET[status],array(1,2,3,4)))}current{/if} text-gray" href="<?php echo url('coupon/get_coupon/index')?>" >全部</a>|
+						<a class="margin-left margin-right {if ($_GET[status] == 1)}current{/if} text-gray" href="<?php echo url('coupon/get_coupon/index', array('status' => 1))?>"  >未使用</a>|
+						<a class="margin-left {if ($_GET[status] == 4)}current{/if} text-gray" href="<?php echo url('coupon/get_coupon/index', array('status' => 4))?>"  >已使用/已过期</a>
+					</div>
+					
+					<!--商品列表-->
+				<div class="collect-list list-wrap">
+					<ul class="round-list clearfix">
+					<?php foreach ($coupons as $k => $v) {  ?>
+						<li class="margin-big-bottom">
+							<div class="round-box ">
+								<div class="round-box-top <?php if($v['end_time'] <= time()){echo 'bg-gray';}else{ if($v['type_use'] == 1){ echo 'bg-blue';}else{echo 'round-red';}}?> text-center border-none">
+									<p class="round-price text-white">￥<?php echo $v['discount'];?></p>
+									<p class="text-white text-default round-coupon"><?php if($v['type_use'] == 1){echo '全品类优惠券';}else{echo '指定品类优惠券';} ?></p>
+									<i class="round-edga"></i>
+								</div>
+								<div class="round-use  border border-black ">
+									<ul class="padding-big padding-bottom border-bottom border-dashed clearfix">
+										<li>
+											<i class="icon-date"></i>
+											<span>使用期限：<?php echo date('Y.m.d', $v['end_time']);?></span>
+										</li>
+										<li class="margin-small-top">
+											<i class="icon-limit"></i>
+											<span>金额限制：<?php if($v['condition'] == -1){echo '不限制购物金额';}else{echo '满'.$v['condition'].'元可用';}?></span>
+										</li>
+									</ul>
+									<div class="padding">
+										<i class="icon-rule"></i>
+										<span>使用规则：</span>
+										<p class="round-font"><?php echo $v['describe'];?></p>
+									</div>
+									<div class="round-bottom "></div>
+								</div>
+								<?php if($v['status'] == 2){ ?>
+								<div class="round-img">
+									<img src="{__ROOT__}system/module/coupon/statics/images/icon_used.png" width="102" height="102">
+								</div>
+								<?php }?>
+								<?php if($v['status'] == 1 && $v['end_time'] <= time()){ ?>
+								<div class="round-img">
+									<img src="{__ROOT__}system/module/coupon/statics/images/icon_exprice.png" width="102" height="102">
+								</div>
+								<?php }?>
+							</div>
+						</li>
+					<?php } ?>
+						
+					</ul>
+					<!-- <ul class="round-list clearfix">
+						<li>
+							<div class="round-box ">
+								<div class="round-box-top bg-blue text-center border-none">
+									<p class="round-price text-white">￥10.00</p>
+									<p class="text-white text-default round-coupon">全品类优惠券</p>
+									<i class="round-edga"></i>
+								</div>
+								<div class="round-use  border border-black ">
+									<ul class="padding-big padding-bottom border-bottom border-dashed clearfix">
+										<li>
+											<i class="icon-date"></i>
+											<span>使用期限：2016.06.30</span>
+										</li>
+										<li class="margin-small-top">
+											<i class="icon-limit"></i>
+											<span>金额限制：不限制购物金额</span>
+										</li>
+									</ul>
+									<div class="padding">
+										<i class="icon-rule"></i>
+										<span>使用规则：</span>
+										<p class="round-font">全场任何商品均可直接使用，不限制购物金额</p>
+									</div>
+									<div class="round-bottom "></div>
+								</div>
+							</div>
+						</li>
+					</ul> -->
+					<!-- <ul class="round-list clearfix">
+						<li>
+							<div class="round-box ">
+								<div class="round-box-top round-red text-center border-none">
+									<p class="round-price text-white">￥10.00</p>
+									<p class="text-white text-default round-coupon">全品类优惠券</p>
+									<i class="round-edga"></i>
+								</div>
+								<div class="round-use  border border-black ">
+									<ul class="padding-big padding-bottom border-bottom border-dashed clearfix">
+										<li>
+											<i class="icon-date"></i>
+											<span>使用期限：2016.06.30</span>
+										</li>
+										<li class="margin-small-top">
+											<i class="icon-limit"></i>
+											<span>金额限制：不限制购物金额</span>
+										</li>
+									</ul>
+									<div class="padding">
+										<i class="icon-rule"></i>
+										<span>使用规则：</span>
+										<p class="round-font">全场任何商品均可直接使用，不限制购物金额</p>
+									</div>
+									<div class="round-bottom "></div>
+								</div>
+								<div class="round-img">
+									<img src="../images/member/icon_used.png" width="102" height="102">
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="round-box ">
+								<div class="round-box-top bg-gray text-center border-none">
+									<p class="round-price text-white">￥10.00</p>
+									<p class="text-white text-default round-coupon">全品类优惠券</p>
+									<i class="round-edga"></i>
+								</div>
+								<div class="round-use  border border-black ">
+									<ul class="padding-big padding-bottom border-bottom border-dashed clearfix">
+										<li>
+											<i class="icon-date"></i>
+											<span>使用期限：2016.06.30</span>
+										</li>
+										<li class="margin-small-top">
+											<i class="icon-limit"></i>
+											<span>金额限制：不限制购物金额</span>
+										</li>
+									</ul>
+									<div class="padding">
+										<i class="icon-rule"></i>
+										<span>使用规则：</span>
+										<p class="round-font">全场任何商品均可直接使用，不限制购物金额</p>
+									</div>
+									<div class="round-bottom "></div>
+								</div>
+								<div class="round-img">
+									<img src="../images/member/icon_exprice.png" width="102" height="102">
+								</div>
+							</div>
+						</li>
+						
+					</ul> -->
+				</div>
+				</div>
+			</div>
+		</div>
+		
+		<!--底部-->
+		{template footer common}
+		<div class="hd-toolbar-footer">
+			<div class="hd-toolbar-tab hd-tbar-tab-top margin-bottom">
+				<a href="#"><i class="tab-ico"></i></a>
+			</div>
+			<div class="hd-toolbar-tab hd-tbar-tab-backlist">
+				<a href="#"><i class="tab-ico"></i></a>
+			</div>
+		</div>
+	</body>
+</html>
+<script>
+
+			$(document).ready(function(){
+				$(".round-list").eq(0).show();
+				$(".round a").live('click',function(){
+					$(this).addClass("current").siblings().removeClass("current");
+					$(".round-list").hide();
+					$(".round-list").eq($(this).index()).show();
+				});
+			});
+
+</script>

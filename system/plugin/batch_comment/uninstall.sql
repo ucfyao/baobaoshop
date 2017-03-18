@@ -1,0 +1,1 @@
+DROP TABLE `hd_virtual_comment`;
