@@ -12,7 +12,7 @@
 				<div class="right padding-big-left padding-big-right">
 					<div class="margin-big-top border">
 						<div class="padding-big-left padding-big-right border-bottom bg-gray-white text-lh-40">
-							<span>欢迎您：<?php echo $member['username']?></span>
+							<span><b>欢迎您：<?php echo $member['username']?></b></span>
 							{hook/account_header_left data}
 							<?php if($_config['balance_pay'] == 1):?>
 							<div class="fr">
@@ -23,7 +23,7 @@
 							<?php endif;?>
 						</div>
 						<div class="layout info-total clearfix">
-							<div class="fl w20">
+							<div class="fl w25">
 								<div class="item-double-txt">
 									<a href="{url('member/order/index')}">
 									<em class="text-sub"><?php echo $member['counts']['going']; ?></em>
@@ -31,19 +31,19 @@
 									</a>
 								</div>
 							</div>
-							<!--<div class="fl w20">
+							<!-- <div class="fl w20">
 								<div class="item-double-txt">
 									<em class="text-sub">0</em>
 									<p>优惠券</p>
 								</div>
-							</div>-->
-							<div class="fl w20">
+							</div> -->
+							<div class="fl w25">
 								<div class="item-double-txt">
 									<em class="text-sub"><?php echo $member['exp']?></em>
 									<p>经验值</p>
 								</div>
 							</div>
-							<div class="fl w20">
+							<div class="fl w25">
 								<div class="item-double-txt">
 									<a href="{url('member/message/index',array('status'=>0))}">
 									<em class="text-sub">{$counts[message]}</em>
@@ -51,7 +51,7 @@
 									</a>
 								</div>
 							</div>
-							<div class="fl w20">
+							<div class="fl w25">
 								<div class="item-double-txt">
 									<a href="{url('member/consult/index')}">
 									<em class="text-sub">{$counts[consult]}</em>

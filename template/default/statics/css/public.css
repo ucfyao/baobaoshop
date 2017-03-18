@@ -96,6 +96,7 @@ img { display: block; }
 .site-bar ul li { float: left; }
 .site-bar ul li.spacer { margin: 24px 16px; background: #fff; }
 .site-bar a { color: #666; }
+.site-bar a:hover { color: #e74447; }
 
 /***header***/
 .header { position: relative; height: 140px; }
@@ -138,7 +139,7 @@ img { display: block; }
 .cart-goods-title { float: left; margin-left: 8px; line-height: 16px; width: 159px; }
 .cart-goods-title h6 { height: 32px; overflow: hidden; }
 .cart-goods-title p { margin-bottom: 0; height: 18px; line-height: 18px; overflow: hidden; }
-.cart-goods-fun { float: right; margin-left: 8px; width: 90px; text-align: right; margin-top: -11px; }
+.cart-goods-fun { float: right; margin-left: 8px; width: 90px; text-align: right; margin-top: 0px; }
 .cart .cart-info { float: left; width: 100%; text-align: right; background: #efefef; }
 .cart .cart-tips { height: 60px; }
 .cart .cart-tips p { line-height: 60px; }
@@ -686,7 +687,7 @@ img { display: block; }
 .friend-link dl dd a:hover { text-decoration: underline; }
 .copyright { margin-top: 20px; }
 /***脚部工具条***/
-.hd-toolbar-footer { display: none; position: fixed; right: 0; bottom: 96px; z-index: 999;   }
+.hd-toolbar-footer { display: none; position: fixed; right: 0; bottom: -296px; z-index: 999;   }
 .hd-toolbar-footer .hd-toolbar-tab { width: 47px; height: 48px; #background-color: #fff; overflow: hidden; margin-top: -8px; }
 .hd-toolbar-footer .hd-toolbar-tab .tab-ico { display: block; width: 49px; height: 49px; }
 .hd-toolbar-footer .hd-tbar-tab-top .tab-ico { background: url(../images/l06.png) no-repeat;  }
@@ -717,6 +718,18 @@ img { display: block; }
 .member-head .menu li { float: left; margin-right: 50px; }
 .member-head .menu a { display: block; height: 32px; color: #fff; line-height: 30px; }
 .member-head .menu a:hover { border-bottom: 2px solid #fff; }
+
+/*用户名称*/
+.member-head .member-user  {}
+.member-head .member-user li { float: left;  }
+.member-head .user { background: none; top:0px; }
+.member-head .member-user { margin: 29px 0 0 -75px; }
+.member-head .member-user li { float: left; margin-right: 50px; }
+.member-head .member-user a { display: block; height: 32px; color: #fff; line-height: 30px; font-size: 14px; }
+.member-head .member-user a:hover { border-bottom: 2px solid #fff; }
+.member-head .member-user .spacer {display: none;}
+.member-head .user .user-top {height: 38px; background: #fff;padding: 2px; border-radius: 6px;}
+.member-head .user .user-content { top:38px;border-radius: 6px;  }
 
 .member { background-color: #f5f5f5; } 
 .member .left { float: left; display: table-cell; position: relative; margin-right: -1px; width: 230px; border-right: 1px solid #eee; z-index: 999; }
