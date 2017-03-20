@@ -3,7 +3,7 @@
 <script type="text/javascript" src="template/default/statics/js/index.js?v={HD_VERSION}"></script>
 <script type="text/javascript" src="template/default/statics/js/jquery.cookie.js?v={HD_VERSION}"></script>
 		<!--面包屑-->
-		<div class="container crumbs border-bottom clearfix">
+		<div class="container crumbs clearfix">
 			<p class="fl layout">
 			<i class="icon-crumbs"></i>
 				{catpos($_GET['id'])}
@@ -41,7 +41,7 @@
 						{/hd}
 					</div>
 				</div>
-				<div class="layout bg-white margin-top border radius margin-big-bottom border-gray-white clearfix">
+				<div class="layout bg-white margin-top radius margin-big-bottom clearfix">
 					<div class="item-title">看了又看</div>
 					<div class="ext-content padding clearfix">
 						<div class="ext-show">
@@ -108,8 +108,8 @@
 				{hook/lists_recommend_between_lists}
 				<!--属性选择-->
 				<!--<div class="border border-gray-white item-blue-top selected-type">-->
-				<div class="item-blue-top margin-large-bottom text-default">
-					<div class="item-title padding-left margin-big-bottom text-default"><span class="text-sub">{$category['name']}</span> - 商品筛选<a class="fr margin-big-right text-sub" href="{url('lists',array('id'=>$_GET[id]))}"> 重置筛选</a></div>
+				<div class="item-blue-top border-top margin-big-bottom text-default">
+					<div class="item-title padding-left text-default"><span class="text-sub">{$category['name']}</span> - 商品筛选<a class="fr margin-big-right text-sub" href="{url('lists',array('id'=>$_GET[id]))}"> 重置筛选</a></div>
 					<div class="list-type-selected clearfix">
 					{if !empty($brands)}
 						<dl class="item-type hidden">
@@ -221,7 +221,7 @@
 				</div>
 				<!--筛选-->
 				<!-- <div class="margin-top border border-gray-white item-blue-top filter"> -->
-				<div class="margin-top text-default filter">
+				<div class="margin-top item-blue-top border-top text-default filter">
 					<dl>
 						<dt>排序方式：</dt>
 						<dd {if $result['sort'] == 'comper'} class="selected" {/if}><a href="{create_url('sort','comper,')}">综合</a></dd>
