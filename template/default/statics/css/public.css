@@ -330,13 +330,13 @@ img { display: block; }
 .product-detail img { display: block; }
 .product-detail .right, .list-right { width: 980px; }
 #pro-detail-right { position: relative; }
-#item-bar {  width: 980px; #background-color: #fff; }
+#item-bar {  width: 970px; #background-color: #fff; }
 #item-bar .tab { position: relative; #margin-top: 4px; height: 48px; border-bottom: 1px solid #eee;  #background-color: #fff;  }
 #item-bar .item-btn { display: none;margin-top: 2px; right: 10px; top: 2px; padding: 1px 0; width: 110px; }
 #pro-detail-right .item-bar { position: fixed; top: 0; z-index: 999; #background-color: #fff;   }
 #pro-detail-right .item-bar div.item-btn { display: block !important; }
 .p-parameter-list li { float: left; padding-left: 20px; width: 239px; line-height: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.detail-content-wrap { width: 980px; overflow: hidden; padding: 40px; background: #fff; }
+.detail-content-wrap { width: 970px; overflow: hidden; padding: 40px; background: #fff; }
 .detail-content-wrap img { margin: 0 auto; display: block; max-width: 980px; }
 .detail-content-wrap br { display: none; }
 .item-blue-top { border-top-width: 2px; border-top-color: #ee260d; line-height: 40px }
@@ -401,11 +401,11 @@ img { display: block; }
 .list-type-selected { padding:10px 0; }
 .item-type { float: left; padding: 5px 0 5px 0; width: 100%; line-height: 22px; border-bottom: 1px dotted #ddd; }
 .item-type dt, .item-type dd { float: left; }
-.item-type dt { width: 103px; text-align: right; line-height: 26px; }
-.item-type .type-name { width: 823px; line-height: 26px; }
-.item-type .type-name a { float: left; margin-left: 10px; margin-right: 10px; padding: 0 10px; }
-.item-type .type-name a:hover, .item-type .type-name .selected { color: #fff; background-color: #ee260d; border-radius: 4px; padding: 0 10px; }
-.item-type .more { width: 49px; text-align: center; }
+.item-type dt { width: 103px; text-align: right; line-height: 30px; }
+.item-type .type-name { width: 800px; line-height: 26px;  }
+.item-type .type-name a { float: left; padding: 0 8px; margin: 2px 5px; }
+.item-type .type-name a:hover, .item-type .type-name .selected { color: #fff; background-color: #ee260d; border-radius: 4px; padding: 0 8px; }
+.item-type .more { width: 49px; text-align: center;line-height: 28px; padding-right: 20px; }
 .more-type { display: block; margin: 0 auto; width: 96px; height: 26px; line-height: 25px; border: 1px solid #eee; border-top: 0; border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; text-align: center; background-color: #f7f7f7; }
 .more-type:hover { color: #fff; background-color: #B12518; }
 

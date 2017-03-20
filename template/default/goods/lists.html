@@ -199,7 +199,7 @@
 						{loop $data $k $r}
 						<dl class="item-type hidden">
 							<dt>{$r['name']}：</dt>
-							<dd class="type-name">
+							<dd class="type-name fl">
 							{if $_GET['attr'][$k]}
 								<a class="hidden" href="{create_url($k, '', $spec)}">全部</a>
 							{else}
@@ -213,7 +213,7 @@
 							{/if}
 							{/loop}
 							</dd>
-							<dd class="more"></dd>
+							<dd class="more fr"></dd>
 						</dl>
 						{/loop}
 						{/hd}
