@@ -1244,7 +1244,7 @@ function seo($title, $keywords='', $description='', $other='', $flag = false) {
 	if(0 === SITE_AUTHORIZE && $tpl_theme !== 'wap')$SEO['title'] .= ' - '.pack("H*","506f77657265642062792048616964616f");
     $SEO['keywords'] = ($keywords ? $keywords : '').$site_keywords;
     $SEO['description'] = ($description ? $description : '').$site_description;
-    $SEO['other'] = $other ? $other : '';
+    $SEO['other'] = $other ? $other : $setting['header_other'];
     return $SEO;
 }
 
