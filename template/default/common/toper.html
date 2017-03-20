@@ -20,16 +20,14 @@
 	<script type="text/javascript"> hd_cart.init(); </script>
 	<!-- <script type="text/javascript" src="{__ROOT__}template/default/statics/js/jquery.min.js"></script> -->
 	<link rel="stylesheet" href="{__ROOT__}template/default/statics/css/zzsc.css"/>
-	{$site_rewrite_other}
 	<!--[if gte IE 8]> 
 		<link type="text/css" rel="stylesheet" href="{__ROOT__}template/default/statics/css/compatible.css" />
 	<![endif]-->
 </head>
 <body>
-	<div class="text-align"></div>
 	<!-- 顶部工具条 -->
 	<!--<div class="layout border-bottom bg-gray-white">-->
-	<div class="layout">
+	<div class="layout toper">
 		<div class="site-bar container">
 			<!--
 			<ul class="fl">
@@ -41,8 +39,9 @@
 			-->
 			<div class="logo fl">
 				<!-- <span><a href="{__APP__}"><img width="190px" height="64px" src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></a></span> -->
-				<span><a href="{__APP__}"><img width="190px" height="auto" src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo1.png' ?>" /></a></span>
+				<span><a href="{__APP__}"><img width="190px" height="140px" src="<?php $cache = model('admin/setting','service')->get(); echo $cache['site_logo'] ? $cache['site_logo'] : 'template/default/statics/images/logo.png' ?>" /></a></span>
 			</div>
+
 			{hook/mid_site_bar data}
 			<ul class="fr">
 				<?php if ($member['id']): ?>
@@ -61,6 +60,11 @@
 				<li><a href="#">手机版</a></li> -->
 				{hook/right_site_bar}
 			</ul>
+			<div class="header_slogan">
+				<!--{$site_rewrite_other}-->
+				<h1 class="text-main">摩擦擦</h1>
+				<p>我们的产品都来自正规渠道</p>
+			</div>
 		</div>
 	</div>
 

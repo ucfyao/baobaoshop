@@ -86,32 +86,31 @@ img { display: block; }
 .cart-btn.bg-gray:hover{background-color: #a5a5a5;}
 .cart-btn:hover{ color: #fff; background-color: #e74447; }
 
+/***toper***/
+.toper { position: relative; height:150px;}
+
 /***header_slogan***/
-.header_slogan { font-size: 22px; text-align: left; padding-top: 20px; padding-left: 300px; margin-top: -40px; line-height: 46px }
+.header_slogan { position: relative; display:block; font-size: 22px; text-align: left; line-height: 46px; top:35px; left:120px; }
 .header_slogan p {  }
 .header_slogan h1 {   }
 
 /***site-bar***/
-.site-bar { height: 63px; line-height: 63px; margin-top: 10px; background: url(../images/topimg.png) no-repeat 200 0px; background-size: 467px auto; }
+.site-bar { height: 80px; line-height: 50px; #margin-top: 10px; background: url(../images/topimg.png) no-repeat 200 0px; background-size: 467px auto; }
 .site-bar ul li { float: left; }
 .site-bar ul li.spacer { margin: 24px 16px; background: #fff; }
 .site-bar a { color: #666; }
 .site-bar a:hover { color: #e74447; }
 
 /***header***/
-.header { position: relative; height: 140px; }
+.header { position: relative; height: 100px; }
 .logo { margin: 0px 0; height: 160px; position: relative; z-index: 99; }
-.search-wrap { position: absolute; z-index: 199; top: 110px; left: 184px; width: 511px; background: #fff;border-top-right-radius: 0;border-bottom-right-radius: 0;}
+.search-wrap { position: absolute; z-index: 199; top: 0px; left: 184px; width: 511px; background: #fff;border-top-right-radius: 0;border-bottom-right-radius: 0;}
 .keyword { line-height: 12px; }
 .keyword li { float: left; }
 .keyword li.spacer { margin: 0 10px; background: #999; }
 .keyword a { margin: 0 5px; }
 
-.user {     position: relative;
-    top: 19px;
-    width: 43%;
-    height: 77px;
-    background: #fff; }
+.user {     position: relative; top: 0px; width: 43%;height: 77px;background: #fff; }
 .user i { width: 14px; height: 14px; background-size: 14px 14px; filter:Alpha(opacity=60); -moz-opacity:.6; opacity:0.6; }
 .user .user-box { float: right; position: relative; right:20px; top:20px; }
 .user .icon-down { margin: 9px 12px 10px 7px; background: url(../images/icon_down.svg) no-repeat; background-size: 13px 13px; }
@@ -151,8 +150,8 @@ img { display: block; }
 .icon-shelves{background-position: 0 -111px;}
 
 /***nav***/
-.nav { height: 75px; position: relative; }
-.category { position: absolute; z-index: 99; top: -30px;  }
+.nav { #height: 27px; position: relative; }
+.category { position: absolute; z-index: 99; top: -100px;  }
 .category .dt { position: relative; width: 175px; height: 77px; line-height: 77px; cursor: pointer; border-radius: 4px; }
 .category .dt i {     float: left;margin: 32px 22px 7px 20px;line-height: 22px;font-size: 14px; }
 .category .dd { display: none; position: absolute; top: 75px; left: 0; border: 1px solid #EE260D; border-top: 0; background-color: #EE260D;}
@@ -196,7 +195,7 @@ img { display: block; }
 .site-menu li { float: left; padding: 0 25px; }
 
 /***crumbs***/
-.crumbs { margin-bottom: 20px;  }
+.crumbs { #margin-bottom: 20px;  }
 .crumbs p { line-height: 43px; padding-left: 20px; }
 .crumbs .icon-crumbs { float: left; margin-top: 14px; margin-right: 10px; display: inline-block; width: 12px; height: 14px; vertical-align: text-top; background: url(../images/icon_coordinates.svg) no-repeat center; background-size: 14px 16px; }
 .crumbs em { margin: 0 7px; font-style: normal; font-family: "宋体"; }
@@ -279,10 +278,10 @@ img { display: block; }
 .item-btn:hover { color: #fff; background-color: #B12518; }
 
 .item-title { height: 70px; line-height: 70px; border-bottom: 1px solid #eee; text-indent: 10px; font-size: 19px; background: #fff; }
-.item-double-txt { padding: 5px; line-height: 18px; text-align: center; overflow: hidden; }
+.item-double-txt { padding: 15px 0; line-height: 18px; text-align: center; overflow: hidden; }
 .product-ext { float: left; width: 208px; #margin-top: 20px; }
 .product-ext .ext-content { border-color: #eee; background: #fff; border-bottom: 1px solid #ccc; }
-.product-ext .ext-content .item-double-txt { float: left; width: 69px; height: 50px; border-right: 1px solid #eee; }
+.product-ext .ext-content .item-double-txt { float: left; width: 69px; height: 70px; border-right: 1px solid #eee; }
 .product-ext .ext-content .item-double-txt.last { width: 70px; border-right: 0; }
 .ext-content .ext-show { width: 100%; overflow: hidden; }
 .ext-con-wrap { width: 196px; }
@@ -333,7 +332,7 @@ img { display: block; }
 #pro-detail-right { position: relative; }
 #item-bar {  width: 980px; #background-color: #fff; }
 #item-bar .tab { position: relative; #margin-top: 4px; height: 48px; border-bottom: 1px solid #eee;  #background-color: #fff;  }
-#item-bar .item-btn { display: none;margin-top: 11px; right: 10px; top: 2px; padding: 1px 0; width: 110px; }
+#item-bar .item-btn { display: none;margin-top: 2px; right: 10px; top: 2px; padding: 1px 0; width: 110px; }
 #pro-detail-right .item-bar { position: fixed; top: 0; z-index: 999; #background-color: #fff;   }
 #pro-detail-right .item-bar div.item-btn { display: block !important; }
 .p-parameter-list li { float: left; padding-left: 20px; width: 239px; line-height: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -404,8 +403,8 @@ img { display: block; }
 .item-type dt, .item-type dd { float: left; }
 .item-type dt { width: 103px; text-align: right; line-height: 30px; }
 .item-type .type-name { width: 823px; }
-.item-type .type-name a { float: left; margin-left: 10px; margin-bottom: 4px; padding: 3 10px; }
-.item-type .type-name a:hover, .item-type .type-name .selected { color: #fff; background-color: #B12518; border-radius: 4px; }
+.item-type .type-name a { float: left; margin-left: 10px; margin-right: 10px; margin-bottom: 4px; padding: 0 10px; }
+.item-type .type-name a:hover, .item-type .type-name .selected { color: #fff; background-color: #ee260d; border-radius: 4px; padding: 0 10px; }
 .item-type .more { width: 49px; text-align: center; }
 .more-type { display: block; margin: 0 auto; width: 96px; height: 26px; line-height: 25px; border: 1px solid #eee; border-top: 0; border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; text-align: center; background-color: #f7f7f7; }
 .more-type:hover { color: #fff; background-color: #B12518; }
@@ -678,7 +677,7 @@ img { display: block; }
 .global-footer .hd-service .last { float: right; width: 190px; }
 .global-footer .hd-service .last dt { display: none; }
 /*.footer-logo{ height: 45px; } 谁加的这个*/
-.hd-service .fore dt { margin: 10px 0; font-size: 14px; }
+.hd-service .fore dt { margin: 20px 0 10px 0; font-size: 14px; }
 .hd-service .fore dd { line-height: 18px; }
 .friend-link dl { line-height: 20px; }
 .friend-link dl dt { width: 68px; }

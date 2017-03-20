@@ -1,5 +1,7 @@
 <?php include template('toper','common');?>
 <?php include template('header','common');?>
+<script type="text/javascript" src="template/default/statics/js/index.js?v={HD_VERSION}"></script>
+<script type="text/javascript" src="template/default/statics/js/jquery.cookie.js?v={HD_VERSION}"></script>
 		<!--面包屑-->
 		<div class="container crumbs border-bottom clearfix">
 			<p class="fl layout">
@@ -7,13 +9,12 @@
 				{catpos($_GET['id'])}
 			</p>
 		</div>
-		{hook/lists_crumbs}
 		<!--list-->
 		<div class="item-two-column container margin-large-top clearfix">
 			<div class="left fl">
-				<div class="list-category bg-white border radius margin-big-bottom border-gray-white">
+				<div class="list-category bg-white radius margin-big-bottom">
 				<!-- <div class="list-category "> -->
-					<div class="item-title">{$category['top_parentid']['name']}</div>
+					<div class="item-title"><b>{$category['top_parentid']['name']}</b></div>
 					<div class="layout sp-category">
 						{hd:goods tagfile="category" catid="$category[top_parentid][id]" method="lists"}
 						{loop $data $r}
@@ -285,7 +286,6 @@
 		</div>
 		<?php include template('toolbar','common');?>
 		<?php include template('footer','common');?>
-
 		<script type="text/javascript" src="<?php echo __ROOT__ ?>statics/js/jquery.lazyload.js?v={HD_VERSION}" ></script>
 		<script>
 			$(function(){
