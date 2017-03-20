@@ -405,7 +405,7 @@ img { display: block; }
 .item-type .type-name { width: 800px; line-height: 26px;  }
 .item-type .type-name a { float: left; padding: 0 8px; margin: 2px 5px; }
 .item-type .type-name a:hover, .item-type .type-name .selected { color: #fff; background-color: #ee260d; border-radius: 4px; padding: 0 8px; }
-.item-type .more { width: 49px; text-align: center;line-height: 28px; padding-right: 20px; }
+.item-type .more { width: 49px; text-align: center;line-height: 28px; padding-right: 0px; }
 .more-type { display: block; margin: 0 auto; width: 96px; height: 26px; line-height: 25px; border: 1px solid #eee; border-top: 0; border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; text-align: center; background-color: #f7f7f7; }
 .more-type:hover { color: #fff; background-color: #B12518; }
 
