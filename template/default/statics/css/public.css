@@ -711,8 +711,8 @@ img { display: block; }
 .member-head .header .logo, .back-shop { height: 45px; margin-top: 20px; }
 .member-head .header .logo img{height: 45px;}
 .back-shop { width: 95px; }
-.back-shop a { float: left; display: block; margin-top: 3px; padding: 0 5px; height: 20px; line-height: 18px; border: 1px solid #c9c9c9; border-radius: 2px; color: #c9c9c9; }
-.back-shop a:hover { color: #B12518; line-height: 20px; border: 0; background-color: #fff; }
+.back-shop a { float: left; display: block; margin-top: 3px; padding: 0 5px; height: 20px; line-height: 18px; border-radius: 2px;color: #B12518; line-height: 20px; border: 0; background-color: #fff;  }
+.back-shop a:hover { color: #fff; background-color: #000; }
 .member-head .menu { margin: 29px 0 0 75px; }
 .member-head .menu li { float: left; margin-right: 50px; }
 .member-head .menu a { display: block; height: 32px; color: #fff; line-height: 30px; }
@@ -1054,7 +1054,10 @@ img { display: block; }
 .floor .left { float: left; width: 947px; }
 .floor-info { position: relative; height: 46px; border-bottom: 1px solid #EE260D; font-size: 18px; }
 .floor-info .floor-logo { float: left; width: 46px; height: 46px; text-align: center; line-height: 46px; color: #fff; background:#EE260D url(#../images/ico_general.png) no-repeat 0 -327px; border-top-left-radius: 15px; }
-.floor-info h3 { float: left; margin-top: 4px; margin-left: 22px; line-height: 36px; }
+.floor-info .floor-logo a {display: block; color: #fff; margin: auto; width: 46px;}
+.floor-info .floor-logo a:hover { color: #000;}
+.floor-info h3 { float: left; line-height: 36px; }
+.floor-info h3 a { display: block; padding-top: 4px; padding-right: 22px; padding-left: 22px;}
 .floor .floor-info ul { margin-top: 15px; margin-right: 1px; padding-left: 1px; /*border-bottom: 1px solid #B12518;*/ display: #none; }
 .floor .floor-info ul li {padding: 0 30px; height: 30px; text-align: center; line-height: 30px; }
 .floor .floor-info ul li.current { margin: -2px -1px -1px;padding: 0 30px;height: 33px; border-top: 1px solid #EE260D; border-left: 1px solid #EE260D; border-right: 1px solid #EE260D; background-color: #f7f7f7; }
