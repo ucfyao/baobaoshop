@@ -120,12 +120,12 @@
 		<?php $catid = $r['id']?>
 		<div class="floor container padding-large-top clearfix">
 			<div class="floor-info tab">
-				<div class="floor-logo"><?php echo $k+1?>F</div>
-				<h3>{$r[name]}</h3>
+				<div class="floor-logo"><a href="{url('goods/index/lists',array('id'=>$r['id']))}"><?php echo $k+1?>F</a></div>
+				<h3><a href="{url('goods/index/lists',array('id'=>$r['id']))}">{$r[name]}</a></h3>
 				<ul class="fr text-default clearfix">
 				{hd:goods tagfile="category" method="lists" catid="$r[id]"}
 				{loop $data $key $r}
-					<li data-id="{$r[id]}" {if $key == 0}data-ajax="1"{/if}><span>{$r[name]}</span></li>
+					<li data-id="{$r[id]}" {if $key == 0}data-ajax="1"{/if}><a href="{url('goods/index/lists',array('id'=>$r['id']))}"><span>{$r[name]}</span></a></li>
 				{/loop}
 				{/hd}
 				</ul>
