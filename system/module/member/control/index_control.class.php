@@ -10,7 +10,7 @@ class index_control extends cp_control
 		//收藏的商品
 		$favorite = $this->load->service('member/member_favorite')->set_mid($this->member['id'])->lists(array(), 10);
 		//待评价商品
-		$notcommentgoods = $this->load->table('order/order_sku')->where(array('buyer_id' => $this->member['id'],'iscomment'=>0,'delivery_status'=>2))->limit(10)->select();
+		$notcommentgoods = $this->load->service('order/order_sku')->fetch(array('buyer_id' => $this->member['id'],'iscomment'=>0,'delivery_status'=>2),10);
 		//进行中的订单
 		// $counts = model('order/order','table')->member_id($this->member['id'])->out_counts();
 		//咨询回复
@@ -18,7 +18,7 @@ class index_control extends cp_control
 		//站内信
 		$counts['message'] = (int)$this->load->service('member/member_message')->user_message($this->member['id']);
 		//配置文件
-		$_config = cache('setting');
+		$_config = model('admin/setting','service')->get();
 		$this->load->librarys('View')->assign('_config',$_config)->assign('favorite',$favorite)->assign('notcommentgoods',$notcommentgoods)->assign('counts',$counts)->assign('SEO',$SEO)->display('index');
 	}
 	public function get_rec_data(){

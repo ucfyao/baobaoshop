@@ -17,12 +17,12 @@
 		            <input type="number" class="mui-input-clear" value="" placeholder="请输入邮政编码" name="zipcode"/>
 		        </div>
 		        <div class="mui-input-row">
-		            <label>所在国家</label>
+		            <label>所在地区</label>
 					<select class="mui-select" id="country"></select>
 		        </div>
 		        <div class="mui-input-row">
-		            <label>所在地区</label>
-		            <input class="mui-input" type="text" name="" value="{implode(" ",$address['full_district'])}" readonly="readonly" placeholder="请选择所在地区" id="choose-address" />
+		            <label>所在省市</label>
+		            <input class="mui-input" type="text" name="" value="{implode(" ",$address['full_district'])}" readonly="readonly" placeholder="请选择所在省市" id="choose-address" />
 					<input class="district-text-id" type="hidden" name="district_id" value="{$address['district_id']}">
 		       </div>
 		        <div class="mui-input-row">

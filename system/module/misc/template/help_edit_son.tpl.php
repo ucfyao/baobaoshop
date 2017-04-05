@@ -34,6 +34,5 @@
 				var $val=$("input[type=text]").first().val();
 				$("input[type=text]").first().focus().val($val);
 			})
-			var ue = UE.getEditor('editor');
 		</script>
 	<?php include template('footer','admin');?>

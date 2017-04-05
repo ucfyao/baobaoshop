@@ -109,7 +109,7 @@ class module_wap_hook
 					$content_tmpl .= ' mui-clearfix">';
 					$content_tmpl .= '{hd:goods tagfile="goods" method="lists" catid="'.$tmpl['category'].'" num="'.$tmpl['goods_number'].'"}';
 					$content_tmpl .= '{loop $data $r}';
-					$content_tmpl .= '<li class="goods-item-list"><div class="list-item"><div class="list-item-pic"><a href="'.$sku_url.'" class="square-item"><img class="lazy" src="{SKIN_PATH}statics/images/loading.gif" data-original="{thumb($r[thumb],500,500)}"></a></div><div class="list-item-bottom"><div class="list-item-title"><a href="'.$sku_url.'">{$r[sku_name]}</a></div><div class="list-item-text"><span class="price-org">￥{$r[prom_price]}</span></div></div></div></li>';
+					$content_tmpl .= '<li class="goods-item-list"><a class="list-item" href="'.$sku_url.'"><div class="list-item-pic"><div class="square-item"><img class="lazy" src="{SKIN_PATH}statics/images/loading.gif" data-original="{thumb($r[thumb],500,500)}"></div></div><div class="list-item-bottom"><div class="list-item-title"><span>{$r[sku_name]}</span></div><div class="list-item-text"><span class="price-org">￥{$r[prom_price]}</span></div></div></a></li>';
 					$content_tmpl .= '{/loop}';
 					$content_tmpl .= '{/hd}';
 					$content_tmpl .= '</ul>';
@@ -157,6 +157,29 @@ class module_wap_hook
 					$content_tmpl .= $tmpl;
 					$template = preg_replace('/<!--{diy '.$tpl[1].'+(.+)}-->/',$content_tmpl,$template,1);
 					break;
+				case 'notice':
+					$content_tmpl = '';
+					if($tmpl['style'] == 0){
+						$content_tmpl .= '<a class="custom-notice custom-notice-jd" href="'.$tmpl["upload"][0]["url"].'"><div class="notice-img"><img src="'.$tmpl["upload"][0]["src"].'" /></div><div class="notice-text mui-ellipsis" style="color: '.$tmpl["color"].';">'.$tmpl["title"].'</div></a>';
+					}else if($tmpl['style'] == 1){
+						$content_tmpl .= '<a class="custom-notice custom-notice-tmall" href="'.$tmpl["upload"][0]["url"].'"><div class="notice-img"><img src="'.$tmpl["upload"][0]["src"].'" /></div><div class="notice-text mui-ellipsis"><div class="notice-title"><div class="main-title" style="color: '.$tmpl["color"].';">'.$tmpl["title"].'</div><div class="sub-title" style="color: '.$tmpl["subcolor"].';">'.$tmpl["subtitle"].'</div></div></div></a>';
+					}
+					$template = preg_replace('/<!--{diy '.$tpl[1].'+(.+)}-->/',$content_tmpl,$template,1);
+					break;
+				case 'nav';
+					$content_tmpl = '';
+					$className = 'hd-col-xs-e4 ';
+					if($tmpl["type"] == 1 || $tmpl["type"] == 3){
+						$className = 'hd-col-xs-e5 ';
+					}
+					$content_tmpl .= '<nav class="quick-entry-nav hd-grid">';
+					$uploads = $tmpl["upload"];
+					for($i= 0;$i< count($uploads); $i++){
+						$content_tmpl .= '<a href="'.$uploads[$i]["url"].'" class="'.$className.'quick-entry-link"><span class="nav-img"><img src="'.$uploads[$i]["src"].'" /></span><span class="title">'.$uploads[$i]["title"].'</span></a>';
+					}
+					$content_tmpl .= '</nav>';
+					$template = preg_replace('/<!--{diy '.$tpl[1].'+(.+)}-->/',$content_tmpl,$template,1);
+					break;
 				default:
 					break;
 			}
@@ -164,9 +187,9 @@ class module_wap_hook
 		}
 		$template = preg_replace('/<\/header>/','</header><div class="mui-content">',$template);
 		$compile_tmpl .= '</div>';
-		$compile_tmpl .= '<footer class="footer"><div class="text-gray mui-text-center copy-text">';
-		$compile_tmpl .= SITE_AUTHORIZE == 0? COPYRIGHT:"";
-		$compile_tmpl .= '</div></footer>';
+		$compile_tmpl .= '<footer class="footer">';
+		$compile_tmpl .= SITE_AUTHORIZE == 0? '<div class="copyright"></div>':"";
+		$compile_tmpl .= '</footer>';
 		$compile_tmpl .= '<script>$("[name=form_search]").submit(function(){if($("[type=search]").val() == ""){return false;}});</script>';
 		$compile_tmpl .= '</body>';
 		$template = preg_replace('/<\/body>/',$compile_tmpl,$template);

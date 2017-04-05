@@ -14,16 +14,16 @@
 	 */
 	function more_array_unique($arr){
 	    foreach($arr[0] as $k => $v){
-	        $arr_inner_key[]= $k;   
+	        $arr_inner_key[]= $k;
 	    }
 	    foreach ($arr as $k => $v){
-	        $v =join(',',$v);    
-	        $temp[$k] =$v;      
+	        $v =join(',',$v);
+	        $temp[$k] =$v;
 	    }
-	    $temp =array_unique($temp);    
+	    $temp =array_unique($temp);
 	    foreach ($temp as $k => $v){
-	        $a = explode(',',$v);  
-	        $arr_after[$k]= array_combine($arr_inner_key,$a);  
+	        $a = explode(',',$v);
+	        $arr_after[$k]= array_combine($arr_inner_key,$a);
 	    }
 	    return $arr_after;
 	}
@@ -67,7 +67,7 @@
 	 * @param  [type] $attr [description]
 	 * @return [type]       [description]
 	 */
-	function create_url($k, $v, $attr) {	
+	function create_url($k, $v, $attr) {
 		$url = parse_url($_SERVER['REQUEST_URI']);
 		parse_str($url['query'], $param);
 		$param = dstripslashes($param);
@@ -89,20 +89,18 @@
 	 * @return [type]         [description]
 	 */
 	function catpos($catid, $symbol=' > ') {
-		$categorys = cache('goods_category');
+		$categorys = model('goods/goods_category','service')->get();
 		$cat_url = $categorys[$catid]['url'] ? $categorys[$catid]['url'] : url('goods/index/lists', array('id' => $catid));
 		$pos = '';
-		$parentids = model('goods_category','service')->get_parent($catid,0);	 
+		$parentids = model('goods_category','service')->get_parent($catid);
 		sort($parentids);
 		foreach ($parentids as $parentid) {
 			$url = $categorys[$parentid]['url'] ? $categorys[$parentid]['url'] :url('goods/index/lists', array('id' => $parentid));
 			$pos .= '<a href="'.$url.'">'.$categorys[$parentid]['name'].'</a>'.'<em>'.$symbol.'</em>';
 		}
 		$pos .= '<a href="'.$cat_url.'">'.$categorys[$catid]['name'].'</a>';
-		return $pos; 
+		return $pos;
 	}
-
-	
 
 	function base_encode($str) {
         $src  = array("/","+","=");
@@ -111,7 +109,7 @@
         $new  = str_replace($src,$dist,$old);
         return $new;
 	}
- 
+
 	function base_decode($str) {
         $src = array("_a","_b","_c");
         $dist  = array("/","+","=");

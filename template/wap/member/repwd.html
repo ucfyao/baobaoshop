@@ -2,7 +2,7 @@
 <script type="text/javascript" src="{__ROOT__}statics/js/haidao.validate.js?v={HD_VERSION}"></script>
 <script type="text/javascript" src="template/default/statics/js/jquery.cookie.js?v={HD_VERSION}"></script>
 <?php
-	$setting = cache('setting');
+	$setting = model('admin/setting','service')->get();
 ?>
 <div class="mui-content">
 	<div class="padding bg-white password-find">
@@ -20,13 +20,13 @@
 </div>
 
 {template footer common}
-        
-	
+
+
 	<script>
 		$(function(){
 			$(".password-find").show();
-			
-			
+
+
 			$("input[name='pwd']").blur(function(){
 				if($(this).val()==""){
 					$(this).siblings('.validform_checktip').html("请输入密码");
@@ -37,7 +37,7 @@
 					$(this).siblings('.validform_checktip').html("")
 				}
 			});
-			
+
 			$("input[name='repwd']").blur(function(){
 				var $pwd=$("input[name='pwd']").val();
 				if($(this).val()==""){
@@ -47,10 +47,10 @@
 					$(this).siblings('.validform_checktip').html("两次输入的密码不一致")
 				}else{
 					$(this).siblings('.validform_checktip').html("")
-				}	
+				}
 			});
-			
-			
+
+
 			$(".re-btn").on('tap',function(){
 				var $pwd_=$("input[name='pwd']");
 				var $repwd_=$("input[name='repwd']");
@@ -74,7 +74,7 @@
 				var data={pwd:$pwd,repwd:$repwd,mid:'{$_GET["mid"]}',key:'{$_GET["key"]}'};
 				ajax_repwd(data);
 			});
-			
+
 			function ajax_repwd(data){
 				$.ajax({
 					type:"post",
@@ -93,9 +93,9 @@
 				});
 			}
 
-            
+
 		});
-		
+
 	</script>
 
 </html>

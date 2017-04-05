@@ -49,38 +49,73 @@ class template
         /* 注释 */
         $template = preg_replace("/\<\!\-\-\{(.+?)\}\-\-\>/s", "{\\1}", $template);
         /* 语言包 */
-        $template = preg_replace("/\{lang\s+(.+?)\}/ies", "\$this->languagevar('\\1')", $template);
-        /* 广告调用 */
-        $template = preg_replace("/\{ad\s+([a-zA-Z0-9_\[\]]+)\}/ies", "\$this->adtags('\\1')", $template);
-        $template = preg_replace("/\{ad\s+([a-zA-Z0-9_\[\]]+)\/(.+?)\}/ies", "\$this->adtags('\\1', '\\2')", $template);
-        /* 插件钩子 */
-        $template = preg_replace("/\{hook\/(\w+)}/ies", "\$this->hooktags('\\1')", $template);
-        $template = preg_replace("/\{hook\/(\w+)\s+(\S+)}/ies", "\$this->hooktags('\\1','\\2')", $template);
-       
-         /* 引入模板 */
-        $template = preg_replace("/\{template\s+(\S+)\}/ies", "\$this->stripvtags('<?php include template(\'\\1\'); ?>')", $template);
-        $template = preg_replace("/\{template\s+(\S+)\s+(\S+)\}/ies", "\$this->stripvtags('<?php include template(\'\\1\', \'\\2\'); ?>')", $template);
+        if(version_compare('5.4.0', phpversion()) > -1){
+            $template = preg_replace("/\{lang\s+(.+?)\}/ies", "\$this->languagevar('\\1')", $template);
+        }else{
+            $template = preg_replace_callback("/\{lang\s+(.+?)\}/is",function($r){return $this->languagevar($r[1]);},$template);
+        }
 
-        /* 条件 */
-        $template = preg_replace("/([\n\r\t]*)\{if\s+(.+?)\}([\n\r\t]*)/ies", "\$this->stripvtags('\\1<?php if(\\2) { ?>\\3')", $template);
-        $template = preg_replace("/([\n\r\t]*)\{elseif\s+(.+?)\}([\n\r\t]*)/ies", "\$this->stripvtags('\\1<?php } elseif(\\2) { ?>\\3')", $template);
+        if(version_compare('5.4.0', phpversion()) > -1){
+             $template = preg_replace("/\{ad\s+([a-zA-Z0-9_\[\]]+)\}/ies", "\$this->adtags('\\1')", $template);
+            $template = preg_replace("/\{ad\s+([a-zA-Z0-9_\[\]]+)\/(.+?)\}/ies", "\$this->adtags('\\1', '\\2')", $template);
+            /* 插件钩子 */
+            $template = preg_replace("/\{hook\/(\w+)}/ies", "\$this->hooktags('\\1')", $template);
+            $template = preg_replace("/\{hook\/(\w+)\s+(\S+)}/ies", "\$this->hooktags('\\1','\\2')", $template);
+
+             /* 引入模板 */
+            $template = preg_replace("/\{template\s+(\S+)\}/ies", "\$this->stripvtags('<?php include template(\'\\1\'); ?>')", $template);
+            $template = preg_replace("/\{template\s+(\S+)\s+(\S+)\}/ies", "\$this->stripvtags('<?php include template(\'\\1\', \'\\2\'); ?>')", $template);
+
+            /* 条件 */
+            $template = preg_replace("/([\n\r\t]*)\{if\s+(.+?)\}([\n\r\t]*)/ies", "\$this->stripvtags('\\1<?php if(\\2) { ?>\\3')", $template);
+            $template = preg_replace("/([\n\r\t]*)\{elseif\s+(.+?)\}([\n\r\t]*)/ies", "\$this->stripvtags('\\1<?php } elseif(\\2) { ?>\\3')", $template);
+        }else{
+            /* 广告调用 */
+            $template = preg_replace_callback("/\{ad\s+([a-zA-Z0-9_\[\]]+)\}/is",function($r){return $this->adtags($r[1]);},$template);
+            $template = preg_replace_callback("/\{ad\s+([a-zA-Z0-9_\[\]]+)\/(.+?)\}/is",function($r){return $this->adtags($r[1],$r[2]);},$template);
+            /* 插件钩子 */
+            $template = preg_replace_callback("/\{hook\/(\w+)}/is",function($r){return $this->hooktags($r[1]);},$template);
+            $template = preg_replace_callback("/\{hook\/(\w+)\s+(\S+)}/is",function($r){return $this->hooktags($r[1],$r[2]);},$template);
+
+             /* 引入模板 */
+            $template = preg_replace_callback("/\{template\s+(\S+)\}/is",function($r){return $this->stripvtags('<?php include template('. $r[1] .'); ?>');},$template);
+            $template = preg_replace_callback("/\{template\s+(\S+)\s+(\S+)\}/is",function($r){return $this->stripvtags('<?php include template('.$r[1].','.$r[2].'); ?>');},$template);
+
+            /* 条件 */
+            $template = preg_replace_callback("/([\n\r\t]*)\{if\s+(.+?)\}([\n\r\t]*)/is",function($r){return $this->stripvtags($r[1].'<?php if('.$r[2].'){?>'.$r[3]);},$template);
+            $template = preg_replace_callback("/([\n\r\t]*)\{elseif\s+(.+?)\}([\n\r\t]*)/is",function($r){return $this->stripvtags($r[1].'<?php }elseif('.$r[2].'){?>'.$r[3]);},$template);
+        }
         $template = preg_replace("/\{else\}/i", "<?php } else { ?>", $template);
         $template = preg_replace("/\{\/if\}/i", "<?php } ?>", $template);
 
         /* 数据循环 */
-        $template = preg_replace("/[\n\r\t]*\{loop\s+(\S+)\s+(\S+)\}[\n\r\t]*/ies", "\$this->stripvtags('<?php if(is_array(\\1)) foreach(\\1 as \\2) { ?>')", $template);
-        $template = preg_replace("/[\n\r\t]*\{loop\s+(\S+)\s+(\S+)\s+(\S+)\}[\n\r\t]*/ies", "\$this->stripvtags('<?php if(is_array(\\1)) foreach(\\1 as \\2 => \\3) { ?>')", $template);
+        if(version_compare('5.4.0', phpversion()) > -1){
+            $template = preg_replace("/[\n\r\t]*\{loop\s+(\S+)\s+(\S+)\}[\n\r\t]*/ies", "\$this->stripvtags('<?php if(is_array(\\1)) foreach(\\1 as \\2) { ?>')", $template);
+            $template = preg_replace("/[\n\r\t]*\{loop\s+(\S+)\s+(\S+)\s+(\S+)\}[\n\r\t]*/ies", "\$this->stripvtags('<?php if(is_array(\\1)) foreach(\\1 as \\2 => \\3) { ?>')", $template);
+        }else{
+            $template = preg_replace_callback("/[\n\r\t]*\{loop\s+(\S+)\s+(\S+)\}[\n\r\t]*/is",function($r){return $this->stripvtags('<?php if(is_array('.$r[1].')) foreach('. $r[1] .' as '. $r[2] .'){?>');},$template);
+            $template = preg_replace_callback("/[\n\r\t]*\{loop\s+(\S+)\s+(\S+)\s+(\S+)\}[\n\r\t]*/is",function($r){return $this->stripvtags('<?php if(is_array('.$r[1].')) foreach('. $r[1] .' as '. $r[2] .' => '. $r[3] .'){?>');},$template);
+        }
         $template = preg_replace("/\{\/loop\}/i", "<?php } ?>", $template);
 
         /* 标签库 */
-        $template = preg_replace("/\{".$this->config['taglib_name'].":(\w+)\s+([^}]+)\}/ie", "\$this->begin_tag('$1','$2', '$0')", $template);
-        $template = preg_replace("/\{\/".$this->config['taglib_name']."\}/ie", "\$this->end_tag()", $template);
+        if(version_compare('5.4.0', phpversion()) > -1){
+             $template = preg_replace("/\{".$this->config['taglib_name'].":(\w+)\s+([^}]+)\}/ie", "\$this->begin_tag('$1','$2', '$0')", $template);
+            $template = preg_replace("/\{\/".$this->config['taglib_name']."\}/ie", "\$this->end_tag()", $template);
+        }else{
+            $template = preg_replace_callback("/\{".$this->config['taglib_name'].":(\w+)\s+([^}]+)\}/i",function($r){return $this->begin_tag($r[1],$r[2],$r[0]);},$template);
+            $template = preg_replace_callback("/\{\/".$this->config['taglib_name']."\}/i",function($r){return $this->end_tag();},$template);
+        }
 
         /* 普通调用 */
         $template = preg_replace ( "/\{([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff:]*\(([^{}]*)\))\}/", "<?php echo \\1;?>", $template );
         $template = preg_replace ( "/\{\\$([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff:]*\(([^{}]*)\))\}/", "<?php echo \\1;?>", $template );
         $template = preg_replace ( "/\{(\\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\}/", "<?php echo \\1;?>", $template );
-        $template = preg_replace("/\{(\\$[a-zA-Z0-9_\[\]\'\"\$\x7f-\xff]+)\}/es", "\$this->addquote('<?php echo \\1;?>')",$template);
+        if(version_compare('5.4.0', phpversion()) > -1){
+            $template = preg_replace("/\{(\\$[a-zA-Z0-9_\[\]\'\"\$\x7f-\xff]+)\}/es", "\$this->addquote('<?php echo \\1;?>')",$template);
+        }else{
+            $template = preg_replace_callback("/\{(\\$[a-zA-Z0-9_\[\]\'\"\$\x7f-\xff]+)\}/s",function($r){return $this->addquote('<?php echo '.$r[1].';?>');},$template);
+        }
         $template = preg_replace ( "/\{([A-Z_\x7f-\xff][A-Z0-9_\x7f-\xff]*)\}/s", "<?php echo \\1;?>", $template );
 
         /* 替代标签 */
@@ -97,27 +132,35 @@ class template
     }
 
     public function template($tplfile, $module = '') {
-        $tplfile = (!empty($tplfile)) ? $tplfile : CONTROL_NAME.'_'.METHOD_NAME;
-        $module = (!empty($module)) ? $module : MODULE_NAME;
-        $template = $fullfile = APP_PATH.config('DEFAULT_H_LAYER').'/'.$module.'/template/'.$tplfile.config('TMPL_TEMPLATE_SUFFIX');
-        if(!is_file($fullfile) && defined('IN_ADMIN')) {
-            $fullfile = APP_PATH.config('DEFAULT_H_LAYER').'/'.$module.'/template/'.$tplfile.'.tpl.php';
-        }
-         if(!is_file($fullfile)) {
-            if(!defined('MOBILE')){
-                $fullfile =  APP_PATH.config('DEFAULT_H_LAYER').'/'.$module.'/template/default/'.$tplfile.config('TMPL_TEMPLATE_SUFFIX');
-            }else{
-                $fullfile =  APP_PATH.config('DEFAULT_H_LAYER').'/'.$module.'/template/wap/'.$tplfile.config('TMPL_TEMPLATE_SUFFIX');
+        if($tplfile[0] == '#'){
+            $tplfile = str_replace('#', '', $tplfile);
+            $fullfile = PLUGIN_PATH.PLUGIN_ID.'/template/'.$tplfile.'.tpl.php';
+            if(!is_file($fullfile)) {
+                $fullfile = PLUGIN_PATH.PLUGIN_ID.'/template/'.$tplfile.config('TMPL_TEMPLATE_SUFFIX');
             }
-        }
+        }else{
+            $tplfile = (!empty($tplfile)) ? $tplfile : CONTROL_NAME.'_'.METHOD_NAME;
+            $module = (!empty($module)) ? $module : MODULE_NAME;
+            $template = $fullfile = APP_PATH.config('DEFAULT_H_LAYER').'/'.$module.'/template/'.$tplfile.config('TMPL_TEMPLATE_SUFFIX');
+            if(!is_file($fullfile) && defined('IN_ADMIN')) {
+                $fullfile = APP_PATH.config('DEFAULT_H_LAYER').'/'.$module.'/template/'.$tplfile.'.tpl.php';
+            }
+            if(!is_file($fullfile)) {
+                if(!defined('MOBILE')){
+                    $fullfile =  APP_PATH.config('DEFAULT_H_LAYER').'/'.$module.'/template/default/'.$tplfile.config('TMPL_TEMPLATE_SUFFIX');
+                }else{
+                    $fullfile =  APP_PATH.config('DEFAULT_H_LAYER').'/'.$module.'/template/wap/'.$tplfile.config('TMPL_TEMPLATE_SUFFIX');
+                }
+            }
 
-        if(!is_file($fullfile)) {
-            $fullfile = TPL_PATH.$this->theme.'/'.$module.'/'.$tplfile.config('TMPL_TEMPLATE_SUFFIX');
-        }
+            if(!is_file($fullfile)) {
+                $fullfile = TPL_PATH.$this->theme.'/'.$module.'/'.$tplfile.config('TMPL_TEMPLATE_SUFFIX');
+            }
 
-        if(!is_file($fullfile)) {
-            hd_error::template_error(lang('_template_not_exist_').'：'.$template.','.$fullfile);
+            if(!is_file($fullfile)) {
+                hd_error::template_error(lang('_template_not_exist_').'：'.$template.','.$fullfile);
 
+            }
         }
         $this->template = $fullfile;
         $this->cachefile = CACHE_PATH.'view/'.md5($this->template).'.inc.php';
@@ -140,16 +183,18 @@ class template
     public function begin_tag($op, $data, $html) {
         preg_match_all("/(\w+)\=[\"|']?([^\"|']+)[\"|']?/i", stripslashes($data), $matches, PREG_SET_ORDER);
         // 内置参数
-        $keep_attrs = array('method', 'num', 'limit', 'cache', 'page', 'pagefunc', 'where', 'tagfile');
+        $keep_attrs = array('method', 'num', 'limit', 'cache', 'page', 'pagefunc', 'where', 'tagfile','return');
         $tags_attrs = array();
+        $extract_tags = array();
         foreach ($matches as $k => $v) {
             if(in_array($v[1], $keep_attrs)) {
-                $$v[1] = $v[2];
+                $extract_tags[$v[1]] = $v[2];
                 continue;
             }
             $tags_attrs[$v[1]] = $v[2];
         }
         if($where) $tags_attrs['_string'] = $where;
+        extract($extract_tags, EXTR_OVERWRITE);
 
         /* 默认值 */
         $num = (isset($num) || is_numeric($num)) ? intval($num) : 20;
@@ -237,7 +282,7 @@ class template
             $this->replacecode['replace'][$i] = "<?php {$dev}echo runhook('$hookid');?>";
         }else{
             $this->replacecode['replace'][$i] = "<?php {$dev}\$$key = runhook('$hookid');?>";
-            
+
         }
         return $search;
     }

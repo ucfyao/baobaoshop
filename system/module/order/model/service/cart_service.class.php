@@ -58,6 +58,7 @@ class cart_service extends service {
             	}
             	return $this->set_nums($sku_id,$nums,$buyer_id);
             } else {
+            	runhook('_add_empty_cart',$data);
             	return $this->table->update($data);
             }
 		} else {
@@ -105,6 +106,7 @@ class cart_service extends service {
 		}
 		if ($buyer_id > 0) {
             $sqlmap['buyer_id'] = $buyer_id;
+            runhook('get_cart_list_sqlmap',$sqlmap);
             $items = $this->table->where($sqlmap)->order("id DESC")->getField('sku_id,nums');
 			foreach($items as $skuid => $num) {
 				$num = ($nums[$skuid] == 0 || $nums[$skuid] > $num) ? $num : $nums[$skuid];
@@ -126,8 +128,9 @@ class cart_service extends service {
         	$val = array();
         	list($sku_id, $number) = explode(",", $item);
         	$sku_info = $this->service_goods_sku->goods_detail($sku_id);
+        	runhook('cart_get_sku_info',$sku_info);
         	unset($sku_info['content']);
-        	if($sku_info === false) {
+        	if($sku_info === false || ($sku_info['status'] == -1)) {
         		continue;
         	}
         	$number = min($sku_info['number'], $number);

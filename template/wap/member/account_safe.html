@@ -41,7 +41,7 @@
 </html>
 <?php 
 helper('attachment');
-$attachment_init = attachment_init(array('mid' => $member['id'],'allow_exts'=>array('bmp','jpg','jpeg','gif','png')));
+$attachment_init = attachment_init(array('module'=>'member', 'mid' => $member['id'],'allow_exts'=>array('bmp','jpg','jpeg','gif','png')));
 ?>
 <link type="text/css" rel="stylesheet" href="{__ROOT__}statics/js/upload/uploader.css?v={HD_VERSION}" />
 <script type="text/javascript" src="{__ROOT__}statics/js/upload/uploader.js?v={HD_VERSION}"></script>

@@ -12,14 +12,8 @@ class goods_sku_service extends service {
 		$this->sku_db = $this->load->table('goods/goods_sku');
 		$this->spu_db = $this->load->table('goods/goods_spu');
 		$this->index_db = $this->load->table('goods/goods_index');
-		$this->cate_db = $this->load->table('goods/goods_category');
 		$this->goodsattr_db = $this->load->table('goods/goods_attribute');
 		$this->cate_service = $this->load->service('goods/goods_category');
-		$this->brand_service = $this->load->service('goods/brand');
-		$this->attr_db = $this->load->table('goods/attribute');
-		$this->favorite_service = $this->load->service('member/member_favorite');
-		$this->prom_time_db = $this->load->table('promotion/promotion_time');
-		$this->prom_group_db = $this->load->table('promotion/promotion_group');
 	}
 	/**
 	 * [create_sku 处理子商品]
@@ -83,7 +77,7 @@ class goods_sku_service extends service {
 		}
 	}
 	/**
-	 * [get_sku_names 生成子商品名称]
+	 * [create_sku_name 生成子商品名称]
 	 * @param  [type] $params [商品参数]
 	 * @return [array]         [子商品名称数组]
 	 */
@@ -120,7 +114,7 @@ class goods_sku_service extends service {
 		$sku_ids = $this->sku_db->join($spu.' on '.'id = spu_id')->where($sqlmap)->page($params['page'])->limit($params['limit'])->getField('sku_id',TRUE);
 		$result['count'] =$this->sku_db->field('sku_id,'.config("DB_PREFIX").'goods_spu.sn AS osn')->join(config("DB_PREFIX").'goods_spu on '.'id = spu_id')->where($sqlmap)->count();
 		foreach ($sku_ids AS $sku_id) {
-			$result['lists'][] = $this->detail($sku_id,TRUE);
+			$result['lists'][] = $this->goods_detail($sku_id,'');
 		}
 		return $result;
 	}
@@ -183,7 +177,7 @@ class goods_sku_service extends service {
 		if((int)$id < 1) return FALSE;
 		$favorite = FALSE;
 		if($mid > 0){
-			$favorite = $this->favorite_service->set_mid($mid)->is_exists($id);
+			$favorite = $this->load->service('member/member_favorite')->set_mid($mid)->is_exists($id);
 		}
 		return $favorite;
 	}
@@ -198,28 +192,29 @@ class goods_sku_service extends service {
 			return FALSE;
 		}
 		$goods_info = array();
-		$goods_info = $this->sku_db->detail($id,TRUE,'goods')->show_index()->output();
+		$goods_info = $this->fetch_by_id($id,'spu,price,brand,cat_name,show_index');
 		if (!$goods_info['sku_id']) {
 			$this->error = lang('goods_goods_not_exist','goods/language');
 			return FALSE;
 		}
 		if($flag == FALSE){
-			$goods_info['catname'] = $this->cate_service->create_cat_format($goods_info['catid']);
+			$categorys = $this->cate_service->get_parent($goods_info['catid']);
+			array_push($categorys,$goods_info['catid']);
+			$goods_info['catname'] = $this->cate_service->create_cat_format($categorys);
 		}
 		$sku_list = $this->sku_db->where(array('spu_id'=>$goods_info['spu_id']))->select();
 		if($sku_list){
 			$sku = array();
 			foreach ($sku_list AS $v) {
-				$v['spec_array'] = json_decode($v['spec'],TRUE);
+				$v['spec_array'] = $v['spec'];
 				$sku[$v['sku_id']] = $v;
 			}
 		}
 		if($sku){
 			foreach ($sku as $k => $v) {
-				$spec_arr = $v['spec_array'];
 				$spec_md5 = '';
 				$spec_md = array();
-				foreach ($spec_arr AS $value) {
+				foreach ($v['spec_array'] AS $value) {
 					$spec_md[] = md5($value['id'].':'.$value['value']);
 					$spec_md5 .= $value['id'].':'.$value['value'].';';
 				}
@@ -232,13 +227,13 @@ class goods_sku_service extends service {
 			$goods_info['sku_arr'] = $sku_arr;
 		}
 		$spec_str = '';
-		foreach (json_decode($goods_info['spec'],TRUE) AS $spec) {
+		foreach ($goods_info['spec'] AS $spec) {
 			$spec_str .= $spec['id'].':'.$spec['value'].';';
 			$spec_show .= $spec['name'].':'.$spec['value'].'&nbsp;&nbsp;';
 		}
 		$goods_info['spec_str'] = $spec_str;
 		$goods_info['spec_show'] = $spec_show;
-		$goods_info['specs'] = json_decode($goods_info['specs'],TRUE);
+		$goods_info['spec'] = json_encode($goods_info['spec']);
 		$goods_info['attrs'] = $this->attrs_detail($id);
 		runhook('after_sku_detail',$goods_info);
 		return $goods_info;
@@ -250,9 +245,25 @@ class goods_sku_service extends service {
 	 * @param  boolean $field [description]
 	 * @return [type]         [description]
 	 */
-	public function fetch_by_id($id,$field = TRUE){
-		$sku = $this->sku_db->detail($id,$field,'goods')->output();
-		$sku['spec'] = json_decode($sku['spec'],TRUE);
+	public function fetch_by_id($id = 0,$extra = ''){
+		if((int)$id < 1){
+			$this->error = lang('_param_error_');
+			return FALSE;
+		}
+		$goods = $this->sku_db->detail($id);
+		if(!($goods->result['sku'])){
+			$this->error = lang('goods_goods_not_exist','goods/language');
+			return FALSE;
+		}
+		if($extra) {
+			$extra = explode(",", $extra);
+			foreach ($extra AS $method) {
+				if(method_exists($this->sku_db,$method)) {
+					$goods = $goods->$method();
+				}
+			}
+		}
+		$sku = $goods->output();
 		runhook('after_sku_fetch_by_id',$sku);
 		return $sku;
 	}
@@ -262,19 +273,21 @@ class goods_sku_service extends service {
 	 * @return [type]     [description]
 	 */
 	public function get_sku($id){
-		$skus = $this->sku_db->where(array('spu_id' => $id,'status' => array('NEQ',-1)))->order('sku_id ASC')->select();
+		$sku_ids = $this->sku_db->where(array('spu_id' => $id,'status' => array('NEQ',-1)))->order('sku_id ASC')->getField('sku_id',TRUE);
 		$result = array();
-		foreach ($skus as $key => $sku) {
-			$sku['spec'] = json_decode($sku['spec'],TRUE);
-			$sku['imgs'] = json_decode($sku['imgs'],TRUE);
-			$result[$key] = $sku;
+		foreach ($sku_ids as $key => $sku_id) {
+			$sku = $this->sku_db->detail($sku_id)->output();
+			$specs = $sku['spec'];
+			unset($sku['spec']);
 			$spec_str = '';
-			foreach ($sku['spec'] AS $_spec_array) {
-				$spec_str .= $_spec_array['name'].':'.$_spec_array['value'].' ';
+			foreach ($specs AS $id => $spec) {
+				$sku['spec'][md5($id.$spec['value'])] = $spec;
+				$spec_str .= $spec['name'].':'.$spec['value'].' ';
 				$spec_md5 = md5($spec_str);
 			}
-			$result[$key]['spec_md5'] = $spec_md5;
-			$result[$key]['spec_str'] = $spec_str;
+			$sku['spec_md5'] = $spec_md5;
+			$sku['spec_str'] = $spec_str;
+			$result[$sku['sku_id']] = $sku;
 		}
 		if(!$result){
 			$this->error = $this->sku_db->getError();
@@ -289,7 +302,7 @@ class goods_sku_service extends service {
 	 */
 	public function get_sku_ids($id,$isspu = TRUE){
 		$spu_id = $id;
-		if($isspu == 'false'){
+		if($isspu == FALSE){
 			$spu_id = $this->sku_db->where(array('sku_id' => $id))->getField('spu_id');
 		}
 		$sku_ids = $this->sku_db->where(array('spu_id'=>$spu_id))->getfield('sku_id',TRUE);
@@ -297,33 +310,6 @@ class goods_sku_service extends service {
 			$this->error = $this->sku_db->getError();
 		}
 		return $sku_ids;
-	}
-	/**
-	 * [get_selected 获取选中的规格]
-	 * @param  [type] $id [description]
-	 * @return [type]     [description]
-	 */
-	public function get_selected($id){
-		$sku_ids = $this->sku_db->where(array('spu_id'=>$id))->getfield('sku_id',TRUE);
-		$specs = $selectedItem = array();
-		foreach ($sku_ids AS $ids) {
-			$specs = $this->get_sku_spec($ids);
-			foreach ($specs AS $spec) {
-				$item = array();
-				$item['id'] = $spec['id'];
-				$item['name'] = $spec['name'];
-				$item['value'] = $spec['value'];
-				$item['style'] = $spec['style'];
-				$item['color'] = $spec['color'];
-				$item['img'] = $spec['img'];
-				$selectedItem[] = $item;
-			}
-		}
-		$selectedItem = more_array_unique($selectedItem);
-		if(!empty($selectedItem)){
-			$selectedItem = json_encode($selectedItem);
-		}
-		return $selectedItem;
 	}
 	/**
 	 * [_history 商品历史浏览记录]
@@ -354,21 +340,6 @@ class goods_sku_service extends service {
 	    cookie('_history', null);
 	    showmessage('success','',1,$result);
 	}
-	
-	/**
-	 * [get_sku_spec 根据子商品id获取]
-	 * @param  [type] $catid [description]
-	 * @return [type]        [description]
-	 */
-	public function get_sku_spec($id){
-		if((int)$id < 1){
-			$this->error = lang('_param_error_');
-			return FALSE;
-		}
-		$_spec_array = $this->sku_db->where(array('sku_id'=>$id))->getfield('spec');
-		$spec_array = json_decode($_spec_array,TRUE);
-		return $spec_array;
-	}
 	/**
 	 * [get_sku_grades 根据分类和子商品价格生成子商品的商品价格范围]
 	 * @param  [type] $id [description]
@@ -385,7 +356,7 @@ class goods_sku_service extends service {
 			return FALSE;
 		}
 		$grades = $_grade_arr = $grade_arr = $_price_grade = $price_grade = array();
-		$grades = $this->cate_db->where(array('id'=>$catid))->getField('grade');
+		$grades = $this->load->table('goods/goods_category')->where(array('id' => $catid))->getField('grade');
 		$_grade_arr = explode(',',$grades);
 		foreach ($_grade_arr as $value) {
 			$grade_arr[] = explode('-',$value);
@@ -395,7 +366,7 @@ class goods_sku_service extends service {
 				$_price_grade = $v;
 			}
 		}
-		$price_grade=implode('-', $_price_grade);
+		$price_grade = implode('-', $_price_grade);
 		return $price_grade;
 	}
 	/**
@@ -427,8 +398,8 @@ class goods_sku_service extends service {
 		$goods_attrs = $_goods_attrs = $attrs = array();
 		$goods_attrs = $this->goodsattr_db->where(array('sku_id'=>$id,'type'=>1))->select();
 		foreach ($goods_attrs as $key => $value) {
-			$attrinfo[$key] = $this->attr_db->where(array('id'=>$value['attribute_id']))->field('name')->find();
-			if($value['attribute_value']){
+			$attrinfo[$key] = $this->load->table('goods/attribute')->where(array('id'=>$value['attribute_id']))->field('name')->find();
+			if($value['attribute_value'] && $attrinfo[$key]['name']){
 				$attrs[$key]['name'] = $attrinfo[$key]['name'];
 				$attrs[$key]['value'] = $value['attribute_value'];
 			}
@@ -466,12 +437,12 @@ class goods_sku_service extends service {
     	return $result;
 	}
 	/**
-	 * [goods_detail 外部调用商品详情接口]
+	 * [goods_detail 外部调用商品详情接口,包含未处理的详细商品sku，spu信息]
 	 * @param  [type] $ids   [description]
 	 * @param  [type] $field [description]
 	 * @return [type]        [description]
 	 */
-	public function goods_detail($ids,$field,$flag = true){
+	public function goods_detail($ids,$extra = 'spu,price',$flag = TRUE){
 		if(empty($ids)){
 			$this->error = lang('_param_error_');
 			return FALSE;
@@ -479,19 +450,21 @@ class goods_sku_service extends service {
 		$result = $goods = array();
 		if(is_array($ids)){
 				foreach ($ids AS $id) {
-	    		$result = $this->sku_db->detail($id,$field,'goods')->create_spec()->output();
+	    		$result = $this->fetch_by_id($id,$extra);
 	    		if(!empty($result)){
 	    			$goods[] = $result;
 	    		}
 	    	}
 	    }else{
-	    	$goods = $this->sku_db->detail($ids,$field,'goods')->create_spec()->output();
+	    	$goods = $this->fetch_by_id($ids,$extra);
 	    	if(!$flag){
-	    		$goods['catname'] = $this->cate_service->create_cat_format($goods['catid']);
-	    		foreach ($goods['spec'] AS $spec) {
-					$goods['spec_show'] .= $spec['name'].':'.$spec['value'].'&nbsp;&nbsp;';
-				}
+	    		$categorys = $this->cate_service->get_parent($goods['catid']);
+				array_push($categorys,$goods['catid']);
+				$goods['catname'] = $this->cate_service->create_cat_format($categorys);
 	    	}
+    		foreach ($goods['spec'] AS $spec) {
+				$goods['spec_show'] .= $spec['name'].':'.$spec['value'].'&nbsp;&nbsp;';
+			}
 	    }
     	if(empty($goods)){
     		$this->error = lang('goods_goods_not_exist','goods/language');
@@ -548,7 +521,7 @@ class goods_sku_service extends service {
 		$count = $this->index_db->where($map)->count();
 		$sku_ids = $this->index_db->where($map)->page($options['page'])->order($sqlmap['order'])->limit($options['limit'])->getfield('sku_id',TRUE);
 		foreach ($sku_ids AS $sku_id) {
-			$result[] = $this->sku_db->detail($sku_id,TRUE,'goods',false)->show_index()->output();
+			$result[] = $this->fetch_by_id($sku_id,'spu,price,brand,show_index');
 		}
 		return array('count' => $count,'lists' => $result);
 	}
@@ -671,23 +644,28 @@ class goods_sku_service extends service {
     	$result = $params;
     	$result['order'] = 'sort asc, sku_id desc';
     	list($_sort, $_by) = explode(',',$params['sort']);
-			switch ($_sort) {
-				case 'sale':
-					$result['order'] = "`sales` desc";
-					break;
-				case 'hits':
-					$result['order'] = "`hits` desc";
-					break;
-				case 'shop_price':
-					$_by = ($_by == 'asc') ? 'desc' : 'asc';
-					$result['order'] = "`shop_price` ".(($_by == 'asc') ? 'desc' : 'asc');
-					break;
-				default:
+		switch ($_sort) {
+			case 'sale':
+				$result['order'] = "`sales` desc";
+				break;
+			case 'hits':
+				$result['order'] = "`hits` desc";
+				break;
+			case 'shop_price':
+				$_by = ($_by == 'asc') ? 'desc' : 'asc';
+				$result['order'] = "`shop_price` ".(($_by == 'asc') ? 'desc' : 'asc');
+				break;
+			case 'comper':
 				$result['order'] = "`sales` desc,`favorites` desc,`hits` desc";
-					break;
-			}
-			$result['_by'] = $_by ? $_by : 'desc';
-			$result['sort'] = $_sort ? $_sort : 'comper';
+				break;
+			default:
+			 	$_by = ($_by == 'asc') ? 'desc' : 'asc';
+			 	$result['order'] = $_sort ? $_sort.(($_by == 'asc') ? ' desc' : ' asc') : '';
+			 	break;
+		}
+		if(empty($_sort)) $result['order'] = "`sales` desc,`favorites` desc,`hits` desc";
+		$result['_by'] = $_by ? $_by : 'desc';
+		$result['sort'] = $_sort ? $_sort : 'comper';
 		if($params['attr']){
 			foreach ($params['attr'] as $key => $value) {
 				$params['attr'][$key] = base_decode($value);
@@ -730,7 +708,7 @@ class goods_sku_service extends service {
 			}
 			$result['_by'] = $_by ? $_by : 'desc';
 			$result['sort'] = $_sort ? $_sort : 'comper';
-			$result['show_switch'] = 1;	
+			$result['show_switch'] = 1;
 		if(!$result){
 			$this->error = $this->logic->error;
 		}
@@ -748,7 +726,7 @@ class goods_sku_service extends service {
 		}
 		if(is_array($sku_ids)){
 			foreach ($sku_ids AS $sku_id) {
-				$sku = $this->sku_db->detail($sku_id)->create_spec()->output();
+				$sku = $this->fetch_by_id($sku_id);
 				$spec_str = '';
 				foreach ($sku['spec'] AS $spec) {
 					$spec_str .= $spec['name'].':'.$spec['value'].' ';
@@ -757,7 +735,7 @@ class goods_sku_service extends service {
 				$result[] = $sku;
 			}
 		}else{
-			$result = $this->sku_db->detail($sku_ids)->output();
+			$result = $this->fetch_by_id($sku_ids);;
 		}
 		return $result;
 	}
@@ -772,7 +750,7 @@ class goods_sku_service extends service {
 		$data = $sqlmap = $map = array();
 		if($id){
 			if($label == 4){
-				$result =$this->delete_goods($id);
+				$result = $this->delete_goods($id);
 				return $result;
 			}else{
 				$sqlmap['sku_id'] = array('IN',$id);
@@ -837,91 +815,78 @@ class goods_sku_service extends service {
 		return $result;
 	}
 	/**
-	 * [ajax_sku_name ajax修改sku名称]
-	 * @param  [type] $params [description]
-	 * @return [type]         [description]
-	 */
-	public function ajax_sku_name($params){
-		if((int)$params['id'] < 1){
-			$this->error = lang('_param_error_');
-			return FALSE;
-		}
-		$data = array();
-		$data['sku_name'] = $params['name'];
-		$result = $this->sku_db->where(array('sku_id'=>$params['id']))->save($data);
-		if(!$result){
-    		$this->error = lang('_operation_fail_');
-    	}
-    	return $result;
-	}
-	/**
-	 * [ajax_sku_sn ajax修改货号]
-	 * @param  [type] $params [description]
-	 * @return [type]         [description]
-	 */
-	public function ajax_sku_sn($params){
-		if((int)$params['id'] < 1){
-			$this->error = lang('_param_error_');
-			return FALSE;
-		}
-		$data = array();
-		$data['sn'] = $params['name'];
-		$result = $this->sku_db->where(array('sku_id'=>$params['id']))->save($data);
-		if(!$result){
-    		$this->error = lang('_operation_fail_');
-    	}
-    	return $result;
-	}
-	/**
 	 * [ajax_show ajax]
 	 * @param  [type] $id [description]
 	 * @return [type]     [description]
 	 */
-	public function ajax_show($id){
+	public function change_show_in_lists($id){
 		if((int)$id < 1){
 			$this->error = lang('_param_error_');
 			return FALSE;
 		}
 		$data = array();
-		$data['show_in_lists']= array('exp',' 1-show_in_lists ');
+		$data['show_in_lists'] = array('exp',' 1-show_in_lists ');
 		$result = $this->sku_db->where(array('sku_id'=>$id))->save($data);
 		$this->index_db->where(array('sku_id'=>$id))->save($data);
 		if($result === FALSE){
     		$this->error = lang('_operation_fail_');
     		return FALSE;
-    	}else{
-    		return TRUE;
     	}
+    	return TRUE;
     }
     /**
-     * [ajax_sku ajax修改商品价格.库存]
+     * [change_sku_info ajax修改商品价格.库存]
      * @param  [type] $id [description]
      * @return [type]     [description]
      */
-    public function ajax_sku(){
-        if((int)$_GET['sku_id'] < 1){
+    public function change_sku_info($params){
+        if((int)$params['sku_id'] < 1){
 			$this->error = lang('_param_error_');
 			return FALSE;
 		}
-		$data = array();
-		if(!empty($_GET['shop_price'])){
-		  $data['shop_price'] = $_GET['shop_price'];
-		}
-		if(!empty($_GET['number'])){
-		  $data['number'] = $_GET['number'];
-		}
-		$result = $this->sku_db->where(array('sku_id' => $_GET['sku_id']))->save($data);
-		$min_max = $this->sku_db->field("min(shop_price) AS min_price, max(shop_price) AS max_price")->where(array("spu_id" => $_GET['spu_id']))->find();
-		$min_max_price = $this->spu_db->where(array('id' => $_GET['spu_id']))->save($min_max);
-		$list = $this->get_sku($_GET['spu_id']);
-		$sku_total = 0;
-		foreach ($list as $key=>$number){
-		    $sku_total += $number['number'];
-		}
-		$total_number = $this->spu_db->where(array('id' => $_GET['spu_id']))->save(array('sku_total' => $sku_total));
+		$result = $this->sku_db->where(array('sku_id' => $params['sku_id']))->save($params);
 		if(!$result){
     		$this->error = lang('_operation_fail_');
+    		return FALSE;
+    	}
+    	if(!empty($params['shop_price'])){
+			$min_max_price = $this->sku_db->field("min(shop_price) AS min_price, max(shop_price) AS max_price")->where(array("spu_id" => $params['spu_id']))->find();
+			$this->spu_db->where(array('id' => $params['spu_id']))->save($min_max_price);
+    	}
+    	if(!empty($params['number'])){
+			$list = $this->get_sku($params['spu_id']);
+			$sku_total = 0;
+			foreach ($list as $key=>$number){
+			    $sku_total += $number['number'];
+			}
+			$this->spu_db->where(array('id' => $params['spu_id']))->save(array('sku_total' => $sku_total));
     	}
     	return $result;
     }
+    /**
+	 * @param  string  获取的字段
+	 * @param  array 	sql条件
+	 * @return [type]
+	 */
+	public function getField($field = '', $sqlmap = array()) {
+		$exist = strpos($field, ',');
+		if($exist === false){
+			$result = $this->index_db->where($sqlmap)->getfield($field);
+		}else{
+			$result = $this->index_db->where($sqlmap)->field($field)->select();
+		}
+		if($result===false){
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		return $result;
+	}
+	/**
+	 * @param  string  获取的字段
+	 * @param  array 	sql条件
+	 * @return [type]
+	 */
+	public function getBySkuid(){
+		return $this->sku_db->getBySkuid();
+	}
 }

@@ -43,10 +43,10 @@ class payment_service extends service {
 	 * [支付方式列表]
 	 * @return boolean
 	 */
-	public function build_cache() {
-		$result_enable = $this->model->where(array('enabled' => 1))->getField('pay_code,pay_name,pay_fee,pay_desc,enabled,config,dateline,sort,isonline,applie');
-		cache('payment_enable', $result_enable);
-		return TRUE;
+
+	public function get($key = NULl) {
+		$result_enable = $this->model->where(array('enabled' => 1))->cache('payment_enable',3600)->getField('pay_code,pay_name,pay_fee,pay_desc,enabled,config,dateline,sort,isonline,applie',TRUE);
+		return is_string($key) ? $result_enable[$key] : $result_enable;
 	}
 
 	/**
@@ -58,7 +58,7 @@ class payment_service extends service {
 		$result = $this->model->where(array('pay_code' => $pay_code))->save(array('enabled' => array('exp', '1-enabled'), 'dateline' => time()));
 		if ($result == 1) {
 			$result = TRUE;
-			$this->build_cache();
+			cache('payment_enable',NULL);
 		} else {
 			$result = $this->model -> getError();
 		}
@@ -79,7 +79,7 @@ class payment_service extends service {
 		}
 		if ($result) {
 			$result = TRUE;
-			$this->build_cache();
+			cache('payment_enable',NULL);
 		} else {
 			$result = $this->model->getError();
 		}
@@ -91,8 +91,7 @@ class payment_service extends service {
 	 * @return array 已开启的支付方式
 	 */
 	public function getpayments($applie = 'pc', $pays = array()){
-		if(!cache('payment_enable'))$this->build_cache();
-		$payments = cache('payment_enable');
+		$payments = $this->get();
 		foreach ($payments as $key => $pay) {
 			if($applie && $pay['applie'] != $applie) unset($payments[$key]);
 		}
@@ -151,4 +150,42 @@ class payment_service extends service {
 		return $this->_return($driver);
 	}
 
+	/**
+	* [删除]
+	* @param array $ids 主键id
+	*/
+	public function delete($ids) {
+		if(empty($ids)) {
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		$_map = array();
+		if(is_array($ids)) {
+			$_map['pay_code'] = array("IN", $ids);
+		} else {
+			$_map['pay_code'] = $ids;
+		}
+		$result = $this->model->where($_map)->delete();
+		if($result === false) {
+			$this->error = $this->model->getError();
+			return false;
+		}
+		return true;
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	条数
+	 * @param  integer 	页数
+	 * @param  string 	排序
+	 * @return [type]
+	 */
+	public function lists($sqlmap = array(), $limit = 20, $page = 1, $order = "") {
+		$count = $this->model->where($sqlmap)->count();
+		$lists = $this->model->where($sqlmap)->limit($limit)->page($page)->order($order)->select();
+		if($count===false || $lists===false){
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		return array('lists'=>$lists,'count'=>$count);
+	}
 }

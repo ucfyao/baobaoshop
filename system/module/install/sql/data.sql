@@ -46540,7 +46540,14 @@ REPLACE INTO `hd_node` (`id`, `parent_id`, `name`, `m`, `c`, `a`, `param`, `sort
 	(53, 1, '模板管理', 'admin', 'template', 'index', '', 100, 1, '', 0, 0),
 	(54, 0, '微店', 'wap', '', '', '', 100, 1, '', 0, 0),
 	(55, 54, '微店设置', 'wap', 'admin', 'setting', '', 100, 1, '', 0, 0),
-	(56, 54, '首页装修', 'wap', 'admin', 'diy_edit', '', 100, 1, '', 0, 0);
+	(56, 54, '首页装修', 'wap', 'admin', 'diy_edit', '', 100, 1, '', 0, 0),
+	(57, 54, '微店导航', 'wap', 'admin', 'nav', '', 100, 1, '', 0, 0),
+	(58, 0, '客服', 'xiaoneng', '', '', '', 100, 1, '', 0, 0),
+	(59, 58, '客服首页', 'xiaoneng', 'admin', 'index', '', 100, 1, '', 0, 0),
+	(60, 58, '接待组管理', 'xiaoneng', 'admin', 'edit', '', 100, 1, '', 0, 0),
+	(61, 58, '接待组分配', 'xiaoneng', 'admin', 'distrib', '', 100, 1, '', 0, 0),
+	(62, 1, '附件管理', 'attachment', 'admin', 'setting', '', 100, 1, '', 0, 0),
+	(63, 1, '运费模板', 'order', 'delivery_template', 'index', '', 100, 1, '', 0, 0);
 
 REPLACE INTO `hd_order_tpl_parcel` (`id`, `name`, `content`, `update_time`) VALUES
 	(1, '发货单模版', '<p></p><table style="width:100%;height:10%;" border="0"><tbody><tr class="firstRow"><td style="height:100%;" rowspan="3"><img style="float:left;" src="../../../../statics/images/logo.gif"/>
@@ -46582,7 +46589,23 @@ REPLACE INTO `hd_setting` (`key`, `value`) VALUES
 	('seller_address', ''),
 	('seller_name', ''),
 	('seller_mobile', ''),
-	('seller_zipcode', '');
+	('return_time','2'),
+	('seller_zipcode', ''),
+	('attach_enabled', 1),
+	('attach_ext', 'gif,jpg,jpeg,bmp,png'),
+	('attach_size', 0),
+	('attach_replace', 0),
+	('attach_type', 'local'),
+	('attach_watermark', 0),
+	('attach_position', 9),
+	('attach_logo', ''),
+	('attach_alpha', '50'),
+	('attach_module', 'a:2:{i:0;s:5:"goods";i:1;s:4:"misc";}'),
+	('attach_thumb', 1);
+
+
+REPLACE INTO `hd_wap_template` (`id`, `content`, `identifier`) VALUES
+  (1, '<!--{diy menu eyJwYWdlIjpbIjAiLCIxIiwiMiIsIjMiLCI0Il0sInN0eWxlIjoiMCIsIm1lbnUiOlt7InRpdGxlIjoi5YWo6YOo5ZWG5ZOBIiwibGlua3RpdGxlIjoiIiwidXJsIjoiIn0seyJ0aXRsZSI6Iui0reeJqei9piIsImxpbmt0aXRsZSI6IiIsInVybCI6IiJ9LHsidGl0bGUiOiLmoIfpopgiLCJsaW5rdGl0bGUiOiIiLCJ1cmwiOiIifV19}-->', 'menu');
 
 REPLACE INTO `hd_delivery` (`id`, `name`, `identif`, `enabled`, `logo`, `insure`, `tpl`, `sort`, `systime`) VALUES
 	(1, '顺丰快递', 'shunfeng', 1, '', 0.00, NULL, 100, 1450340324),
@@ -46596,16 +46619,23 @@ REPLACE INTO `hd_delivery` (`id`, `name`, `identif`, `enabled`, `logo`, `insure`
 	(9, '德邦快递', 'debang', 1, '', 0.00, NULL, 100, 1450089699),
 	(10, '国通快递', 'guotong', 1, '', 0.00, NULL, 100, 1450175358);
 
-INSERT INTO `hd_app` VALUES ('1', 'module.admin', '后台模块', '核心模块，用于后台  各项功能模块及功能拓展', '1', '海盗研发团队', '1.0.0', 'http://www.haidao.la', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('2', 'module.goods', '商品模块', '商品编辑、展示以及管理系统', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('3', 'module.order', '订单模块', '独立订单系统，支持智能拆分订单和物流分单，包含物流追踪', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('4', 'module.member', '会员模块', '会员管理系统', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('5', 'module.attachment', '附件模块', '提供附件管理及上传功能', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('6', 'module.ads', '广告模块', '添加并管理广告位及广告', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('7', 'module.comment', '商品评价', '提供会员评价晒单及评价管理功能', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('8', 'module.misc', '杂项模块', '辅助系统，用于管理友链等数据', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('9', 'module.notify', '通知模块', '通知系统，可用于管理及拓展各类通知方式', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('11', 'module.pay', '支付模块', '支付系统，可用于管理及拓展各类支付方式', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('12', 'module.promotion', '运营模块', '运营辅助系统，可管理各项活动运营方式及拓展新的运营功能', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('13', 'module.statistics', '统计模块', '统计系统，用于记录和统计系统各项数据，可拓展新的数据分析', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '');
-INSERT INTO `hd_app` VALUES ('14', 'module.wap', '微店模块', '微店模块, 用于设置wap端设置展示以及管理系统', '1', '海盗研发团队', '1.0.0', 'http://www.haidao.la', '', '0', '100', '1', '');
+INSERT INTO `hd_app` VALUES ('1', 'module.admin', '后台模块', '核心模块，用于后台  各项功能模块及功能拓展', '1', '海盗研发团队', '1.0.0', 'http://www.haidao.la', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('2', 'module.goods', '商品模块', '商品编辑、展示以及管理系统', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('3', 'module.order', '订单模块', '独立订单系统，支持智能拆分订单和物流分单，包含物流追踪', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('4', 'module.member', '会员模块', '会员管理系统', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('5', 'module.attachment', '附件模块', '提供附件管理及上传功能', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('6', 'module.ads', '广告模块', '添加并管理广告位及广告', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('7', 'module.comment', '商品评价', '提供会员评价晒单及评价管理功能', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('8', 'module.misc', '杂项模块', '辅助系统，用于管理友链等数据', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('9', 'module.notify', '通知模块', '通知系统，可用于管理及拓展各类通知方式', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('11', 'module.pay', '支付模块', '支付系统，可用于管理及拓展各类支付方式', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('12', 'module.promotion', '运营模块', '运营辅助系统，可管理各项活动运营方式及拓展新的运营功能', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('13', 'module.statistics', '统计模块', '统计系统，用于记录和统计系统各项数据，可拓展新的数据分析', '1', '海盗研发团队', '1.0.0', '', '', '0', '100', '1', '', '');
+INSERT INTO `hd_app` VALUES ('14', 'module.wap', '微店模块', '微店模块, 用于设置wap端设置展示以及管理系统', '1', '海盗研发团队', '1.0.0', 'http://www.haidao.la', '', '0', '100', '1', '', '');
+
+INSERT INTO `hd_app` (`id`, `identifier`, `name`, `description`, `available`, `copyright`, `version`, `url`, `author`, `branch_id`, `sort`, `is_system`, `menu`, `server_version`) VALUES('15', 'module.xiaoneng', '小能客服', '海盗云商与小能客服联合推出的云客服解决方案', 1, '海盗研发团队', '1.0.0', '', '海盗研发团队', 22, 100,0, '', '');
+
+INSERT INTO `hd_xiaoneng_service` (`id`,`status`,`config`) VALUES(1,1,'');
+
+REPLACE INTO `hd_notify_driver` (`code`, `name`, `description`, `dateline`, `sort`, `config`) VALUES
+	('local', '本地', '描述', 0, 100, '');

@@ -69,7 +69,7 @@
 								</div>
 								<div class="table">
 									<div class="table-h">
-										
+
 									</div>
 								</div>
 							</div>
@@ -91,7 +91,7 @@
 								</div>
 								<div class="table">
 									<div class="table-h">
-										
+
 									</div>
 								</div>
 							</div>
@@ -126,9 +126,8 @@
 						$(".spec-right-body .title").children(".spec_add").addClass("hidden");
 					}
 					spec_select();
-					//spec_create();
 				});
-				
+
 				$(".specname i").live('click', function(e){
 					e.stopPropagation();
 					if(confirm("是否删除此规格？")){
@@ -150,7 +149,7 @@
 						},'json');
 					}
 				})
-				
+
 				function scrollBar(i){
 					var $o = $(".table-wrap").eq(i);
 					if($o.find(".table-h").children(".tr").length>0){
@@ -160,14 +159,14 @@
 						$(".table-wrap").hide();
 						$(".spec-right-body .bottom .no-choose-tip").show();
 					}
-					
+
 					if($o.find(".table-h").height()>$o.find(".table").height()){
 						$o.find(".fixed-tr").addClass("p-right");
 					}else{
 						$o.find(".fixed-tr").removeClass("p-right");
 					}
 					$o.find("[type='radio']:checked").trigger("click");
-					
+
 					$(".table-wrap").each(function(i,item) {
 						$(item).find('label').on('click',function(){
 							var type = $(item).find('input:radio:checked').val();
@@ -175,16 +174,16 @@
 						})
 					});
 				}
-				
-				$(".choose-show").click(function(){ 
-					var i = $(this).val(); 
-					var obj = $(this).parents(".table-wrap").find(".bg-block"); 
+
+				$(".choose-show").click(function(){
+					var i = $(this).val();
+					var obj = $(this).parents(".table-wrap").find(".bg-block");
 					obj.show();
-					if(i==2){ 
-						obj.css({left:"66%",width:"34%"})	 
+					if(i==2){
+						obj.css({left:"66%",width:"34%"})
 					}else{
 						obj.css({left:i*33+"%",width:"33%"})
-					}	 
+					}
 				});
 				/**
 				 *选择规格值处理
@@ -244,7 +243,7 @@
 					}
 					spec_select();
 				});
-				
+
 				//点击规格值
 				$(".spec_choose a").live('click',function(){
 					var spec_id = $(this).attr('data-value');
@@ -280,7 +279,7 @@
 						},'json');
 					}
 				});
-				
+
 				//添加新属性
 				$(".spec-right-body .new-prop").live('click',function(){
 					if($(this).hasClass("current")){
@@ -296,14 +295,14 @@
 						$(".spec-right-body .title").children("label").addClass("hidden");
 						$(".spec_add").find('.input').attr('data-id',$(this).attr('data-id'));
 						$(this).html('<i class="ico_plus margin-right"></i>取消添加');
-					}		
+					}
 				});
 				// 提交添加新规格
 				function add_spec(){
 					var new_spec = $.trim($('input[name="new_spec"]').val());
 					var spec_url = "<?php echo url('spec/ajax_add_spec')?>";
 					if (new_spec.length < 1) {
-						alert('请填写新的规格名称');
+						//alert('请填写新的规格名称');
 						return false;
 					}
 					$.post(spec_url,{
@@ -333,7 +332,7 @@
 				$('input[name="new_spec"]').live('keypress',function(event){
 					 if(event.keyCode == "13"){
 					 	add_spec();
-					 }  
+					 }
 				})
 				// 提交添加新属性
 				function add_spec_value(){
@@ -352,7 +351,7 @@
 						spec_id : spec_id,
 						new_value : new_value
 					},function(ret){
-						if (ret.status == 1) {	
+						if (ret.status == 1) {
 							$('div[data-id="'+ ret.result.id +'"] .new-prop').before('<a data-id="'+ret.result.id+'" data-name="'+ret.result.name+'" data-value="'+ret.result.value+'" data-style="" data-color="" data-img="" href="javascript:;">'+ret.result.value+'<i>×</i></a>');
 							$('input[name="new_value"]').val('');
 						} else {
@@ -370,13 +369,16 @@
 					add_spec_value();
 				});
 			})
+
+
 		  	$(window).load(function(){
 				try {
 					var dialog = top.dialog.get(window);
+					dialog.reset();
+					dialog.title('请选择规格');
 				} catch (e) {
 					return;
 				}
-				dialog.reset();
 				var selectArr = new Array();
 				var selectedItem = dialog.data;
 				//显示已选择的项目
@@ -385,6 +387,7 @@
 					num = parseInt($("a[data-id='"+val.id+"'] em").text().replace('[','').replace(']',''));
 					$("a[data-id='"+val.id+"'][data-value='"+val.value+"']").attr({"data-style":val.style,"data-img":val.img,"data-color":val.color});
 					$("a[data-id='"+val.id+"'] em").text('['+(++num)+']');
+
 					selectArr.push(val.id);
 					spec_img = val.img ? val.img :'./statics/images/default_no_upload.png';
 					var html = '<div class="tr" data-title="' + val.value + '">'
@@ -403,10 +406,9 @@
 					$('div[data-id="' + val.id + '"]').find('input[type=radio][value="' + val.style + '"]').attr('checked','checked');
 				});
 				spec_create();
-				
+
 				$(".input_cxcolor").cxColor();//调用颜色选择器插件
-				
-				dialog.title('请选择规格');
+
 				// 重置对话框位置
 				$('#okbtn').on('click', function () {
 					$('.current').each(function() {

@@ -10,16 +10,16 @@ define('IN_ADMIN', TRUE);
 class init_control extends control {
 	public function _initialize() {
 		parent::_initialize();
-        $this->admin = model('admin/admin','service')->init();		
+        $this->admin = model('admin/admin','service')->init();
         if($this->admin['id'] < 1 && CONTROL_NAME != 'public') {
             redirect(url('admin/public/login'));
-        }		
+        }
 		define('ADMIN_ID', $this->admin['id']);
 		define('FORMHASH', $this->admin['formhash']);
 		$load = hd_load::getInstance();
-        $load->librarys('View')->assign('admin',$this->admin);    	
+        $load->librarys('View')->assign('admin',$this->admin);
         if(isset($_GET['formhash']) && $_GET['formhash'] !== FORMHASH) {
-			error::system_error('_request_tainting_');
+			hd_error::system_error('_request_tainting_');
 		}
         if($this->admin['group_id'] > 1 && model('admin/admin','service')->auth($this->admin['rules']) === false) {
 			showmessage(lang('no_promission_operate','admin/language'));

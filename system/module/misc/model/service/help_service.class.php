@@ -232,4 +232,31 @@ class help_service extends service {
 		}
 		return  rtrim($cat_name,' > ');
 	}
+
+	//标签调用
+	public function help_lists($sqlmap, $options) {
+		$this->db->where($this->build_map($sqlmap));
+		if($sqlmap['order']){
+			$this->db->order($sqlmap['order']);			
+		}
+		if($options['limit']){
+			$this->db->limit($options['limit']);
+		}
+		return $this->db->select();
+	}
+	public function build_map($data){
+		$sqlmap = array();
+		$sqlmap['display'] = 1;
+		if (isset($data['id'])) {
+			if(preg_match('#,#', $data['id'])) {	
+				$sqlmap['parent_id'] = array("IN", explode(",", $data['id']));
+			} else {
+				$sqlmap['parent_id'] = $data['id'];
+			}
+		}
+		if(isset($data['_string'])){
+			$sqlmap['_string'] = $data['_string'];
+		}
+		return $sqlmap;
+	}
 }

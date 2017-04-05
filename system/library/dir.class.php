@@ -23,7 +23,7 @@ class dir {//类定义开始
     function __construct($path, $pattern = '*') {
         if (substr($path, -1) != "/")
             $path .= "/";
-        $this->listFile($path, $pattern);
+        self::listFile($path, $pattern);
     }
 
 	/**
@@ -437,7 +437,7 @@ class dir {//类定义开始
      */
     function delDir($directory, $subdir = true) {
         if (is_dir($directory) == false) {
-            $this->error = lang('this_catalogue_no_exist');
+           // self::$error = lang('this_catalogue_no_exist');
             return false;
         }
         $handle = opendir($directory);
@@ -465,7 +465,7 @@ class dir {//类定义开始
      */
     function del($directory) {
         if (is_dir($directory) == false) {
-            $this->error = lang('this_catalogue_no_exist');
+            //self::$error = lang('this_catalogue_no_exist');
             return false;
         }
         $handle = opendir($directory);
@@ -488,7 +488,7 @@ class dir {//类定义开始
      */
     function copyDir($source, $destination) {
         if (is_dir($source) == false) {
-            $this->error = lang('root_catalogue_no_exist');
+            //self::$error = lang('root_catalogue_no_exist');
             return false;
         }
         if (is_dir($destination) == false) {

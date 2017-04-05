@@ -20,7 +20,6 @@ _slice = [].slice;
 				checked: false
 			}, this.defaults, options);//Object {}
 			this.$table = $table;			//.table对象
-			this.$padding = $table.find(".tr").eq(0).outerWidth(true)-$table.find(".tr").eq(0).width();//tr的padding值
 			if($table.hasClass('resize-table')){
 				$table.find('.tr').eq(0).addClass("resize-th");
 			}
@@ -38,10 +37,11 @@ _slice = [].slice;
 		resizeableColumns.prototype.setLinesWidth = function(){
 			
 			var $table = this.$table;
+			var $padding = $table.find(".tr").eq(0).outerWidth(true) - $table.find(".tr").eq(0).width();//tr的padding值
 			var tableWidth = $("#table-get-width").width();
 			var tbl = parseInt($table.css('border-left-width'));
 			var tbr = parseInt($table.css('border-right-width'));
-			var trWidth = tableWidth - this.$padding - tbl - tbr;
+			var trWidth = tableWidth - $padding - tbl - tbr;
 			var totalWidth = 0;
 			$table.find('.tr').each(function(){
 				$(this).children(".td").each(function(){
@@ -75,7 +75,7 @@ _slice = [].slice;
 			$table.find('.tr').each(function(){
 				$(this).css("visibility","visible");				
 			});
-			$table.width(totalWidth+tbl+tbr+this.$padding);
+			$table.width(totalWidth + tbl + tbr + $padding);
 		}
 		
 		resizeableColumns.prototype.destroy = function() {
@@ -103,18 +103,18 @@ _slice = [].slice;
 
 
 	    resizeableColumns.prototype.saveColumnWidths = function() {
-	      var _this = this;
+	    	var _this = this;
 	
-	      return this.$table.find('.tr .th').each(function(_, el) {
-	        var id;
+	    	return this.$table.find('.tr .th').each(function(_, el) {
+	       		var id;
 					
-	        if ($(el).attr('data-resize') == null) {
-	          id = _this.tableId + '-' + $(el).data('resizable-column-id');
-	          if (_this.options.store != null) {
-	            return store.set(id, $(el).width());
-	          }
-	        }
-	      });
+	        	if ($(el).attr('data-resize') == null) {
+	          		id = _this.tableId + '-' + $(el).data('resizable-column-id');
+	          		if (_this.options.store != null) {
+	            		return store.set(id, $(el).width());
+	          		}
+	        	}
+	      	});
 	    };
 	
 	    resizeableColumns.prototype.mousedown = function(e) {
@@ -159,8 +159,8 @@ _slice = [].slice;
 	    };
 	
 	    return resizeableColumns;
-		})();
-		return $.fn.extend({
+	})();
+	return $.fn.extend({
 	    resizableColumns: function() {
 	      var args, option;
 	

@@ -12,7 +12,7 @@ class form {
 	    $attribute = self::_parseAttribute($attribute);
 		if($type == 'hidden'){
 			$string .= self::$type($name, $value, $attribute);
-		}else{	
+		}else{
 	        $string = '<div class="form-group"><span class="label">'.$label.'</span>';
 	        $string .= '<div class="box">'.(self::$type($name, $value, $attribute)).'</div>';
 	        if($description) {

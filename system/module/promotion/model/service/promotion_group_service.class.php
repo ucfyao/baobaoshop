@@ -11,6 +11,7 @@
 class promotion_group_service extends service {
 	public function _initialize() {
 		$this->table = $this->load->table('promotion_group');
+		$this->sku_db = $this->load->table('goods/goods_sku');
 	}
 	public function get_lists($params){
 		$result = $this->table->page($params['page'])->limit($params['limit'])->select();
@@ -19,6 +20,28 @@ class promotion_group_service extends service {
 		}
 		return $result;
 	}
+
+	public function lists($sqlmap = array()){
+		$group = $this->get_lists($sqlmap);
+		$lists = array();
+		foreach ($group AS $value) {
+			$count = count(explode(',', $value['sku_ids']));
+			$lists[] =array(
+				'id'=>$value['id'],
+				'title'=>$value['title'],
+				'subtitle'=>$value['subtitle'],
+				'count' =>$count,
+				'status' =>$value['status'],
+				);
+
+		}
+		return array('lists'=>$lists);
+
+	}
+
+
+
+
 	/**
 	 * [fetch_by_id 查询单条数据]
 	 * @param  [type] $id [description]
@@ -130,5 +153,36 @@ class promotion_group_service extends service {
     		$this->error = lang('_operation_fail_');
     	}
     	return $result;
+	}
+	/**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->table->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->table->getError();
+            return false;
+        }
+        return $result;
+    }
+	//标签调用
+	public function group_lists($sqlmap,$options) {
+        $where['_string']='FIND_IN_SET('.$sqlmap["sku_id"].', sku_ids)';
+        $where['status'] = 1;
+        $group_info = $this->table->where($where)->select();
+        $lists = array();
+        if(!empty($group_info)){
+            foreach ($group_info AS $group) {
+                foreach (explode(',',$group['sku_ids']) AS $sku_id) {
+                    if($sku_id != $sqlmap['sku_id']){
+                        $lists[$group['subtitle']]['group'][] = $this->load->service('goods/goods_sku')->fetch_by_id($sku_id,'price');
+                    }
+                }
+                $lists[$group['subtitle']]['id'] = $group['id'];
+            }
+        }
+        return $lists;
 	}
 }

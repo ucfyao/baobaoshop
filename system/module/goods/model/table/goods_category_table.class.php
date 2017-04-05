@@ -20,8 +20,13 @@ class goods_category_table extends table {
     public function get_fields(){
         return $this->fields['_type'];
     }
-    public function detail($id,$field){
-        $this->result['category'] = $this->field($field)->find($id);
+    public function detail($id,$field = TRUE){
+        $exist = strpos($field, ',');
+        if($exist === false && is_string($field)){
+            $this->result['category'] = $this->where(array('id' => $id))->getField($field);
+        }else{
+            $this->result['category'] = $this->field($field)->find($id);
+        }
         return $this;
     }
     public function output(){

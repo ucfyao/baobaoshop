@@ -1,4 +1,25 @@
 <?php
+function db_select($db,$conn){
+	if(version_compare(phpversion(), '7.0.0') > -1){
+		return $conn->select_db($db);
+	}else{
+		return mysql_select_db($db);
+	}
+}
+function db_query($string,$conn){
+	if(version_compare(phpversion(), '7.0.0') > -1){
+		return $conn->query($string);
+	}else{
+		return mysql_query($string);
+	}
+}
+function db_fetch_row($row){
+	if(version_compare(phpversion(), '7.0.0') > -1){
+		return $row->fetch_row();
+	}else{
+		return mysql_fetch_row($row);
+	}
+}
 //测试链接数据库
 function check_mysql()
 {
@@ -10,23 +31,38 @@ function check_mysql()
 	$db_user = $_GET['db_user'];
 	$db_pwd  = $_GET['db_pwd'];
 
-	if($db_host != '' && function_exists('mysql_connect')){
-		$conn = @mysql_connect($db_host.':'.$db_port,$db_user,$db_pwd);
+	if($db_host != ''){
+		if(function_exists('mysql_connect')){
+			$conn = @mysql_connect($db_host.':'.$db_port,$db_user,$db_pwd);
+		}
+		if(version_compare(phpversion(), '7.0.0') > -1 && function_exists('mysqli_connect')){
+			$conn = @mysqli_connect($db_host.':'.$db_port,$db_user,$db_pwd);
+		}
 	}
 
 	if($conn)
 	{
-		if(!@mysql_select_db($db_name)){
+		// 严格模式
+		$sql_string = "show variables like '%sql_mode%'";
+		$sql_mode = @db_query($sql_string,$conn);
+	 	$result =	db_fetch_row($sql_mode);
+		if($result['1']==='STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'){
+			$sql_status = "2";
+		}else{
+			$sql_status = "1";
+		}
+
+		if(!@db_select($db_name,$conn)){
 			$sqlstr = "create database `{$db_name}`";
-			if(!@mysql_query($sqlstr)){
+			if(!@db_query($sqlstr,$conn)){
 				echo json_encode(array('status'=>0,'info'=>'创建数据库失败,请检查权限'));
 				exit();
 			}else{
-				echo json_encode(array('status'=>1,'info'=>'创建数据库成功'));
+				echo json_encode(array('status'=>1,'info'=>'创建数据库成功','sql_mode'=>$sql_status));
 				exit();
 			}
 		}else{
-			echo json_encode(array('status'=>1,'info'=>'连接数据库成功'));
+			echo json_encode(array('status'=>1,'info'=>'连接数据库成功','sql_mode'=>$sql_status));
 			exit();
 		}
 	}
@@ -64,8 +100,8 @@ function parseSQL($fileName,$status = true){
 				break 1;
 				}
 				case '--': break 1;
-				default : 
-				{				
+				default :
+				{
 					if($flage)
 					{
 						$sql.=$line;
@@ -83,7 +119,7 @@ function parseSQL($fileName,$status = true){
 	}
 	return $sqls;
 }
-function execSQL($sqls){
+function execSQL($sqls,$conn){
 	$flag=true;
 	if(is_array($sqls))
 	{
@@ -91,11 +127,37 @@ function execSQL($sqls){
 		$num = 0;
 		foreach($sqls as $sql)
 		{
-			$result   = mysql_query($sql);
-			if($flag) $num++;			
+			if(substr($sql,0,7)=='REPLACE' && substr($sql,17,8)=='district'){
+				//substr($sql,125);截取数据
+				//str_replace('),',');',substr($sql,125));逗号改分号
+				$districts = explode(';',str_replace('),',');',substr($sql,125)));//字符串转数组
+				$limit = 1000;
+				$page_total = (count($districts)/$limit);
+				for ($page=0; $page < $page_total; $page++) {
+					foreach ($districts as $key => $district) {
+						if(($limit*($page+1)) > $key && ($limit*$page) <= $key){
+							$district_page[] = $district;
+						}
+					}
+					$district_page = implode(',', $district_page);
+					if(substr($district_page,-1,1) == ','){
+						$district_page = substr($district_page,0,strlen($district_page)-1);
+					}
+					if($district_page){
+						$district_sqls[] = substr($sql,0,125).$district_page.';';
+					}
+					$district_page = '';
+				}
+				foreach ($district_sqls as $district_sql) {
+					$result   = db_query($district_sql,$conn);
+				}
+			}else{
+				$result   = db_query($sql,$conn);
+			}
+			if($flag) $num++;
 			$percent = ($num/$total)*100;
 			@sqlCallBack($sql,$result,$percent,$is_test);
-		}	
+		}
 	}
 	return $flag;
 }
@@ -120,7 +182,7 @@ function sqlCallBack($sql,$result,$percent,$is_test = false){
 			$isError  = true;
 			$message .= '...失败! '.mysql_error();
 		}
-		
+
 		$percent = $percent == 100 ? 99 :sprintf("%.2d",$percent) ;
 		$return_info = array(
 			'isError' => $isError,
@@ -139,23 +201,24 @@ function install_sql(){
 	global $db_pre;
 
 	//安装配置信息
+	$db_type      = version_compare(phpversion(), '7.0.0') > -1 ? 'mysqli' : 'mysql';
 	$db_address   = $_GET['db_address'];
 	$db_port      = $_GET['db_port'];
 	$db_user      = $_GET['db_user'];
 	$db_pwd       = $_GET['db_pwd'];
 	$db_name      = $_GET['db_name'];
 	$db_pre       = $_GET['db_pre'];
-	
+
 	$admin_user   = $_GET['admin_user'];
 	$admin_pwd    = $_GET['admin_pwd'];
 	$admin_email  = $_GET['admin_email'];
-	
+
 	$site_name 	  = $_GET['site_name'];
 	$site_keywords 	= $_GET['site_keywords'];
 	$site_description    	= $_GET['site_description'];
-	
+
 	//链接mysql数据库
-	$mysql_link = @mysql_connect($db_address.':'.$db_port,$db_user,$db_pwd);
+	$mysql_link = version_compare(phpversion(), '7.0.0') > -1 ? mysqli_connect($db_address.':'.$db_port,$db_user,$db_pwd) : @mysql_connect($db_address.':'.$db_port,$db_user,$db_pwd);
 	if(!$mysql_link)
 	{
 		showProgress(array('isError' => true,'message' => 'mysql链接失败'.mysql_error()));
@@ -172,30 +235,30 @@ function install_sql(){
 		showProgress(array('isError' => false,'message' => '解析SQL文件'));
 	}
 	//执行SQL,创建数据库操作
-	mysql_query("set names 'UTF8'");
+	db_query("set names 'UTF8'",$mysql_link);
 
-	if(!@mysql_select_db($db_name))
+	if(!@db_select($db_name,$mysql_link))
 	{
 		$DATABASESQL = '';
 		if(version_compare(mysql_get_server_info(), '4.1.0', '>='))
 		{
 	    	$DATABASESQL = "DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		}
-		if(!mysql_query('CREATE DATABASE `'.$db_name.'` '.$DATABASESQL))
+		if(!db_query('CREATE DATABASE `'.$db_name.'` '.$DATABASESQL,$mysql_link))
 		{
 			showProgress(array('isError' => true,'message' => '用户权限受限，创建'.$db_name.'数据库失败，请手动创建数据表'));
 		}
 	}
 
-	if(!@mysql_select_db($db_name))
+	if(!@db_select($db_name,$mysql_link))
 	{
 		showProgress(array('isError' => true,'message' => $db_name.'数据库不存在'.mysql_error()));
 	}
 
 	//安装SQL
 	$sqls = parseSQL($sql_file);
-	execSQL($sqls);
-	
+	execSQL($sqls,$mysql_link);
+
 	//安装地区数据
 	$sql_data_file = MODULE_PATH.'sql/data.sql';
 	if(!file_exists($sql_data_file))
@@ -203,16 +266,16 @@ function install_sql(){
 	}else{
 		showProgress(array('isError' => false,'message' => '正在加载必要数据','percent' => 90));
 		$sqls = parseSQL($sql_data_file);
-		execSQL($sqls);
+		execSQL($sqls,$mysql_link);
 		showProgress(array('isError' => false,'message' => '更新必要数据成功','percent' => 99));
 	}
-	
+
 
 	//写入数据库配置文件
 	$configDefFile =  <<<EOF
 <?php
 return array(
-	'db_type'   =>'mysql',
+	'db_type'   =>'{DB_TYPE}',
 	'db_host'   =>'{DB_HOST}',
 	'db_port'   =>'{DB_PORT}',
 	'db_name'   =>'{DB_NAME}',
@@ -224,6 +287,7 @@ return array(
 EOF;
 	$configFile    = APP_ROOT.'config/database.php';
 	$updateData    = array(
+		'{DB_TYPE}'		=> $db_type,
 		'{DB_PREFIX}' 	=> $db_pre,
 		'{DB_HOST}' 	=> $db_address,
 		'{DB_PORT}' 	=> $db_port,
@@ -243,7 +307,7 @@ EOF;
 	//插入管理员数据
 	$valid = generate_password(10);
 	$adminSql = 'insert into `'.$db_pre.'admin_user` (`username`,`password`,`email`,`encrypt`,`group_id`) values ("'.$admin_user.'","'.md5($admin_pwd.$valid).'","'.$admin_email.'","'.$valid.'",1)';
-	if(!mysql_query($adminSql))
+	if(!db_query($adminSql,$mysql_link))
 	{
 		showProgress(array('isError' => true,'message' => '创建管理员失败'.$adminSql.mysql_error(),'percent' => 99));
 	}else{
@@ -255,17 +319,17 @@ EOF;
 	$seos['header_title_add'] = '全球领先的企业级电子商务系统软件';
 	$seos['header_keywords'] = $site_keywords;
 	$seos['header_description'] = $site_description;
-	
-	$adminSql = 'replace into `'.$db_pre.'setting` VALUES 
+
+	$adminSql = 'replace into `'.$db_pre.'setting` VALUES
 	(\'site_name\',\''.$site_name.'\'),
 	(\'seos\',\''.serialize($seos).'\')';
-	if(!mysql_query($adminSql))
+	if(!db_query($adminSql,$mysql_link))
 	{
 		showProgress(array('isError' => true,'message' => '更新站点配置失败'.$adminSql.mysql_error(),'percent' => 99));
 	}else{
 		showProgress(array('isError' => false,'message' => '更新站点配置成功','percent' => 99));
 	}
-	
+
 
 	//设置session cookies前缀
 
@@ -275,11 +339,11 @@ EOF;
 	$g_config = preg_replace('/(\'AUTHKEY\'.+?=>)(.+?),/', "$1'".generate_password(24)."'," ,$g_config);
 
 	file_put_contents(CONF_PATH.'config.php',$g_config);
-	
+
 	$result = file_get_contents('http://'.$_SERVER['SERVER_NAME'].url('install/index/clear_cache'));
-	
+
 	showProgress(array('isError' => false,'message' => '更新站点缓存成功','percent' => 99));
-	
+
 	//执行完毕
 	showProgress(array('isError' => false,'message' => '安装完成','percent' => 100,'admin_user'=>$admin_user));
 

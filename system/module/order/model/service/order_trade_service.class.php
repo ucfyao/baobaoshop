@@ -23,7 +23,7 @@ class order_trade_service extends service
      * 如果有该订单的支付记录，需判断传过来的订单号和金额是否与订单交易表中“未支付”状态的订单号和金额一致；
      * 如果一致，则用该订单的支付单号作为第三方支付需要的订单号发起支付；
      * 如果不一致，则需再生成一条新的支付记录，并重新生成支付单号作为第三方支付需要的订单号发起支付。
-     * 
+     *
      * @param string $order_sn 订单号
      * @param string $total_fee 金额
      * @param string $method 交易方式
@@ -73,4 +73,46 @@ class order_trade_service extends service
         }
         return $result['trade_no'];
     }
+
+    /**
+     * @param  array    sql条件
+     * @param  integer  条数
+     * @param  integer  页数
+     * @param  string   排序
+     * @return [type]
+     */
+    public function fetch($sqlmap = array(), $limit = 20, $page = 1, $order = "") {
+        $result = $this->table->where($sqlmap)->limit($limit)->page($page)->order($order)->select();
+        if($result===false){
+            $this->error = lang('_param_error_');
+            return false;
+        }
+        return $result;
+    }
+    /*修改*/
+    public function setField($data, $sqlmap = array()){
+        if(empty($data)){
+            $this->error = lang('_param_error_');
+            return false;
+        }
+        $result = $this->table->where($sqlmap)->save($data);
+        if($result === false){
+            $this->error = $this->table->getError();
+            return false;
+        }
+        return $result;
+    }
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	读取的字段
+	 * @return [type]
+	 */
+	public function find($sqlmap = array(), $field = "") {
+		$result = $this->table->where($sqlmap)->field($field)->find();
+		if($result===false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
+	}
 }

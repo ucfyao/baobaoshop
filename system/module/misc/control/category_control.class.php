@@ -19,8 +19,8 @@ class category_control extends init_control {
 		$sqlmap = array();
 		$sqlmap['parent_id'] = 0;
 		$_GET['limit'] = isset($_GET['limit']) ? $_GET['limit'] : 10;
-		$category = $this->load->table('article_category')->where($sqlmap)->page($_GET['page'])->limit($_GET['limit'])->order("sort DESC")->select();
-        $count = $this->load->table('article_category')->where($sqlmap)->count();
+		$category = $this->load->table('article_category')->where($sqlmap)->page($_GET['page'])->limit($_GET['limit'])->order("sort ASC")->select();
+        $count = $this->service->count($sqlmap);
         $pages = $this->admin_pages($count,$_GET['limit']);
         $this->load->librarys('View')->assign('category',$category)->assign('pages',$pages)->display('category_index');
 	}
@@ -55,7 +55,7 @@ class category_control extends init_control {
 				showmessage(lang('_operation_success_'),url('misc/category/index'),1);
 			}
 		}else{
-			$info = $this->service->get_category_by($_GET['id']);
+			$info = $this->service->get_category_by_id($_GET['id']);
 			$result =  $this->service->get_category_by_id($info['parent_id']);
 			$parent_name = $result['parent_name'];
 			$this->load->librarys('View')->assign('info',$info)->assign('result',$result)->assign('parent_name',$parent_name)->display('category_edit');

@@ -145,19 +145,18 @@
 					var identifier = $('.bg-main').parents('.tr').attr('data-identifier');
 					$.post('<?php echo url("bind")?>',{identifier:identifier},function(ret){
 						if(ret.status == 1){
-							dialog.close('1'); // 关闭（隐藏）对话框
+							dialog.close(ret.result); // 关闭（隐藏）对话框
 							dialog.remove();	// 主动销毁对话框
 						}else{
 							alert(ret.message);
 						}
-						message(ret.message);
 					},'json');
 				})
 				$('.new_site').bind('click',function(){
 					if(confirm('进行此操作会新生成站点，确认该操作吗？')){
 						$.post('<?php echo url("bind")?>',{identifier:''},function(ret){
 							if(ret.status == 1){
-								dialog.close('1'); // 关闭（隐藏）对话框
+								dialog.close(ret.result); // 关闭（隐藏）对话框
 								dialog.remove();	// 主动销毁对话框
 							}else{
 								alert(ret.message);

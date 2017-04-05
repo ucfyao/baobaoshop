@@ -30,67 +30,75 @@
 			<div class="table-wrap">
 				<div class="table resize-table paging-table high-table border clearfix">
 					<div class="tr">
-						<span class="th w1_5" data-width="30">
-							<span class="td-con">退货商品</span>
-						</span>
-						<span class="th w1_5" data-width="10">
-							<span class="td-con">会员账号</span>
-						</span>
-						<span class="th w1_5" data-width="10">
-							<span class="td-con">退款金额</span>
-						</span>
-						<span class="th w1" data-width="15">
-							<span class="td-con">申请时间</span>
-						</span>
-						<span class="th w1" data-width="15">
-							<span class="td-con">物流信息</span>
-						</span>
-						<span class="th w1" data-width="10">
-							<span class="td-con">处理状态</span>
-						</span>
+					<?php foreach ($lists['th'] AS $th) {?>
+					<span class="th" data-width="<?php echo $th['length']?>">
+						<span class="td-con"><?php echo $th['title']?></span>
+					</span>
+					<?php }?>
 						<span class="th w1" data-width="10">
 							<span class="td-con">操作</span>
 						</span>
 					</div>
-					<?php foreach ($infos['lists'] as $val) : ?>
-						<div class="tr">
+					<?php foreach ($lists['lists'] AS $list) {?>
+					<div class="tr">
+						<?php foreach ($list as $key => $value) {?>
+						<?php if($lists['th'][$key]){?>
+						<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
+						<span class="td">
+							<div class="double-click">
+								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
+								<input class="input double-click-edit text-ellipsis text-center" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
+							</div>
+						</span>
+						<?php }elseif ($lists['th'][$key]['style'] == 'goods') {?>
 							<span class="td">
 								<div class="td-con td-pic text-left">
-									<span class="pic"><img src="<?php echo $val['_sku']['sku_thumb']; ?>" /></span>
-									<span class="title text-ellipsis txt"><a href="" target="_blank"><?php echo $val['_sku']['sku_name']; ?></a></span>
+									<span class="pic"><img src="<?php echo $list['sku_thumb']; ?>" /></span>
+									<span class="title text-ellipsis txt"><a href="" target="_blank"><?php echo $value; ?></a></span>
 									<span class="icon">
-										<?php foreach ($val['_sku']['sku_spec'] as $spec) : ?>
+										<?php foreach ($list['specs'] as $spec) : ?>
 											<em class="text-main"><?php echo $spec['name'] ?>：</em><?php echo $spec['value'] ?>&nbsp;
 										<?php endforeach; ?>
 									</span>
 								</div>
 							</span>
-							<span class="td">
-								<span class="td-con"><?php echo $val['_buyer']['username']; ?></span>
+						<?php }elseif ($lists['th'][$key]['style'] == 'delivery_status') {?>
+						<span class="td">
+							<?php if ($value == 2) : ?>
+								<span class="td-con double-row text-left">物流公司：<?php echo $list['delivery_name'];?><br />物流单号：<?php echo $list['delivery_sn'];?></span>
+							<?php else: ?>
+								<span class="td-con text-center">--</span>
+							<?php endif; ?>
+						</span>
+						<?php }elseif ($lists['th'][$key]['style'] == 'left_text') {?>
+						<span class="td">
+							<span class="td-con text-left"><?php echo $value;?></span>
+						</span>
+						<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
+						<span class="td">
+							<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
+						</span>
+						<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
+						<span class="td">
+							<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
+						</span>
+						<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
+							<input type="hidden" name="id" value="<?php echo $value?>" />
+						<?php }else{?>
+						<span class="td">
+							<span class="td-con"><?php echo $value;?></span>
+						</span>
+						<?php }?>
+						<?php }?>
+						<?php }?>
+						<span class="td">
+							<span class="td-con">
+								<a href="<?php echo url('order/admin_server/detail_return',array('id' => $list['id'])) ?>"><?php if($list['status'] == 0): ?>处理<?php else: ?>查看<?php endif; ?></a>&emsp;
 							</span>
-							<span class="td">
-								<span class="td-con">￥<?php echo $val['amount'];?></span>
-							</span>
-							<span class="td">
-								<span class="td-con"><?php echo date('Y-m-d H:i:s',$val['dateline']);?></span>
-							</span>
-							<span class="td">
-								<?php if ($val['status'] == 2) : ?>
-									<span class="td-con double-row text-left">物流公司：<?php echo $val['delivery_name'];?><br />物流单号：<?php echo $val['delivery_sn'];?></span>
-								<?php else: ?>
-									<span class="td-con text-center">--</span>
-								<?php endif; ?>
-							</span>
-							<span class="td">
-								<span class="td-con"><?php echo $val['_status'] ?></span>
-							</span>
-							<span class="td">
-								<span class="td-con">
-									<a href="<?php echo url('order/admin_server/detail_return',array('id' => $val['id'])) ?>"><?php if($val['status'] == 0): ?>处理<?php else: ?>查看<?php endif; ?></a>&emsp;
-								</span>
-							</span>
-						</div>
-					<?php endforeach; ?>
+						</span>
+					</div>
+					<?php }?>
+
 					<div class="paging padding-tb body-bg clearfix">
 						<ul class="fr"><?php echo $pages; ?></ul>
 						<div class="clear"></div>

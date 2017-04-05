@@ -161,7 +161,7 @@ function lang($name=null, $file = 'language', $vars = array(), $default = null) 
         } else {
             $path = LANG_PATH.$default_lang.'/';
         }
-        $fullname = $path.$file.'.php';        
+        $fullname = $path.$file.'.php';
         if(!isset($_lang[md5($fullname)]) && file_exists_case($fullname)) {
             $lang = include $fullname;
             $_lang[md5($fullname)] = array_change_key_case(array_merge($lang, (array) $_lang[md5($fullname)]));
@@ -176,7 +176,7 @@ function lang($name=null, $file = 'language', $vars = array(), $default = null) 
                     $replaces[] = $v;
                 }
             }
-            return str_replace($searchs, $replaces, $return);          
+            return str_replace($searchs, $replaces, $return);
         }
     }
     return null;
@@ -607,7 +607,7 @@ function template($tplfile, $module = '') {
  */
 function module_exists($name) {
 	if(empty($name)) return false;
-	$modules = cache('module', '', 'common');
+	$modules = model('admin/app','service')->get_module();
 	return isset($modules[$name]);
 }
 
@@ -850,6 +850,7 @@ function url($name, $param = '', $domain = FALSE) {
             }
         }
         if ($param) $params = array_merge($params, $param);
+        runhook('before_url_output',$params);
         return $url.__APP__.'?'.http_build_query($params);
     }
 }
@@ -1166,13 +1167,13 @@ function thumb($src = '', $width = 500, $height = 500, $replace = false) {
         $ext = pathinfo($src, PATHINFO_EXTENSION);
         $name = basename($src, '.'.$ext);
         $dir = dirname($src);
+        $setting = model('admin/setting','service')->get();
         if(in_array($ext, array('gif','jpg','jpeg','bmp','png'))) {
             $name = $name.'_thumb_'.$width.'_'.$height.'.'.$ext;
             $file = $dir.'/'.$name;
             if(!file_exists($file) || $replace == TRUE) {
-                $load = hd_load::getInstance();
                 $image = new image($src);
-                $image->thumb($width, $height, 1);
+                $image->thumb($width, $height, isset($setting['attach_thumb'])?$setting['attach_thumb']:1);
                 $image->save($file);
             }
             return $file;
@@ -1229,7 +1230,7 @@ function fileext($filename) {
  * @return array
  */
 function seo($title, $keywords='', $description='', $other='', $flag = false) {
-    $setting = cache('setting', '', 'common');
+    $setting = model('admin/setting','service')->get();
     $site_title = $setting['site_name'];
     $site_keywords = $setting['site_keywords'];
     $site_description = $setting['site_description'];
@@ -1393,4 +1394,72 @@ function deldir($dir){
     } else {
         return false;
     }
+}
+/**
+ * 加密字符串
+ * @param string $str 字符串
+ * @param string $key 加密key
+ * @return string
+ */
+function encrypt($data,$key = '',$expire = 0) {
+    $expire = sprintf('%010d', $expire ? $expire + time():0);
+    $key = md5($key != '' ? $key : config('authkey'));
+    $data = base64_encode($expire.$data);
+    $x    = 0;
+    $len  = strlen($data);
+    $l    = strlen($key);
+    $char = $str    =   '';
+
+    for ($i = 0; $i < $len; $i++) {
+        if ($x == $l) $x = 0;
+        $char .= substr($key, $x, 1);
+        $x++;
+    }
+
+    for ($i = 0; $i < $len; $i++) {
+        $str .= chr(ord(substr($data, $i, 1)) + (ord(substr($char, $i, 1)))%256);
+    }
+    return str_replace(array('+','/','='),array('-','_',''),base64_encode($str));
+}
+
+/**
+ * 解密字符串
+ * @param string $str 字符串
+ * @param string $key 加密key
+ * @return string
+ */
+function decrypt($data,$key = '') {
+    $key = md5($key != '' ? $key : config('authkey'));
+    $data   = str_replace(array('-','_'),array('+','/'),$data);
+    $mod4   = strlen($data) % 4;
+    if ($mod4) {
+       $data .= substr('====', $mod4);
+    }
+    $data   = base64_decode($data);
+
+    $x      = 0;
+    $len    = strlen($data);
+    $l      = strlen($key);
+    $char   = $str = '';
+
+    for ($i = 0; $i < $len; $i++) {
+        if ($x == $l) $x = 0;
+        $char .= substr($key, $x, 1);
+        $x++;
+    }
+
+    for ($i = 0; $i < $len; $i++) {
+        if (ord(substr($data, $i, 1))<ord(substr($char, $i, 1))) {
+            $str .= chr((ord(substr($data, $i, 1)) + 256) - ord(substr($char, $i, 1)));
+        }else{
+            $str .= chr(ord(substr($data, $i, 1)) - ord(substr($char, $i, 1)));
+        }
+    }
+    $data   = base64_decode($str);
+    $expire = substr($data,0,10);
+    if($expire > 0 && $expire < time()) {
+        return '';
+    }
+    $data   = substr($data,10);
+    return $data;
 }

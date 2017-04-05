@@ -157,22 +157,10 @@ var hd_order = {
 				}
 			})
 		}
-		//支付 && 配送
-		if (D.payType && D.deliverys[0]) {
-			$("[data-show='title']").addClass("order-lh-40");
-			var _html = '<em>'+ D.payType[D.payMethod] +'</em><br/>';
-			var _ds = T.isJSON(D.deliverys);
-			//根据_ds收货地址是否为空对象来判断是否已选择收货地址，“{}”表示未选择收货地址，相反则表示已选择
-			if(JSON.stringify(_ds) == "{}"){
-				_html += '<span class="text-gray">请选择配送方式</span>';
-			}else{
-				$.each(_ds, function(sd, dd) {
-					_html += '<span>'+ carts.deliverys[sd][dd]._delivery.name +'</span>';
-				});
-			}
-			$("[data-show='pay_delivery']").html(_html);
+		//支付
+		if (D.payType) {
+			$("[data-show='pay_delivery']").html(D.payType[D.payMethod]);
 		}else{
-			$("[data-show='title']").removeClass("order-lh-40");
 			$("[data-show='pay_delivery']").html('请选择');
 		}
 		//发票信息 
@@ -265,35 +253,6 @@ var hd_order = {
 		}else{
 			$("[data-id='type_box']").html('<p class="text-org">系统暂未开启支付方式</p>');
 		}
-		// 配送方式 ，如果没有选择收货地址提示选择收货地址
-		if(D.address && D.address != "null"){
-			var D_H = '';
-			var carts = T.isJSON(D.carts);
-
-			$.each(carts.skus, function(sid, v){
-				var S_L = '';
-				$.each(v.sku_list ,function(k, sku) {
-					S_L += '<li class="item-list"><a href="javascript:;" class="square-item"><img src="'+ sku._sku_.thumb +'" /></a></li>';
-				});
-				var L_H = '';
-				$.each(carts.deliverys[sid], function(ind, de){
-					var _type = 'gray';
-					var _selected = D.deliverys;
-					if((_selected && _selected[sid] == de.delivery_id) || (!_selected && ind == 1)){
-						_type = 'blue';
-					}
-					L_H += '<a class="mui-btn hd-btn-'+ _type +' margin-small-right" delivery-district-id="'+  de.delivery_id +'">' + de._delivery.name +'</a>';
-				});
-				
-				D_H += '<div class="border-bottom padding-bottom" data-sellerid="'+ sid +'">'
-					   + '	<ul class="delivery-items mui-clearfix">'+ S_L +'</ul>'
-					   + '	<div class="margin-top">'+ L_H +'</div>'
-					   + '</div>';
-			});
-			$("[data-id='delivery_box']").html(D_H);
-		}else{
-			$("[data-id='delivery_box']").html('<p class="padding-top padding-bottom text-org">您所选择的收货地址暂时无法配送</p>');
-		}
 	},
 	// 更新选中的收货地址的物流配送方式
 	getDeliverys : function(url, id) {
@@ -378,7 +337,7 @@ var hd_order = {
 				address_id: D.addrId,		//收货地址
 				district_id: D.district,	//收货地址
 				pay_type: D.payMethod,		//支付方式
-				deliverys: D.deliverys,		//物流组
+				// deliverys: D.deliverys,		//物流组
 				order_prom: D.orderProm,	//订单促销组
 				sku_prom: D.goodsProm ,		//商品促销组
 				remarks: D.remarks,			//留言组

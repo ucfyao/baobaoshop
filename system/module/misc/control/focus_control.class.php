@@ -12,6 +12,7 @@ class focus_control extends init_control {
 	public function _initialize() {
 		parent::_initialize();
 		$this->service = $this->load->service('focus');
+		$this->attachment_service = $this->load->service('attachment/attachment');
 		helper('attachment');
 	}
 	/**
@@ -20,10 +21,20 @@ class focus_control extends init_control {
 	public function index(){
 		$sqlmap = array();
 		$_GET['limit'] = isset($_GET['limit']) ? $_GET['limit'] : 10;
-		$focus = $this->load->table('focus')->where($sqlmap)->page($_GET['page'])->limit($_GET['limit'])->order("sort ASC")->select();
-        $count = $this->load->table('focus')->where($sqlmap)->count();
+		$focus = $this->service->get_lists($sqlmap,$_GET['page'],$_GET['limit']);
+        $count = $this->service->count($sqlmap);
         $pages = $this->admin_pages($count, $_GET['limit']);
-        $this->load->librarys('View')->assign('focus',$focus)->assign('pages',$pages)->display('focus_index');
+        $lists = array(
+            'th' => array(
+                'sort' => array('title' => '排序','length' => 10,'style' => 'double_click'),
+                'title' => array('title' => '幻灯片名称','length' => 20,'style' => 'ident'),
+                'url'=>array('title' => '幻灯片链接','length' => 50,'style' => 'double_click'),
+                'target' => array('title' => '新窗口打开','length' => 10,'style' => 'ico_up_rack'),
+            ),
+            'lists' => $focus,
+            'pages' => $pages,
+            );
+        $this->load->librarys('View')->assign('lists',$lists)->display('focus_index');
 	}
 	/**
 	 * [add 添加]
@@ -32,16 +43,16 @@ class focus_control extends init_control {
 		if(checksubmit('dosubmit')){
 			if(!empty($_FILES['thumb']['name'])) {
 				$code = attachment_init(array('module'=>'common','path'=>'common','mid'=>$this->admin['id'],'allow_exts'=>array('bmp','jpg','jpeg','png','gif')));
-				$_GET['thumb'] = $this->load->service('attachment/attachment')->setConfig($code)->upload('thumb');
+				$_GET['thumb'] = $this->attachment_service->setConfig($code)->upload('thumb');
 				if(!$_GET['thumb']){
-					showmessage($this->load->service('attachment/attachment')->error);
+					showmessage($this->attachment_service->error);
 				}
 			}
 			$result = $this->service->add($_GET);
 			if(!$result){
 				showmessage($this->service->error);
 			}else{
-				$this->load->service('attachment/attachment')->attachment($_GET['thumb'],'',false);
+				$this->attachment_service->attachment($_GET['thumb'],'',false);
 				showmessage(lang('_operation_success_'),url('index'),1);
 			}
 		}else{
@@ -56,16 +67,16 @@ class focus_control extends init_control {
 		if(checksubmit('dosubmit')){
 			if(!empty($_FILES['thumb']['name'])) {
 				$code = attachment_init(array('module'=>'common','path'=>'common','mid'=>$this->admin['id'],'allow_exts'=>array('bmp','jpg','jpeg','png','gif')));
-				$_GET['thumb'] = $this->load->service('attachment/attachment')->setConfig($code)->upload('thumb');
+				$_GET['thumb'] = $this->attachment_service->setConfig($code)->upload('thumb');
 				if(!$_GET['thumb']){
-					showmessage($this->load->service('attachment/attachment')->error);
+					showmessage($this->attachment_service->error);
 				}
 			}
 			$result = $this->service->edit($_GET);
 			if(!$result){
 				showmessage($this->service->error);
 			}else{
-				$this->load->service('attachment/attachment', 'service')->attachment($_GET['thumb'], $info['thumb'],false);
+				$this->attachment_service->attachment($_GET['thumb'], $info['thumb'],false);
 				showmessage(lang('_operation_success_'),url('index'),1);
 			}
 		}else{

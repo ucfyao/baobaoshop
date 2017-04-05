@@ -34,7 +34,7 @@ class admin_control extends init_control {
         if (checksubmit('dosubmit')) {
             $_POST['config'] = serialize($_POST['config']);
             if ($this->service->save($_POST)) {
-            	$this->service->build_cache();
+            	cache('payment_enable',NULL);
                 showmessage(lang('_enabled_success_','pay/language'), url('setting'), 1);
             } else {
                 showmessage(lang('_enabled_error_','pay/language'), url('setting'), 0);
@@ -63,8 +63,9 @@ class admin_control extends init_control {
         $pay_code = $_GET['pay_code'];
         $data = array();
         $data['pay_code'] = $pay_code;
-        $this->load->table('payment')->where(array('pay_code'=>$pay_code))->delete();
-		$this->service->build_cache();
+        $result = $this->service->delete($pay_code);
+		cache('payment_enable',NULL);
+        if($result === false) showmessage($this->service->error);
         showmessage(lang('_uninstall_success_','pay/language'), url('setting'), 1);
     }
 

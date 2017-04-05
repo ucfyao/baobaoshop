@@ -4,6 +4,9 @@ class index_control extends control {
 		parent::_initialize();
 		$this->service = $this->load->service('pay/payment');
 		$this->service_payment = $this->load->service('pay/payment');
+		$this->member_deposit_service = $this->load->service('member/member_deposit');
+		$this->order_service = $this->load->service('order/order');
+		$this->order_trade_service = $this->load->service('order/order_trade');
 	}
 
 	public function dnotify() {
@@ -33,23 +36,23 @@ class index_control extends control {
 			$_map = array();
 			$_map['order_sn'] = $order_sn;
 			$_map['order_status'] = 1;
-			$result = $this->load->table('member_deposit')->where($_map)->find();
+			$result = $this->member_deposit_service->find($_map);
 		} else {
 			$_map = array();
 			$_map['sn'] = $order_sn;
 			$_map['pay_status'] = 1;
-			$result = $this->load->table('order')->where($_map)->find();
+			$result = $this->order_service->find($_map);
 		}
 		if($result) {
 			showmessage(lang('order_pay_success','pay/language'), url('index'), 1);
 		}
 	}
-	
-	public function wechat($order_sn,$pay_code) {
+
+	public function wechat() {
 		$member = $this->load->service('member/member')->init();
 		$pay_info = array();
-		if($_GET['order_sn'][0] == 'm'){
-			$m_order = $this->load->table('member/member_deposit')->where(array('order_sn' => $_GET['order_sn']))->find();
+		if($_GET['trade_no'][0] == 'm'){
+			$m_order = $this->member_deposit_service->find(array('order_sn' => $_GET['trade_no']));
 			if (!$m_order || $member['id'] != $m_order['mid']) {
 				showmessage(lang('no_promission_view','order/language'));
 			}
@@ -64,8 +67,8 @@ class index_control extends control {
 			$success_url = url('member/money/success',array('order_sn'=>$pay_info['trade_sn']));
 			$error_url = url('member/money/pay');
 		}else{
-			$order = $this->load->table('order/order_trade')->where(array('trade_no' => $_GET['trade_no']))->find();
-			$order_info = $this->load->table('order/order')->where(array('sn' => $order['order_sn']))->find();
+			$order = $this->order_trade_service->find(array('trade_no' => $_GET['trade_no']));
+			$order_info = $this->order_service->find(array('sn' => $order['order_sn']));
 			if (!$order || $member['id'] != $order_info['buyer_id']) {
 				showmessage(lang('no_promission_view','order/language'));
 			}

@@ -10,9 +10,31 @@
 
 class friendlink_service extends service {
 	public function _initialize() {
-		$this->db = $this->load->table('misc/friendlink');	
-		$this->article_service = $this->load->service('misc/article');	
+		$this->db = $this->load->table('misc/friendlink');
+		$this->article_service = $this->load->service('misc/article');
 	}
+
+
+	/**
+	 * 获取友情链接列表
+	 */
+
+	public function get_lists($sqlmap,$page,$limit){
+		$friendlink = $this->db->where($sqlmap)->page($page)->limit($limt)->order("sort ASC")->select();
+		foreach ($friendlink as $k => $v) {
+			$lists[] = array(
+				'id' => $v['id'],
+				'sort'=>$v['sort'],
+				'name'=>$v['name'],
+				'url'=>$v['url'],
+				'target'=>$v['target'],
+				'logo'=>$v['logo'],
+				'display'=>$v['display'],
+			);
+		}
+		return $lists;
+	}
+
 	/**
 	 * [add 添加]
 	 * @return [type] [description]
@@ -107,5 +129,37 @@ class friendlink_service extends service {
 			$this->error = $this->db->getError();
 		}
 		return $result;
+	}
+	/**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->db->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->db->getError();
+            return false;
+        }
+        return $result;
+    }
+ 	//标签调用
+  	public function friendlink_lists($sqlmap, $options) {
+		$this->db->where($this->build_map($sqlmap));
+		if($options['limit']){
+			$this->db->limit($options['limit']);
+		}
+		if($sqlmap['order']){
+			$this->db->order($sqlmap['order']);
+		}
+		return  $this->db->select();
+	}
+	public function build_map($data){
+		$sqlmap = array();
+		$sqlmap['display'] = 1;
+		if($data['_string']){
+			$sqlmap['_string'] = $data['_string'];
+		}
+		return $sqlmap;
 	}
 }

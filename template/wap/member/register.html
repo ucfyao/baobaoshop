@@ -2,7 +2,7 @@
 <script type="text/javascript" src="{__ROOT__}statics/js/haidao.validate.js?v={HD_VERSION}"></script>
 <script type="text/javascript" src="template/default/statics/js/jquery.cookie.js?v={HD_VERSION}"></script>
 <?php
-	$setting = cache('setting');
+	$setting = model('admin/setting','service')->get();
 ?>
 	<div class="mui-content">
 	    <div class="padding bg-white login-wrap">

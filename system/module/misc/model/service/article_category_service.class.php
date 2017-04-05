@@ -12,6 +12,34 @@ class article_category_service extends service {
 	public function _initialize() {
 		$this->db = $this->load->table('misc/article_category');
 	}
+
+
+	/**
+	 * 获取文章分类
+	 */
+	public function get_lists($sqlmap,$page,$limit,$order){
+
+		$category = $this->db->where($sqlmap)->page($page)->limit($limit)->order($order)->select();
+		if(!$category){
+			$this->error = $this->db->getError();
+		}
+		foreach ($category AS $k => $v) {
+			if($this->has_child($v['id'])){
+				$level = 1;
+			}
+			$lists[] = array(
+					'id' =>$v['id'],
+					'sort' =>$v['sort'],
+					'name'=>$v['name'],
+					'display' =>$v['display'],
+					'parent_id' =>$v['parent_id'],
+					'level' =>$level,
+				);
+		}
+		return array('lists'=>$lists);
+
+	}
+
 	/**
 	 * [get_category_by_id 根据id获取文章信息]
 	 * @param  [type] $id [description]
@@ -19,9 +47,12 @@ class article_category_service extends service {
 	 * @return [type]     [description]
 	 */
 	public function get_category_by_id($id,$field = FALSE){
-		if((int)$id < 1){
+		if((int)$id < 1 && $id != 'all'){
 			$this->error = lang('goods_category_not_exist','goods/language');
 			return FALSE;
+		}
+		if((int)$id < 1 && $id == 'all'){
+			return '所有';
 		}
 		$result = $this->db->find($id);
 		$result['category_id'] = $this->get_parents_id($result['id']);
@@ -29,7 +60,7 @@ class article_category_service extends service {
 		if(!$result){
 			$this->error = $this->db->getError();
 		}
-		if($field) return $result[$field]; 
+		if($field) return $result[$field];
 		return $result;
 	}
 	//获取父分类id
@@ -68,7 +99,7 @@ class article_category_service extends service {
 		if((int)$params['id'] < 1){
 			$this->error = lang('goods_category_not_exist','goods/language');
 			return FALSE;
-		}		
+		}
 		$data = array();
 		$data['id'] = $params['id'];
 		$data['name'] = $params['name'];
@@ -81,7 +112,7 @@ class article_category_service extends service {
     		return FALSE;
     	}else{
     		return TRUE;
-    	}	
+    	}
 	}
 	/**
 	 * [delete 删除分类]
@@ -102,7 +133,7 @@ class article_category_service extends service {
     		return FALSE;
     	}else{
     		return TRUE;
-    	}	
+    	}
 	}
 	/**
      * [has_child 判断分类是否有子分类]
@@ -142,7 +173,7 @@ class article_category_service extends service {
 	 * @param [array] $params [增加分类信息]
 	 * @return [boolean]         [返回ture or false]
 	 */
-	public function add($params){		
+	public function add($params){
 		if(empty($params['parent_id'])){
 			$params['parent_id'] = 0;
 		}else{
@@ -164,7 +195,7 @@ class article_category_service extends service {
 			return FALSE;
     	}else{
     		return TRUE;
-    	}		
+    	}
 	}
 	/**
 	 * [ajax_sun_class ajax获取分类]
@@ -195,21 +226,46 @@ class article_category_service extends service {
 		}
     	return true;
 	}
+
 	/**
-	 * [get_category_by 获取一条分类信息]
- 	 */
-	public function get_category_by($id,$type){
-		$id = (int)$id;
-		if($id < 1){
-			$this->error = lang('_param_error_');
-			return FALSE;
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->db->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->db->getError();
+            return false;
+        }
+        return $result;
+    }
+
+
+	//标签调用
+	public function category_lists($sqlmap, $options) {
+		$this->db->where($this->build_map($sqlmap));
+		if(isset($sqlmap['order'])){
+			$this->db->order($sqlmap['order']);
 		}
-		$data = array();
-		$data['id'] = array('eq',$id);
-		$row = $this->load->table('misc/article_category')->where($data)->find();
-		if($type){
-			return $row[$type];
+		if(isset($options['limit'])){
+			$this->db->limit($options['limit']);
 		}
-		return $row;
+		return $this->db->select();
+	}
+	public function build_map($data){
+		$sqlmap = array();
+		$sqlmap['display'] = 1;
+		if (isset($data['id'])) {
+			if(preg_match('#,#', $data['id'])) {
+				$sqlmap['parent_id'] = array("IN", explode(",", $data['id']));
+			} else {
+				$sqlmap['parent_id'] = $data['id'];
+			}
+		}
+		if(isset($data['_string'])){
+			$sqlmap['_string'] = $data['_string'];
+		}
+		return $sqlmap;
 	}
 }

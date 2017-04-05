@@ -19,6 +19,8 @@ class goods_spu_table extends table {
     );
     protected $_auto = array(
     );
+
+
     public function status($status){
         if(is_null($status)){
             return $this;
@@ -26,6 +28,7 @@ class goods_spu_table extends table {
         $this->where(array('status'=>$status));
         return $this;
     }
+
     public function category($catid){
         if(!$catid){
             return $this;
@@ -33,6 +36,7 @@ class goods_spu_table extends table {
         $this->where(array('catid'=>array('IN',$catid)));
         return $this;
     }
+
     public function brand($brand_id){
         if(!$brand_id){
             return $this;
@@ -40,44 +44,88 @@ class goods_spu_table extends table {
        $this->where(array('brand_id'=>$brand_id));
         return $this;
     }
-   	public function keyword($keyword){
+
+    public function keyword($keyword){
         if(!$keyword){
             return $this;
         }
         $this->where(array('name'=>array('LIKE','%'.$keyword.'%')));
         return $this;
     }
-    public function detail($id,$field = TRUE){
-        if($id < 1){
-            return $this;
-        } 
-        $this->result['goods'] = $this->field($field)->find($id);
-        if(empty($this->result['goods'])) return $this;
-        if(!empty($this->result['goods']['imgs'])){
-            $this->result['goods']['imgs'] = json_decode($this->result['goods']['imgs'],TRUE);
+
+
+
+
+    protected function _after_find(&$result,$options) {
+        return $result = $this->_output($result);
+    }
+
+    /**
+     * 获取拓展品牌
+     * @param  array $spu SPU数组
+     * @author xuewl <master@xuewl.com>
+     * @return array
+     */
+    public function get_extra_brand($spu) {
+        $spu_id = (int) $spu['id'];
+        $brand_id = (int) $spu['brand_id'];
+        if($spu_id > 0 && $brand_id > 0) {
+            return $this->load->table('goods/brand')->find($spu['brand_id']);
         }
-        if(empty($this->result['goods']['thumb'])){
-            $this->result['goods']['thumb'] = $this->load->table('goods/goods_sku')->where(array('spu_id'=>$this->result['goods']['id']))->order('sku_id ASC')->getField('thumb');
+        return false;
+    }
+
+    /**
+     * 获取拓展分类
+     * @param  array $spu SPU数组
+     * @author xuewl <master@xuewl.com>
+     * @return array
+     */
+    public function get_extra_category($spu) {
+        $catid = (int) $spu['catid'];
+        if($catid > 0) {
+            return $this->load->service('goods/goods_category')->get_category_by_id($spu['catid'],false);
         }
-        return $this;
+        return false;
     }
-    public function sku_id(){
-        $this->result['goods']['sku_id'] = $this->load->table('goods/goods_sku')->order('sku_id ASC')->where(array('spu_id'=>$this->result['goods']['id']))->getField('sku_id');
-        return $this;
+
+    /**
+     * 获取拓展SKU列表
+     * @param  array $spu SPU数组
+     * @author xuewl <master@xuewl.com>
+     * @return array
+     */
+    public function get_extra_sku($spu) {
+        $spu_id = (int) $spu['id'];
+        if($spu_id > 0) {
+            return $this->load->service('goods/goods_sku')->get_sku($spu_id);
+        }
+        return false;
     }
-    public function brandname(){
-        $this->result['goods']['brandname'] = $this->load->table('goods/brand')->where(array('id'=>$this->result['goods']['brand_id']))->getField('name');
-        return $this;
+
+
+    public function get_extra_type($spu) {
+        $spu_id = (int) $spu['id'];
+        if($spu_id > 0) {
+            return $this->load->service('goods/type')->get_type_by_goods_id($spu_id);
+        }
+        return false;
     }
-    public function catname(){
-        $this->result['goods']['catname'] = $this->load->service('goods/goods_category')->create_cat_format($this->result['goods']['catid']);
-        return $this;
-    }
-    public function cat_format(){
-         $this->result['goods']['cat_format'] = $this->load->service('goods/goods_category')->create_format_id($this->result['goods']['catid']);
-        return $this;
-    }
-    public function output(){
-        return $this->result['goods'];
+
+
+    protected function _output($result) {
+        /* 默认主图 */
+        $result['imgs'] = json_decode($result['imgs'],true);
+        if($result['specs']) {
+            $specs = json_decode($result['specs'], true);
+            foreach ($specs as $id => $spec) {
+                $specs[$id]['value'] = explode(",", $spec['value']);
+                $specs[$id]['img'] = explode(",", $spec['img']);
+                // $specs[$id]['md5'] = md5($spec['name'].':'.$spec['value']);
+            }
+            $result['specs'] = $specs;
+        }
+
+        return $result;
     }
 }

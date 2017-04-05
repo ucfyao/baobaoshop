@@ -18,7 +18,7 @@ class setting_service extends service {
 	 * @return [boolean]
 	 */
 	public function update($params){
-		$settings = $this->get_setting();
+		$settings = $this->get();
 		runhook('setting_update',$params);
 		foreach ($params as $key => $value) {
 			if (is_array($value)) $value = serialize($value);
@@ -28,22 +28,16 @@ class setting_service extends service {
 				$this->db->add(array('key' => $key ,'value' => $value));
 			}
 		}
-		$this->load->service('admin/cache')->setting();
+		cache('setting',NULL);
 		return TRUE;
 	}
 
+
 	/**
-	 * 获取后台设置
-	 * @param  string 	$key 缓存名称(为空取所有设置)
-	 * @return [result]
+	 * 获取设置缓存
 	 */
-	public function get_setting($key){
-		$get_setting = cache('setting') ? cache('setting') : $this->load->table('setting')->getField('key,value',TRUE);
-		if(is_string($key)) return $get_setting[$key];
-		foreach($get_setting as $key => $value){
-			$get_setting[$key] = unserialize($value) ? unserialize($value) : $value;
-		}
-		runhook('setting_get_setting',$get_setting);
-		return $get_setting;
+	public function get($key = NULL){
+		$setting = $this->load->table('setting')->cache('setting',3600)->select();
+		return is_string($key) ? $setting[$key] : $setting;
 	}
 }

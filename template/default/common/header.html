@@ -16,24 +16,20 @@
 				</div>
 			{/if}
 		{/hd}
-		{hook/common_header data}
 	<!-- 头部 -->
 	<div class="header container">
 		<div class="logo fl">
-			<span><a href="{__APP__}"><a href="{__APP__}"><img width="190px" height="140px" src="<?php $cache = model('admin/setting','service')->get(); echo $cache['site_logo'] ? $cache['site_logo'] : 'template/default/statics/images/logo.png' ?>" /></a></span>
-			<div class="header_slogan">
-				{$SEO['other']}
-			</div>
+			<span><a href="{__APP__}"><img width="190px" height="64px" src="<?php $cache = model('admin/setting','service')->get(); echo $cache['site_logo'] ? $cache['site_logo'] : 'template/default/statics/images/logo.png' ?>" /></a></span>
 		</div>
 		<!-- 搜索框 -->
-		<div class="search-wrap border radius">
-			<div class="search">
+		<div class="search-wrap">
+			<div class="search border border-main border-small">
 				<form name="form-search" action="{__APP__}" method="get">
 					<input type="hidden" name="m" value="goods">
 					<input type="hidden" name="c" value="search">
 					<input type="hidden" name="a" value="search">
 					<input class="input border-none bg-none fl" type="text" name="keyword" placeholder="请输入商品关键字" value="" />
-					<input class="button text-big text-white radius-none bg-OrangeRed fr" type="submit" value="搜索" />
+					<input class="button text-big text-white radius-none bg-main fr" type="submit" value="搜索" />
 				</form>
 			</div>
 			<ul class="keyword margin-top text-gray">
@@ -46,40 +42,14 @@
 				{/loop}
 			{/hd}
 			</ul>
-			{hook/header_search}
 		</div>
-		<div class="user border radius fr">
-			<!-- 购物车 -->
-			<div class="user-box fun-show" id="carts">
-				<div class="user-top bg-white #border">
-					<i class="icon-cart fl"></i>我的购物车<em class="cart-num text-center bg-OrangeRed margin-big-left fr" id="count">0</em>
-				</div>
-				<div class="user-content bg-white cart border radius">
-					<div class="user-con-top border-bottom">
-						<a class="fl">最新加入的商品</a>
-						<a class="fr" href="javascript:;">清空购物车</a>
-					</div>
-					<div class="cart-goods border-bottom none hidden" id="lists"></div>
-					<div class="cart-tips bg-white text-center"><p>购物车加载中...</p></div>
-					<div class="cart-info padding-lr">
-						<p class="margin-small-top hidden none">共
-							<em class="text-mix g_c">0</em> 种商品
-							<em class="text-mix m_c">0</em> 件，
-							商品金额总计:<em class="text-mix text-default p_c">￥0.00</em>
-						</p>
-						<a class="cart-btn margin-tb" href="{url('order/cart/index')}">去购物车结算</a>
-						<!--商品下架时-->
-						<!--<a class="cart-btn margin-tb bg-gray" href="#">去购物车结算</a>-->
-					</div>
-				</div>
-				{hook/cart_box data}
-			</div>
+		<div class="user fr">
 			<!-- 会员中心 -->
 			<div class="user-box fun-show">
-				<div class="user-top bg-white">
+				<div class="user-top bg-white border">
 					<i class="icon-member fl"></i>会员中心<i class="icon-down fr"></i>
 				</div>
-				<div class="user-content bg-white core border radius">
+				<div class="user-content bg-white core border">
 					<div class="user-con-top border-bottom">
 					<?php if($member['id']){?>
 					<a class="fl text-sub" href="{url('member/index/index')}"><?php echo $member['username'] ?></a>
@@ -110,25 +80,48 @@
 							{/hd}
 						</ul>
 					</div>
-					{hook/user_box data}
+				</div>
+			</div>
+			<!-- 购物车 -->
+			<div class="user-box fun-show" id="carts">
+				<div class="user-top bg-white border">
+					<i class="icon-cart fl"></i>我的购物车<em class="cart-num text-center bg-main margin-big-left fr" id="count">0</em>
+				</div>
+				<div class="user-content bg-white cart border">
+					<div class="user-con-top border-bottom">
+						<a class="fl">最新加入的商品</a>
+						<a class="fr" href="javascript:;">清空购物车</a>
+					</div>
+					<div class="cart-goods border-bottom none hidden" id="lists"></div>
+					<div class="cart-tips bg-white text-center"><p>购物车加载中...</p></div>
+					<div class="cart-info padding-lr">
+						<p class="margin-small-top hidden none">共
+							<em class="text-mix g_c">0</em> 种商品
+							<em class="text-mix m_c">0</em> 件，
+							商品金额总计:<em class="text-mix text-default p_c">￥0.00</em>
+						</p>
+						<a class="cart-btn margin-tb" href="{url('order/cart/index')}">去购物车结算</a>
+						<!--商品下架时-->
+						<!--<a class="cart-btn margin-tb bg-gray" href="#">去购物车结算</a>-->
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<!-- 购物车结束 -->
 	<!-- 导航 -->
-	<div class="nav">
+	<div class="nav layout">
 		<div class="container">
 			<!-- 商品分类 -->
 			<div class="category fl">
-				<h3 class="dt bg-OrangeRed text-default text-white">
+				<h2 class="dt bg-sub text-default text-white">
 					<i>
 					    <svg width="14" height="14" viewBox="0 0 1024 1024">
 							<g>
 								<path d="M196.277147 586.083667c0-12.674671-10.264182-22.950711-22.951652-22.950711L87.253731 563.132956C74.567285 563.132956 64.300033 573.41002 64.300033 586.083667l0 86.069261C64.300033 684.827599 74.567285 695.104663 87.253731 695.104663l86.071764 0c12.68747 0 22.951652-10.276041 22.951652-22.950711L196.277147 586.083667zM959.45027 586.083667c0-12.674671-10.265205-22.950711-22.951652-22.950711L311.040523 563.132956c-12.686447 0-22.952675 10.276041-22.952675 22.950711l0 86.069261c0 12.674671 10.266228 22.950711 22.952675 22.950711l625.458095 0c12.685423 0 22.951652-10.276041 22.951652-22.950711L959.45027 586.083667zM196.277147 279.106134c0-12.674671-10.264182-22.951735-22.951652-22.951735L87.253731 256.154399C74.567285 256.154399 64.300033 266.431463 64.300033 279.106134l0 86.069261c0 12.674671 10.266228 22.951735 22.952675 22.951735l86.071764 0c12.68747 0 22.951652-10.276041 22.951652-22.951735L196.276124 279.106134zM959.45027 279.106134c0-12.674671-10.265205-22.951735-22.951652-22.951735L311.040523 256.154399c-12.686447 0-22.952675 10.277064-22.952675 22.951735l0 86.069261c0 12.674671 10.266228 22.951735 22.952675 22.951735l625.458095 0c12.685423 0 22.951652-10.276041 22.951652-22.951735L959.45027 279.106134zM196.277147-27.871399c0-12.674671-10.264182-22.951735-22.951652-22.951735L87.253731-50.823134C74.567285-50.823134 64.300033-40.54607 64.300033-27.871399l0 86.068238c0 12.675694 10.266228 22.952758 22.952675 22.952758l86.071764 0c12.68747 0 22.951652-10.277064 22.951652-22.952758L196.276124-27.871399zM959.45027-27.871399c0-12.674671-10.265205-22.951735-22.951652-22.951735L311.040523-50.823134c-12.686447 0-22.952675 10.277064-22.952675 22.951735l0 86.068238c0 12.675694 10.266228 22.952758 22.952675 22.952758l625.458095 0c12.685423 0 22.951652-10.277064 22.951652-22.952758L959.45027-27.871399z" fill="#fff"></path>
 							</g>
 						</svg>
-					</i>全部商品分类</h3>
+					</i>全部商品分类</h2>
 				<div class="dd">
 						<ul class="dd-inner clearfix">
 						{hd:goods tagfile="category" order="sort asc" method="lists" catid="0"}
@@ -190,7 +183,6 @@
 			</ul>
 		</div>
 	</div>
-	{hook/nav_between_content data}
 	<!--导航结束-->
 	<!--面包屑-->
 	<script>
@@ -200,7 +192,7 @@
 				$(this).children().attr('class','text-sub');
 			}
 		})
-		var cart_jump = <?php $cache = cache('setting'); echo json_encode($cache['cart_jump'])?>;
+		var cart_jump = <?php $cache = model('admin/setting','service')->get(); echo json_encode($cache['cart_jump'])?>;
 		$('input[type=submit]').bind('click',function(){
 			if($('[name=keyword]').val() == ''){
 				return false;

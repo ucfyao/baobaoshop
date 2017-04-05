@@ -13,6 +13,7 @@ class article_control extends init_control {
 		parent::_initialize();
 		$this->service = $this->load->service('article');
 		$this->category_service = $this->load->service('article_category');
+		$this->attachment_service = $this->load->service('attachment/attachment');
 		$this->load->helper('attachment');
 	}
 	/**
@@ -21,14 +22,22 @@ class article_control extends init_control {
 	public function index(){
 		$sqlmap = array();
 		$_GET['limit'] = isset($_GET['limit']) ? $_GET['limit'] : 10;
-		$article = $this->load->table('article')->where($sqlmap)->page($_GET['page'])->limit($_GET['limit'])->order("sort DESC")->select();
-		foreach($article as $key => $value){
-		   $article[$key]['category'] = $this->load->table('article_category')->where(array('id' =>array('eq',$value['category_id'])))->getField('name');
-		   $article[$key]['dataline'] = date('Y-m-d H:i:s',$value['dataline']);
-	    }
-        $count = $this->load->table('article')->where($sqlmap)->count();
+		$article = $this->service->get_lists($sqlmap,$_GET['page'],$_GET['limit']);
+        $count = $this->service->count($sqlmap);
         $pages = $this->admin_pages($count, $_GET['limit']);
-        $this->load->librarys('View')->assign('article',$article)->assign('pages',$pages)->display('article_index');
+        $lists = array(
+            'th' => array(
+                'sort' => array('title' => '排序','length' => 10,'style' => 'double_click'),
+                'title' => array('title' => '标题','length' => 30,'style' => 'double_click'),
+                'category'=>array('title' => '文章分类','length' => 15),
+                'dataline' => array('title' => '发布时间','length' => 15,'style'=>'date'),
+                'display'=>array('title' => '显示','length' => 10,'style' => 'ico_up_rack'),
+                'recommend'=>array('title' => '推荐','length' => 10,'style' => 'ico_up_rec'),
+            ),
+            'lists' => $article,
+            'pages' => $pages,
+            );
+        $this->load->librarys('View')->assign('lists',$lists)->display('article_index');
 	}
 	/**
 	 * [article_category_choose 选择框]
@@ -44,17 +53,17 @@ class article_control extends init_control {
 		if(checksubmit('dosubmit')){
 			if(!empty($_FILES['thumb']['name'])) {
 				$code = attachment_init(array('module'=>'article','path'=>'article','mid'=>$this->admin['id'],'allow_exts'=>array('bmp','jpg','jpeg','gif','png')));
-				$_GET['thumb'] = $this->load->service('attachment/attachment')->setConfig($code)->upload('thumb');
+				$_GET['thumb'] = $this->attachment_service->setConfig($code)->upload('thumb');
 				if(!$_GET['thumb']){
-					showmessage($this->load->service('attachment/attachment')->error);
+					showmessage($this->attachment_service->error);
 				}
 			}
 			$result = $this->service->add($_GET);
 			if(!$result){
 				showmessage($this->service->error);
 			}else{
-				$this->load->service('attachment/attachment')->attachment($_GET['thumb'], '',false);
-				$this->load->service('attachment/attachment')->attachment($_GET['content'],'');
+				$this->attachment_service->attachment($_GET['thumb'], '',false);
+				$this->attachment_service->attachment($_GET['content'],'');
 				showmessage(lang('_operation_success_'),url('index'));
 			}
 		}else{
@@ -69,13 +78,13 @@ class article_control extends init_control {
 		if(checksubmit('dosubmit')){
 			if(!empty($_FILES['thumb']['name'])) {
 				$code = attachment_init(array('module'=>'article','path'=>'article','mid'=>$this->admin['id'],'allow_exts'=>array('bmp','jpg','jpeg','gif','png')));
-				$_GET['thumb'] = $this->load->service('attachment/attachment')->setConfig($code)->upload('thumb');
+				$_GET['thumb'] = $this->attachment_service->setConfig($code)->upload('thumb');
 				if(!$_GET['thumb']){
-					showmessage($this->load->service('attachment/attachment')->error);
+					showmessage($this->attachment_service->error);
 				}
-				$this->load->service('attachment/attachment')->attachment($_GET['thumb'], $info['thumb'],false);
+				$this->attachment_service->attachment($_GET['thumb'], $info['thumb'],false);
 			}
-			$this->load->service('attachment/attachment')->attachment($_GET['content'], $info['content']);
+			$this->attachment_service->attachment($_GET['content'], $info['content']);
 			$result = $this->service->edit($_GET);
 			if(!$result){
 				showmessage($this->service->error);

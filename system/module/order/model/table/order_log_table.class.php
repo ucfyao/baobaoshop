@@ -19,7 +19,7 @@ class order_log_table extends table {
         array('operator_id', 'require', '{order/user_id_not_empty}', self::MUST_VALIDATE, 'regex', self::MODEL_INSERT),
         array('operator_id', 'number', '{order/user_id_require}', self::VALUE_VALIDATE, 'regex', self::MODEL_BOTH),
         // 操作者名称
-        array('operator_name', 'require', '{order/user_naem_not_null}', self::MUST_VALIDATE, 'regex', self::MODEL_INSERT),
+        array('operator_name', 'require', '{order/user_name_not_null}', self::MUST_VALIDATE, 'regex', self::MODEL_INSERT),
         // 操作者类型
         array('operator_type','require','{order/operator_type_not_null}',self::MUST_VALIDATE,'regex',self::MODEL_INSERT),
         array('operator_type','number','{order/operator_type_numbre}',self::VALUE_VALIDATE,'regex',self::MODEL_BOTH),

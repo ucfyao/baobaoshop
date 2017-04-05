@@ -18,7 +18,9 @@
 				<div class="tips-txt padding-small-top layout">
 					<p>- 模块安装请先认证站点，如未出现模块，请到海盗云商官网控制台推送</p>
 					<p>- 海盗云商模块不支持本地安装或推送，确保站点在外网并能够访问</p>
-					<p>- 获取新模块请到海盗云商应用市场 点击进入</p>
+					<p>- 获取新模块请到海盗云商应用市场 
+					<a href="javascript:" style="color:#498BC8" onClick="window.open('http://market.haidao.la')">点击进入</a>
+					</p>
 				</div>
 			</div>
 			<div class="hr-gray margin-bottom"></div>
@@ -70,11 +72,11 @@
 						<span class="td-con double-row">
 							<a href="<?php echo url('admin/app/available',array('identifier' => $identifier,'type' => 'module'))?>"><?php if($_GET['status'] == 1 || !isset($_GET['status'])){?>禁用<?php }?><?php if($_GET['status'] == 0 && isset($_GET['status'])){?>开启<?php }?></a> <?php if($_GET['status'] != -1){?> | <?php }?>
 							<?php if($_GET['status'] == -1){?>
-							<a href="<?php echo url('admin/app/install',array('identifier' => $identifier,'type' => 'module'))?>">安装</a> |
+							<a href="<?php echo url('admin/app/install',array('identifier' => $identifier,'type' => 'module'))?>">安装</a>
 							<?php }else{?>
-							<a href="<?php echo url('admin/app/upgrade',array('identifier' => $identifier,'type' => 'module'))?>">更新</a> 
+							<a href="<?php echo url('admin/app/upgrade',array('identifier' => $identifier,'type' => 'module'))?>">更新</a>
 							<?php }?>
-							<?php if($module['issystem'] != 1){?>
+							<?php if($module['is_system'] != 1){?>
 							| <a data-confirm="卸载将清空该模块的所有配置信息，是否确认卸载？" href="<?php echo url('admin/app/uninstall',array('identifier' => $identifier,'type' => 'module'))?>">卸载</a>
 							<?php }?>
 						</span>

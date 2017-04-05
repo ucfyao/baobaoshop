@@ -24,6 +24,32 @@ class promotion_goods_service extends service {
 		return $result;
 	}
 
+
+	public function get_lists($sqlmap = array(), $limit = 10, $page = 1, $order = "sort ASC, id DESC") {
+		$goods = $this->lists($sqlmap,$limit,$page,$order);
+		$lists = array();
+		foreach ($goods['lists'] AS $value) {
+			$start_time = $value['start_time'] ? date('Y-m-d H:i', $value['start_time']) : '无限制';
+    		$end_time = $value['end_time'] ? date('Y-m-d H:i', $value['end_time']) : '无限制';
+			if($value['status'] == 1){
+    			$status = '未开始';
+    		}elseif($value['status'] == 2){
+    			$status = '已结束';
+    		}else{
+    			$status = '进行中';
+    		}
+			$lists[] =array(
+				'id'=>$value['id'],
+				'name'=>$value['name'],
+				'start_time'=>$start_time.'~'.$end_time,
+				'status' =>$status,
+				);
+			
+		}
+		return array('lists'=>$lists,'count'=>$order['count']);
+	} 
+
+
 	public function fetch_by_id($id, $field = null) {
 		$r = $this->table->find($id);
 		return (empty($field)) ? $r : $r[$field];
@@ -163,4 +189,30 @@ class promotion_goods_service extends service {
 		}
 		return TRUE;
 	}	
+	/*修改*/
+	public function setField($data, $sqlmap = array()){
+		if(empty($data)){
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		$result = $this->table->where($sqlmap)->save($data);
+		if($result === false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	读取的字段
+	 * @return [type]
+	 */
+	public function find($sqlmap = array(), $field = "") {
+		$result = $this->table->where($sqlmap)->field($field)->find();
+		if($result===false){
+			$this->error = $this->table->getError();
+			return false;
+		}
+		return $result;
+	}
 }

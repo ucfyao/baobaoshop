@@ -93,6 +93,11 @@ $(window).load(function(){
 		var _width = roll.children("li").outerWidth(true);
 		var _normal = roll.children("li").width();
 		var num = 0;
+		var rec_btn=this.parents().find("#rec_btn");
+	    rec_btn.on('click',function(){
+	        num=0;
+	        disabledBtn();
+	    })
 		
 		roll.children("li").eq(0).addClass("current");
 		roll.width(_width*roll.children("li").length);
@@ -110,7 +115,7 @@ $(window).load(function(){
 				if(num>0&&parseInt(roll.css("left"))!=0){
 					num--;
 				}
-				roll.animate({left: "-"+_width*num+"px"},opt.time,function(){
+				roll.stop(true,false).animate({left: "-"+_width*num+"px"},opt.time,function(){
 					disabledBtn();
 				});
 			}else{
@@ -125,7 +130,7 @@ $(window).load(function(){
 				if(num<roll.children("li").length&&dif>Math.abs(_left-_normal)){
 					num++;
 				}
-				roll.animate({left: "-"+_width*num+"px"},opt.time,function(){
+				roll.stop(true,false).animate({left: "-"+_width*num+"px"},opt.time,function(){
 					disabledBtn();
 				});
 			}else{

@@ -11,7 +11,7 @@ class member_message_service extends service
 	 */
 	public function ajax_update($params) {
 		if(count($params) < 1){
-			$this->error = lang('_param_error_');
+			$this->error = lang('choose_empty','member/language');
 			return FALSE;
 		}
 		$data = array();
@@ -81,5 +81,21 @@ class member_message_service extends service
 			return FALSE;
 		}
 		return $result;
+	}
+	/**
+	 * @param  array 	sql条件
+	 * @param  integer 	条数
+	 * @param  integer 	页数
+	 * @param  string 	排序
+	 * @return [type]
+	 */
+	public function lists($sqlmap = array(), $limit = 20, $page = 1, $order = "") {
+		$count = $this->table->where($sqlmap)->count();
+		$lists = $this->table->where($sqlmap)->limit($limit)->page($page)->order($order)->select();
+		if($count===false || $lists===false){
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		return array('lists'=>$lists,'count'=>$count);
 	}
 }

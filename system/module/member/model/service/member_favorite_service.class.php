@@ -13,19 +13,24 @@ class member_favorite_service extends service {
     public function _initialize() {
         $this->table = $this->load->table('member/member_favorite');
     }
-
+    /**
+     * 收藏列表
+     */
     public function lists($sqlmap = array(), $limit = 20, $page = 1) {
         $this->sqlmap = array_merge($this->sqlmap, $this->build_map($sqlmap));
         $DB = $this->table->where($this->sqlmap);
-        $lists = &$DB->page($page)->limit($limit)->select();
+        $lists = $DB->page($page)->limit($limit)->select();
         foreach ($lists as $key => $value) {
-            $sku = $this->load->service('goods/goods_sku')->goods_detail($value['sku_id']);
+            $sku = $this->load->service('goods/goods_sku')->fetch_by_id($value['sku_id']);
             if($sku === false) continue;
             $lists[$key]['_sku'] = $sku;
         }
-        $count = &$DB->count();
+        $count = $this->table->where($this->sqlmap)->count();
         return array('count' => $count, 'lists' => $lists);
     }
+    /**
+     * 构造查询语句
+     */
 	private function build_map($data){
 		switch($data['datetime']){
 			case 'week':
@@ -46,6 +51,9 @@ class member_favorite_service extends service {
 		}
 		return  $data;
 	}
+    /**
+     * 设置mid
+     */
     public function set_mid($mid) {
         if((int) $mid > 0) {
             $this->sqlmap['mid'] = $mid;
@@ -56,7 +64,7 @@ class member_favorite_service extends service {
     /* 加入收藏夹 */
     public function add($sku_id, $sku_price = 0 ,$mid = 0,$id = 0,$datetime = 0) {
         if(!$sku_price){
-            $_sku_info = $this->load->service('goods/goods_sku')->goods_detail($sku_id);
+            $_sku_info = $this->load->service('goods/goods_sku')->fetch_by_id($sku_id);
             if($_sku_info === false) {
                 $this->error = $this->load->service('goods/goods_sku')->error;
                 return false;
@@ -76,7 +84,7 @@ class member_favorite_service extends service {
         }
         runhook('member_favorite_add',$this->sqlmap);
         $data = $this->table->update($this->sqlmap);
-        if(!$result) {
+        if(!$data) {
             $this->error = $this->table->getError();
             return false;
         }
@@ -107,7 +115,7 @@ class member_favorite_service extends service {
 		$param['mid'] = $this->sqlmap['mid'];
 		$lists = $this->table->where($param)->page($page)->limit($limit)->select();
         foreach ($lists as $key => $value) {
-            $sku = $this->load->service('goods/goods_sku')->goods_detail($value['sku_id']);
+            $sku = $this->load->service('goods/goods_sku')->fetch_by_id($value['sku_id']);
             if($sku === false) continue;
 			$lists[$key]['sku_name'] = $sku['sku_name'];
 			$lists[$key]['shop_price'] = $sku['shop_price'];

@@ -10,6 +10,7 @@ img { display: block; }
 .hd-grid:after { clear: both; }
 .hd-grid [class*='hd-col-xs-'] { float: left; position: relative; min-height: 1px; }
 .hd-col-xs-e5 { width: 20%; }
+.hd-col-xs-e4 { width: 25%; }
 .hd-col-xs-e10 { width: 10%; }
 /*字体*/
 .text-org { color: #fc6e51; }
@@ -87,10 +88,11 @@ img { display: block; }
 .hd-slider-indicator .hd-indicator { display: inline-block; width: 8px; height: 8px; margin: 0 5px; cursor: pointer; border-radius: 50%; background: #aaa; -webkit-box-shadow: 0 0 1px 1px rgba(130,130,130,.7); box-shadow: 0 0 1px 1px rgba(130,130,130,.7); }
 
 /*快速导航*/
-.quick-entry-nav { margin: 0; padding: 0 5px; background-color: #fff; }
-.quick-entry-nav .quick-entry-link { display: block; padding: 10px 0 10px; text-align: center; color: #666; }
-.quick-entry-nav .quick-entry-link img { display: block; margin: 0 auto; width: 38px; vertical-align: middle; }
-.quick-entry-nav .quick-entry-link span { display: block; line-height: 24px; padding-top: 5px; font-size: 12px; }
+.quick-entry-nav { padding: 5px 0; background-color: #fff; }
+.quick-entry-nav .quick-entry-link { display: block; padding: 5px 0; text-align: center; color: #666; }
+.quick-entry-nav .quick-entry-link .nav-img { display: block; font-size: 0; overflow: hidden; }
+.quick-entry-nav .quick-entry-link img { display: inline-block; vertical-align: middle; width: 80%; }
+.quick-entry-nav .quick-entry-link span, .quick-entry-nav .quick-entry-link .title { display: block; line-height: 24px; font-size: 12px; color: #666; }
 
 .viewport{ padding: 0 10px; }
 .list-col-10 { margin-top: 10px; border-top: 1px solid #e1e1e1; border-bottom: 1px solid #e1e1e1; background-color: #fff; }
@@ -305,6 +307,7 @@ img { display: block; }
 .other-login .login_alipay.close { background-position: -180px 0; }
 .other-login .login_wechat { background-position: -120px -44px; }
 .other-login .login_wechat.close { background-position: -120px 0; }
+.other-login .login_wechat_wap { background-position: -120px -44px; }
 
 .tips-wrap { position: fixed; left: 10px; right: 10px; top: 50%; margin-top: -20px; padding: 15px 10px; text-align: center; font-size: 16px; color: #fff; border-radius: 5px; background: rgba(25,25,25,.8); z-index: 9999; }
 
@@ -501,30 +504,4 @@ img { display: block; }
 .custom-coupon li:nth-child(3) a { color: #ff9664; }
 .custom-coupon .custom-coupon-price { height: 36px; line-height: 24px; padding-top: 12px; font-size: 24px; overflow: hidden; }
 .custom-coupon .custom-coupon-price span { font-size: 16px; }
-.custom-coupon .custom-coupon-desc { height: 24px; line-height: 20px; font-size: 12px; padding-top: 4px; overflow: hidden; }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.custom-coupon .custom-coupon-desc { height: 24px; line-height: 20px; font-size: 12px; padding-top: 4px; }

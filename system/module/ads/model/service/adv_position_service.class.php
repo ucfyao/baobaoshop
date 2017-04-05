@@ -9,13 +9,16 @@
  */
 
 class adv_position_service extends service {
-		
+
 	protected $count;
     protected $pages;
-	
+
 	public function _initialize() {
 		$this->model = $this->load->table('ads/adv_position');
+		$this->adv_table = $this->load->table('adv');
 	}
+
+
 	/**
      * 获广告位列表
      * @param type $sqlmap
@@ -25,6 +28,28 @@ class adv_position_service extends service {
         $advs = $this->model->where($sqlmap)->select();
 		return $advs;
     }
+
+    public function get_lists($sqlmap,$page,$limit){
+		$position = $this->model->where($sqlmap)->page($page)->limit($limit)->select();
+		foreach ($position as $k => $v) {
+			$lists[] = array(
+				'id' => $v['id'],
+				'name'=>$v['name'],
+				'type_text'=>$v['type_text'],
+				'width'=>$v['width'],
+				'height'=>$v['height'],
+				'adv_count'=>$v['adv_count'],
+				'status'=>$v['status'],
+				'format_name'=>$v['format_name'],
+				'adv_count' =>$v['adv_count'],
+				'defaulttext'=>$v['defaulttext'],
+				'type'=>$v['type'],
+				'sort'=>$v['sort'],
+			);
+		}
+			return $lists;
+    }
+
 	/**
      * 查询单个信息
      * @param int $id 主键ID
@@ -66,17 +91,17 @@ class adv_position_service extends service {
 		}
 		return $result;
 	}
-	public function getdetail($params = array()) {
+	public function lists($params = array(), $options = array()) {
 		$data = array();
 		$map = array();
 		$map['status'] = array('EQ', 1);
 		$map['id'] = array('EQ', $params['position']);
 
-		if (array_key_exists("order", $params)) {
-			$order = $params['order'];
+		if (isset($options['order'])) {
+			$this->adv_table->order($options['order']);
 		}
-		if (array_key_exists("limit", $params)) {
-			$limit = $params['limit'];
+		if (isset($options['limit'])) {
+			$this->adv_table->limit($options['limit']);
 		}
 		//广告位
 		$data = $this->model->where($map)->find();
@@ -86,7 +111,42 @@ class adv_position_service extends service {
 		$map['endtime'] = array("GT", time());
 		$map['status'] = array('EQ', 1);
 		$map['position_id'] = array('EQ', $params['position']);
-		$data['list'] = $this->load->table('adv')->where($map)->limit($limit)->order($order)->select();
+		$data['list'] = $this->adv_table->where($map)->select();
 		return dstripslashes($data);
+	}
+	/**
+     * 条数
+     * @param  [arra]   sql条件
+     * @return [type]
+     */
+    public function count($sqlmap = array()){
+        $result = $this->model->where($sqlmap)->count();
+        if($result === false){
+            $this->error = $this->model->getError();
+            return false;
+        }
+        return $result;
+    }
+    /**
+	* [删除]
+	* @param array $ids 主键id
+	*/
+	public function delete($ids) {
+		if(empty($ids)) {
+			$this->error = lang('_param_error_');
+			return false;
+		}
+		$_map = array();
+		if(is_array($ids)) {
+			$_map['id'] = array("IN", $ids);
+		} else {
+			$_map['id'] = $ids;
+		}
+		$result = $this->model->where($_map)->delete();
+		if($result === false) {
+			$this->error = $this->model->getError();
+			return false;
+		}
+		return true;
 	}
 }
