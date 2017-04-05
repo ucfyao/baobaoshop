@@ -10,6 +10,7 @@
 				{$_GET['keyword']}
 			</p>
 		</div>
+		{hook/search_crumbs}
 		<!--list-->
 		<div class="item-two-column container clearfix">
 			<div class="left fl">
@@ -34,6 +35,7 @@
 						</div>
 					</div>
 				</div>
+				{hook/search_left}
 			</div>
 			{hook/search_top}
 			{hd:goods tagfile="goods" method="page" order="$result[order]" num="12" page="$_GET[page]" goods_ids="$result[_goods_ids]" show_switch="$result[show_switch]"}
@@ -103,7 +105,7 @@
 					{/hd}
 					</ul>
 				</div>
-				<div class="paging margin-top padding-tb clearfix" data-id="{$_GET[id]}" data-page="{$_GET[page]}">
+				<div class="paging margin-top padding-tb clearfix" data-id="{$_GET[id]}" data-page="{$_GET[page]}">>
 					<?php echo $pages?>
 				</div>
 			</div>
@@ -180,7 +182,7 @@
 				$(".paging input[name=page]").live('keyup',function(e){
 					if(e.keyCode == 13){
 						jump_to_page(this);
-					}
+					} 
 				});
 			})
 		</script>

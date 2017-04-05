@@ -24,7 +24,7 @@
 							<div class="dl">
 								<div class="dt">{$specs['name']}：</div>
 								<div class="dd item-check">
-								<?php foreach($specs['value'] AS $spec):?>
+								<?php foreach(explode(',',$specs['value']) AS $spec):?>
 									<div class="item" data-id="{$specs['id']}" data-name="{$specs['name']}" data-value="{$spec}">
 										<i></i>
 										<a href="javascript:;" title="">{$spec}</a>

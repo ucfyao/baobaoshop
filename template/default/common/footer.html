@@ -1,5 +1,5 @@
-	<div class="layout border-top border-gray-white global-footer margin-big-top">
-		<div class="layout border border-main"></div>
+	 <div class="layout @border-top @border-gray-white global-footer margin-big-top">
+		 	<div class="layout border border-main"></div>
 			<div class="container hd-service clearfix">
 				{hd:misc method="lists" num="5" tagfile="help" id="0" order="sort asc"}
 				{loop $data $r}
@@ -15,51 +15,60 @@
 				</dl>
 				{/loop}
 				{/hd}
-				<dl class="fore last">
-					<dt>&nbsp;<!-- 海盗云商：www.haidao.la --></dt>
+				<dl class="fore last fr">
+					<dt>&nbsp;</dt>
 					<dd>
-						<span><img class="footer-logo" src="{SKIN_PATH}statics/images/logo.png" width="158" /></span>
+						<!-- <span><img src="{SKIN_PATH}statics/images/logo.png" width="158" /></span> -->
+						<span><img width="190px" height="140px" src="<?php $cache = model('admin/setting','service')->get(); echo $cache['site_logo'] ? $cache['site_logo'] : 'template/default/statics/images/logo.png' ?>" /></span>
 					</dd>
 				</dl>
 			</div>
-			{hook/help_between_link}
-			<div class="container copyright border-top border-gray-white padding-tb clearfix">
-				<p class="cop-left fl w50 text-lh-small"><?php echo SITE_AUTHORIZE == 0? COPYRIGHT:''?></p>
-				<div class="cop-right fr text-right w50">
-					<?php $cache = model('admin/setting','service')->get();?>
-					<p class="text-lh-small"><!-- <a href="">手机版</a> |  -->
-					{if $cache[com_name]}
-					<a target="_blank" href="{$cache[site_url]}">{$cache[com_name]}</a>
-					{/if}
-					{if $cache[icp]}
-					|<a target="_blank" href="http://www.miitbeian.gov.cn/">{$cache[icp]}</a>
-					{/if}
-					{if $cache[site_statice]}
-					|<a href="">{$cache[site_statice]}</a></p>
-					{/if}
-					<p class="text-lh-small">PRC, <em id="time"></em></p>
-				</div>
-			</div>
+			{hook/help_between_link data}
+			 <div class="container copyright border-top border-gray-white padding-big-top padding-big-bottom clearfix">
+				 <!-- <p class="cop-left fl w50 text-lh-small"><?php echo SITE_AUTHORIZE == 0? COPYRIGHT:''?></p> -->
+				 <!-- <p class="cop-left fl w20 text-lh-small">爱我商城 版权所有，并保留所有权利。<br>© 2016-2027 Inc.</p> -->
+				 <p class="cop-left fl w20 text-lh-small"><?php echo SITE_AUTHORIZE == 0? COPYRIGHT:''?></p>
+				 <p class="fl w50">
+					 <img class="fl margin-right" src="{SKIN_PATH}statics/images/di-ico1.gif">
+					 <img class="fl margin-right" src="../template/default/statics/images/di-ico2.gif">
+					 <img class="fl margin-right" src="../template/default/statics/images/di-ico3.gif">
+					 <img class="fl" src="../template/default/statics/images/di-ico4.gif">
+				 </p>
+				 <div class="cop-right fr text-right w30">
+					 <?php $cache = model('admin/setting','service')->get();?>
+					 <p class="text-lh-small"><!-- <a href="">手机版</a> |  -->
+						 {if $cache[com_name]}
+						 <a target="_blank" href="{$cache[site_url]}">{$cache[com_name]}</a>
+						 {/if}
+						 {if $cache[icp]}
+						 |<a target="_blank" href="http://www.miitbeian.gov.cn/">{$cache[icp]}</a>
+						 {/if}
+						 {if $cache[site_statice]}
+						 |<a href="">{$cache[site_statice]}</a></p>
+					 {/if}
+					 <p class="text-lh-small">PRC, <em id="time"></em></p>
+				 </div>
+			 </div>
 		</div>
 	</body>
 </html>
 	<script>
-		function current(){
-			var d = new Date();
-			var year = d.getFullYear(),
+		function current(){ 
+			var d = new Date(); 
+			var year = d.getFullYear(), 
 			month = d.getMonth() < 10 ? '0'+(d.getMonth() + 1) : d.getMonth() + 1,
 			date = d.getDate() < 10 ? '0'+d.getDate() : d.getDate(),
 			hours = d.getHours() < 10 ? '0'+d.getHours() : d.getHours(),
 			minutes = d.getMinutes() < 10 ? '0'+d.getMinutes() : d.getMinutes(),
 			seconds = d.getSeconds() < 10 ? '0'+d.getSeconds() : d.getSeconds();
-			return  year+'-'+month+'-'+date+' '+hours+':'+minutes+':'+seconds;
-		}
+			return  year+'-'+month+'-'+date+' '+hours+':'+minutes+':'+seconds; 
+		} 
 		setInterval(function(){$("#time").html(current)},1000);
 		var url = "{url('goods/index/html_load')}";
 		$(function(){
 			$.ajax(url, {}, function(ret){});
 		})
-	</script>
+	</script>  
 	{hook/global_footer}
 
 

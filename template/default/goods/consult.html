@@ -11,6 +11,7 @@
 				商品咨询
 			</p>
 		</div>
+		{hook/consult_crumbs}
 		<!--list-->
 		<div class="item-two-column container clearfix" id="adjust">
 			<div id="consult-left" class="left fl">
@@ -23,9 +24,10 @@
 						<div id="adjust">
 							<div class="adjust-wrap"><input value="1" type="hidden"></div>
 						</div>
-							<a class="cart-btn" data-event="cart_add" data-skuids="{$sku_id}">加入购物车</a>
+							<a class="cart-btn" data-event="cart_add" data-skuids="{$sku_id}">加入购物车</a>	
 					</div>
 				</div>
+				{hook/consult_left}
 			</div>
 			{hook/consult_top}
 			<div class="fr right goods-consult">
@@ -34,7 +36,7 @@
 					<div class="item-title padding-left"><span>发表咨询</span></div>
 					<div class="layout padding consult-box">
 						<p class="text-lh-small">声明：您可在购买前对产品包装、颜色、运输、库存等方面进行咨询，我们有专人进行回复！因厂家随时会更改一些产品的包装、颜色、产地等参数，所以该回复仅在当时对提问者有效，其他网友仅供参考！发布咨询后请耐心等待工作人员回复，可在会员中心随时查看您的所有咨询。</p>
-						<textarea class="margin-top padding layout textarea border text-lh" placeholder="发表您的商品咨询，我们将第一时间给予解答" name="question"></textarea>
+						<textarea class="margin-top padding layout textarea border text-lh" placeholder="发表您的商品咨询，我们将第一时间给予解答" name="question"></textarea>				
 						<input class="margin-top button" id="consult" type="submit" value="发表咨询" />
 					</div>
 				</div>
@@ -42,7 +44,7 @@
 				<div class="layout consult-lists">
 					{hd:goods method="lists"  tagfile="consult" spu_id="$spu_id" num="10" page="$_GET[page]" }
 					{loop $data $r}
-					<div class="list">
+					<div class="list">       
 						{if $r[username]}
 						<p><span class="user-name">网友：{$r[username]}</span><span>{date('Y-m-d H:i:s',$r[dateline])}</span></p>
 						{else}
@@ -51,13 +53,13 @@
 						<p>咨询内容：<span class="text-sub">{$r[question]}</span></p>
 						{if $r[status] == 1}
 						<p>卖家回复： <span class="text-mix">{$r[reply_content]}</span></p>
-						{/if}
+						{/if}	
 					</div>
 					{/loop}
 					{/hd}
 				</div>
 				<!--分页-->
-				<div class="fl layout paging margin-top padding-tb clearfix" data-id="{$_GET[id]}" data-page="{$_GET[page]}">
+				<div class="fl layout paging margin-top padding-tb clearfix" data-id="{$_GET[id]}" data-page="{$_GET[page]}"> 
 					<?php echo $pages;?>
 				</div>
 			</div>
@@ -69,10 +71,10 @@
 		var success_url = "<?php echo url('order/cart/success')?>";
 		var cart_url = "<?php echo url('order/cart/index')?>";
 			$(function(){
-
+				
 				//筛选条
 				scrollBar();
-			})
+			})	
 			//筛选条
 			function scrollBar(){
 				$(window).scroll(function(){
@@ -103,7 +105,7 @@
 			var url = "{url('goods/index/add')}&sku_id="+sku_id+"&page=" + $(this).prev().val();
 			location.href = url;
 		})
-
+		
 		$("#consult").click(function(){
 			var url = '<?php echo url('goods/consult/add')?>';
 			var sku_id = '<?php echo $_GET['sku_id']?>';

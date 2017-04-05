@@ -1,5 +1,7 @@
 <?php include template('toper','common');?>
 <?php include template('header','common');?>
+<script type="text/javascript" src="template/default/statics/js/index.js?v={HD_VERSION}"></script>
+<script type="text/javascript" src="template/default/statics/js/jquery.cookie.js?v={HD_VERSION}"></script>
 		<!--面包屑-->
 		<div class="container crumbs clearfix">
 			<p class="fl layout">
@@ -8,10 +10,11 @@
 			</p>
 		</div>
 		<!--list-->
-		<div class="item-two-column container clearfix">
+		<div class="item-two-column container margin-large-top clearfix">
 			<div class="left fl">
-				<div class="list-category border border-gray-white">
-					<div class="item-title">{$category['top_parentid']['name']}</div>
+				<div class="list-category bg-white radius margin-big-bottom">
+				<!-- <div class="list-category "> -->
+					<div class="item-title"><b>{$category['top_parentid']['name']}</b></div>
 					<div class="layout sp-category">
 						{hd:goods tagfile="category" catid="$category[top_parentid][id]" method="lists"}
 						{loop $data $r}
@@ -38,14 +41,14 @@
 						{/hd}
 					</div>
 				</div>
-				<div class="layout margin-top border border-gray-white clearfix">
+				<div class="layout bg-white margin-top radius margin-big-bottom clearfix">
 					<div class="item-title">看了又看</div>
 					<div class="ext-content padding clearfix">
 						<div class="ext-show">
 							<div class="ext-con-wrap clearfix">
 								{hd:goods tagfile="goods" method="lists" num="6" order="rand()"}
 									{loop $data $r}
-										<div class="ext-con-box">
+										<div class="ext-con-box margin-bottom">
 											<a href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}" title="{$r['sku_name']}"><img class="lazy" src="{SKIN_PATH}statics/images/lazy.gif" data-original="<?php echo thumb($r['thumb'],500,500)?>" width="90" height="90" /></a>
 											<p>￥<?php echo $r['prom_price']?></p>
 										</div>
@@ -102,9 +105,11 @@
 				</div>
 				{/if}
 				{/hd}
+				{hook/lists_recommend_between_lists}
 				<!--属性选择-->
-				<div class="border border-gray-white item-blue-top selected-type">
-					<div class="item-title padding-left"><span class="text-sub">{$category['name']}</span>-商品筛选<a class="fr margin-big-right text-sub" href="{url('lists',array('id'=>$_GET[id]))}">重置筛选</a></div>
+				<!--<div class="border border-gray-white item-blue-top selected-type">-->
+				<div class="item-blue-top border-top margin-big-bottom text-default">
+					<div class="item-title padding-left text-default"><span class="text-sub">{$category['name']}</span> - 商品筛选<a class="fr margin-big-right text-sub" href="{url('lists',array('id'=>$_GET[id]))}"> 重置筛选</a></div>
 					<div class="list-type-selected clearfix">
 					{if !empty($brands)}
 						<dl class="item-type hidden">
@@ -194,7 +199,7 @@
 						{loop $data $k $r}
 						<dl class="item-type hidden">
 							<dt>{$r['name']}：</dt>
-							<dd class="type-name">
+							<dd class="type-name fl">
 							{if $_GET['attr'][$k]}
 								<a class="hidden" href="{create_url($k, '', $spec)}">全部</a>
 							{else}
@@ -208,14 +213,15 @@
 							{/if}
 							{/loop}
 							</dd>
-							<dd class="more"></dd>
+							<dd class="more fr"></dd>
 						</dl>
 						{/loop}
 						{/hd}
 					</div>
 				</div>
 				<!--筛选-->
-				<div class="margin-top border border-gray-white item-blue-top filter">
+				<!-- <div class="margin-top border border-gray-white item-blue-top filter"> -->
+				<div class="margin-top item-blue-top border-top text-default filter">
 					<dl>
 						<dt>排序方式：</dt>
 						<dd {if $result['sort'] == 'comper'} class="selected" {/if}><a href="{create_url('sort','comper,')}">综合</a></dd>
@@ -251,14 +257,14 @@
 								<a href="{url('goods/index/detail',array('sku_id'=>$r['sku_id']))}">{if isset($r['prom_time']) && $r['prom_time'] > 0}<span class="padding-small-left padding-small-right radius-small bg-mix text-white margin-small-right">限时促销</span>{/if}{$r['sku_name']}</a>
 							</div>
 							<div class="p-price">
-								<span class="text-mix">￥<?php echo $r['prom_price']?></span>
+								<span class="text-mix">￥<?php echo $r['prom_price']?><!-- <i>￥{$r['market_price']}</i> --></span>
 							</div>
 							<div class="p-hand text-right">
 								<div class="short-share">
 									{if $r[number] > 0}
 									<a class="cart-btn fl" data-event="cart_add" data-skuids="{$r['sku_id']}">加入购物车</a>
 									{else}
-									<span class="fl">商品已售罄</span>
+									<span class="fl text-gray">商品已售罄</span>
 									{/if}
 									{if is_favorite($member['id'],$r['sku_id'])}
 									<span class="button"><em class="text-gray">已收藏</em></span>
@@ -280,7 +286,6 @@
 		</div>
 		<?php include template('toolbar','common');?>
 		<?php include template('footer','common');?>
-
 		<script type="text/javascript" src="<?php echo __ROOT__ ?>statics/js/jquery.lazyload.js?v={HD_VERSION}" ></script>
 		<script>
 			$(function(){
@@ -292,7 +297,7 @@
 				$(".paging input[name=page]").live('keyup',function(e){
 					if(e.keyCode == 13){
 						jump_to_page(this);
-					}
+					} 
 				});
 
 				loadAfterAction();

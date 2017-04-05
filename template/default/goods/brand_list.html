@@ -10,6 +10,7 @@
 				{$brand[name]}
 			</p>
 		</div>
+		{hook/brand_crumb}
 		<!--list-->
 		<div class="item-two-column container clearfix">
 			<div id="brand-left" class="left fl">
@@ -31,6 +32,7 @@
 						<p class="text-lh-small">{$brand['descript']}</p>
 					</div>
 				</div>
+				{hook/brand_descript_between_lists}
 				<!--筛选-->
 				<div class="margin-top border border-gray-white item-blue-top filter">
 					<dl>
@@ -89,7 +91,7 @@
 			</div>
 		</div>
 <?php include template('toolbar','common');?>
-<?php include template('footer','common');?>
+<?php include template('footer','common');?>	
 		<script>
 			$(function(){
 				//点击到指定页
@@ -100,16 +102,16 @@
 				$(".paging input[name=page]").live('keyup',function(e){
 					if(e.keyCode == 13){
 						jump_to_page(this);
-					}
+					} 
 				});
-
+				
 				//左侧内容
 				scrollBar();
 				//筛选条
 				filterBar();
 			})
-
-
+			
+			
 			//左侧内容
 			function scrollBar(){
 				$(window).scroll(function(){
@@ -123,7 +125,7 @@
 					}
 				});
 			}
-
+			
 			//筛选条
 			function filterBar(){
 				$(window).scroll(function(){

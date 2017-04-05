@@ -71,11 +71,6 @@ var hd_order = (function() {
 					$("[data-model='promot_total']").text(ret.result.promot_total);
 					$("[data-model='coupon_total']").text(ret.result.coupon_total);
 					$("[data-model='real_amount']").text(ret.result.real_amount);
-					if(ret.result.deliverys === true){
-						$('.deliverys').addClass('hidden');
-					}else{
-						$('.deliverys').removeClass('hidden');
-					}
 
 					$("[data-sellerid]").each(function(i, n){
 						var _sellerid = $(this).data('sellerid');
@@ -143,11 +138,7 @@ var hd_order = (function() {
 					}
 					delivery_box.html(_html);
 				})
-				var _sellerid = $("[data-sellerid]").data('sellerid');
-        		order_params.deliverys[_sellerid] = $("[data-sellerid]").find("[data-model='delivery']").find(".selected").attr("delivery-district-id");
-				order_params.district_id = $("[data-model=districts]").find(".choose").data('district');
-				order_params.address_id = $("[data-model=districts]").find(".choose").data('addresid');
-				hd_order._get(order_params);
+				hd_order._get();
 			})
 		},
 
