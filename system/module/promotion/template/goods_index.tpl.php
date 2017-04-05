@@ -1,7 +1,7 @@
 <?php include template('header','admin');?>
 <div class="fixed-nav layout">
 	<ul>
-		<li class="first">商品促销<a id="addHome" title="添加到首页快捷菜单">[+]</a></li>
+		<li class="first">订单促销<a id="addHome" title="添加到首页快捷菜单">[+]</a></li>
 		<li class="spacer-gray"></li>
 		<li><a class="current" href="javascript:;"></a></li>
 	</ul>
@@ -39,65 +39,47 @@
 					<input id="check-all" type="checkbox" />
 				</span>
 			</span>
-			<?php foreach ($lists['th'] AS $th) {?>
-			<span class="th" data-width="<?php echo $th['length']?>">
-				<span class="td-con"><?php echo $th['title']?></span>
+			<span class="th" data-width="40">
+				<span class="td-con">促销名称</span>
 			</span>
-			<?php }?>
+			<span class="th" data-width="40">
+				<span class="td-con">促销时间</span>
+			</span>
+			<span class="th" data-width="10">
+				<span class="td-con">状态</span>
+			</span>
 			<span class="th" data-width="10">
 				<span class="td-con">操作</span>
 			</span>
 		</div>
-		<?php foreach ($lists['lists'] AS $list) {?>
-				<div class="tr">
-					<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $list['id']?>" /></span>
-					<?php foreach ($list as $key => $value) {?>
-					<?php if($lists['th'][$key]){?>
-					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
-					<span class="td">
-						<div class="double-click">
-							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-							<input class="input double-click-edit text-ellipsis text-center" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
-						</div>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ident') {?>
-						<span class="td ident">
-							<span class="ident-show">
-								<em class="ico_pic_show"></em>
-								<div class="ident-pic-wrap">
-									<img src="<?php echo $list['logo'] ? $list['logo'] : '../images/default_no_upload.png'?>" />
-								</div>
-							</span>
-							<div class="double-click">
-								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" type="text" value="<?php echo $value?>" />
-							</div>
-						</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
-					<span class="td">
-						<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
-					<span class="td">
-						<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
-						<input type="hidden" name="id" value="<?php echo $value?>" />
-					<?php }else{?>
-					<span class="td">
-						<span class="td-con"><?php echo $value;?></span>
-					</span>
-					<?php }?>
-					<?php }?>
-					<?php }?>
-					<span class="td">
-						<span class="td-con">
-						<a href="<?php echo url('edit',array('id'=>$list['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('delete', array('id[]' => $list['id'])); ?>">删除</a><?php echo $lists['option']?></span>
-					</span>
+		<?php $types = array('满额立减', '满额免邮', '满额赠礼');?>
+		<?php foreach ($result['lists'] as $r): ?>
+		<div class="tr" data-id="<?php echo $r['id'] ?>">
+			<div class="td check-option">
+				<input type="checkbox" name="id[]" value="<?php echo $r['id'] ?>" />
+			</div>
+			<span class="td">
+				<div class="double-click">
+					<a class="double-click-button" title="双击可编辑" href="javascript:;">
+					</a>
+					<input class="input double-click-edit text-ellipsis" type="text" value="<?php echo $r['name'] ?>">
 				</div>
-				<?php }?>
+			</span>
+			<span class="td">
+				<span class="td-con"><?php echo ($r['start_time']) ? date('Y-m-d H:i', $r['start_time']) : '无限制' ?> ~ <?php echo ($r['end_time']) ? date('Y-m-d H:i', $r['end_time']) : '无限制' ?></span>
+			</span>
+			<span class="td">
+				<span class="td-con"><?php if($r['status'] == 1){?>未开始<?php }elseif($r['status'] == 2){?>已结束<?php }else{?>进行中<?php }?></span>
+			</span>
+			<span class="td">
+				<span class="td-con">
+					<a href="<?php echo url('edit', array('id' => $r['id'])) ?>">编辑</a>&nbsp;&nbsp;&nbsp;
+					<a href="<?php echo url('delete', array('id[]' => $r['id'])) ?>" data-confirm="是否删除该商品促销活动？">删除</a></span>
+			</span>
+		</div>
+		<?php endforeach ?>
 		<div class="paging padding-tb body-bg clearfix">
-			<?php echo $lists['pages'] ?>
+			<?php echo $result['pages'] ?>
 			<div class="clear">
 			</div>
 		</div>
@@ -107,7 +89,7 @@
 $(".table").resizableColumns();
 $(".table").fixedPaging();
 $(".double-click-edit").live('change',function(){
-	var data = {id:$(this).data("id"),name:$(this).val()};
+	var data = {id:$(this).parents(".tr").data("id"),name:$(this).val()};
 	$.post("<?php echo url('ajax_name') ?>",data,function(ret){
 		message(ret.message);
 	},'json');

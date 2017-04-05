@@ -3,7 +3,7 @@
 	<div class="mui-content">
 	<form class="double-line clearfix" action="{url('ajax_delivery')}" method="post" name="ajax_delivery">
 	    <ul class="mui-table-view layout-list-common comment-form margin-none">
-	    <?php $setting = model('admin/setting','service')->get(); ?>
+	    <?php $setting = cache('setting'); ?>
 	    	<li class="padding border-bottom">
 	    		<h3 class="margin-bottom hd-h5">请把商品快递至以下地址(未经卖家同意，请勿使用到付或平邮)</h3>
 	    		<div class="lh-20">
@@ -58,7 +58,7 @@
 						callback:function() {
 							window.location.reload();
 						}
-					});
+					});					
 				}
 			}
 		})

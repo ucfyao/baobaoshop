@@ -14,37 +14,24 @@ class admin_control extends init_control {
 		parent::_initialize();
 		$this->model = $this->load->table('adv');
 		$this->service = $this->load->service('adv');
-
+		
 		$this->position_service = $this->load->service('adv_position');
 		$this->position_model = $this->load->table('adv_position');
-
+		
 		$this->attachment_service = $this->load->service('attachment/attachment');
 		$this->attachment_service->setConfig(authcode(serialize(array('module'=>'common','path' => 'common','mid' => 1,'allow_exts' => array('gif','jpg','jpeg','bmp','png'))), 'ENCODE'));
 	}
 
-	/*广告=====*/
+	/*广告=======================================================*/
 	/**
 	 * 获取广告方式列表
 	 */
 	public function index() {
 		$sqlmap = array();
-		$limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
-		$ads = $this->service->get_lists($sqlmap,$_GET['page'],$limit);
-		$count = $this->service->count($sqlmap);
-		$pages = $this->admin_pages($count, $limit);
-		$lists = array(
-            'th' => array(
-                'title' => array('title' => '广告名称','length' => 20,'style' => 'double_click'),
-                'position_name' => array('title' => '所属广告位','length' => 15,'style' => 'left_text'),
-                'type_text'=>array('title' => '类别','length' => 10),
-                'startime_text' => array('title' => '开始时间','length' => 20),
-                'endtime_text'=>array('title' => '结束时间','length' => 20),
-                'hist'=>array('title' => '点击数','length' => 5),
-            ),
-            'lists' => $ads,
-            'pages' => $pages,
-            );
-		$this->load->librarys('View')->assign('lists',$lists)->display('index');
+		$count = $this->model->where($sqlmap)->count();
+		$ads = $this->model->where($sqlmap)->page($_GET['page'])->limit(10)->select();
+		$pages = $this->admin_pages($count, 10);
+		$this->load->librarys('View')->assign('ads',$ads)->assign('pages',$pages)->display('index');
 	}
 
 	/**
@@ -64,7 +51,7 @@ class admin_control extends init_control {
 			$_GET['content'] = $_GET['type'] == 0 ? $_GET['content_pic'] : $_GET['content_text'];
 			$_GET['content'] = is_null($_GET['content']) ? '' : $_GET['content'];
 			$r = $this->service->save($_GET);
-			if($r == FALSE)showmessage($this->service->error, url('add'), 0);
+			if($r == FALSE)showmessage($this->model->getError(), url('add'), 0);
 			$this->attachment_service->attachment($_GET['content_pic'],'',false);
 			showmessage(lang('_update_adv_success_','ads/language'), url('index'), 1);
 		} else {
@@ -104,8 +91,7 @@ class admin_control extends init_control {
 		if(empty($_GET['formhash']) || $_GET['formhash'] != FORMHASH) showmessage('_token_error_');
 		$data = $this->service->fetch_by_id($_GET['id']);
 		$this->attachment_service->attachment('',$data['content'],false);
-		$result = $this->service->delete((array)$_GET['id']);
-		if($result === false) showmessage($this->service->error);
+		$this->model->where(array('id' => array('IN', (array)$_GET['id'])))->delete();
 		showmessage(lang('_del_adv_success_','ads/language'), url('index'), 1);
 	}
 
@@ -114,7 +100,7 @@ class admin_control extends init_control {
 	 */
 	public function save_title() {
 		if(empty($_GET['formhash']) || $_GET['formhash'] != FORMHASH) showmessage('_token_error_');
-		$this->service->save_title(array('id' => $_GET['id'], 'title' => $_GET['title']));
+		$this->service->save(array('id' => $_GET['id'], 'title' => $_GET['title']), FALSE);
 		showmessage(lang('_update_adv_success_','ads/language'), url('index'), 1);
 	}
 
@@ -125,23 +111,10 @@ class admin_control extends init_control {
 	 */
 	public function position_index() {
 		$sqlmap = array();
-		$limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
-		$count = $this->position_service->count($sqlmap);
-		$position = $this->position_service->get_lists($sqlmap,$_GET['page'],$limit);
-		$pages = $this->admin_pages($count, $limit);
-		$lists = array(
-            'th' => array(
-                'name' => array('title' => '名称','length' => 35,'style' => 'double_click'),
-                'type_text' => array('title' => '类别','length' => 10),
-                'width'=>array('title' => '宽度','length' => 10),
-                'height' => array('title' => '高度','length' => 10),
-                'adv_count'=>array('title' => '已发布','length' => 10),
-                'status'=>array('title' => '启用','length' => 10,'style' => 'ico_up_rack'),
-            ),
-            'lists' => $position,
-            'pages' => $pages,
-            );
-		$this->load->librarys('View')->assign('lists',$lists)->display('position_index');
+		$count = $this->position_model->where($sqlmap)->count();
+		$position = $this->position_model->where($sqlmap)->page($_GET['page'])->limit(10)->select();
+		$pages = $this->admin_pages($count, 10);
+		$this->load->librarys('View')->assign('position',$position)->assign('pages',$pages)->display('position_index');
 	}
 
 	/**
@@ -162,11 +135,10 @@ class admin_control extends init_control {
 	 */
 	public function position_del() {
 		if(empty($_GET['formhash']) || $_GET['formhash'] != FORMHASH) showmessage('_token_error_');
-		$result = $this->service->count(array('position_id' => array('IN', (array)$_GET['id'])));
-		if($result > 0) showmessage(lang('no_delete_advposition_','ads/language'), url('position_index'), 0);
+		if($this->model->where(array('position_id' => array('IN', (array)$_GET['id'])))->count() > 0)showmessage(lang('no_delete_advposition_','ads/language'), url('position_index'), 0);
 		$position = $this->position_service->fetch_by_id($_GET['id']);
 		$this->attachment_service->attachment('',$position['defaultpic'],false);
-		$this->position_service->delete((array)$_GET['id']);
+		$this->position_model->where(array('id' => array('IN', (array)$_GET['id'])))->delete();
 //		$this->model->where(array('position_id' => array('IN', (array)$_GET['id'])))->delete();
 		showmessage(lang('_del_adv_position_success_','ads/language'), url('position_index'), 1);
 	}
@@ -183,7 +155,7 @@ class admin_control extends init_control {
 				}
 			}
 			$r = $this->position_service->save($_GET);
-			if(!$r)showmessage($this->position_service->getError, url('position_add'), 0);
+			if(!$r)showmessage($this->model->getError, url('position_add'), 0);
 			$this->attachment_service->attachment($_GET['defaultpic'],'',false);
 			showmessage(lang('_update_adv_position_success_','ads/language'), url('position_index'), 1);
 		} else {

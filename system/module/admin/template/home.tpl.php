@@ -181,7 +181,7 @@
 							<tr class="border-bottom">
 								<td class="text-left today-sales padding-big padding-small-top padding-small-bottom line-height-40">
 									<span class="fl">数据库信息</span>
-									<span class="fr">MySQL&nbsp;<?php echo version_compare(phpversion(), '7.0.0') > -1 ? mysqli_get_server_info() : mysql_get_server_info();?>/数据库大小&nbsp;<em data-id="dbsize">0</em>M</span>
+									<span class="fr">MySQL&nbsp;<?php echo mysql_get_server_info();?>/数据库大小&nbsp;<em data-id="dbsize">0</em>M</span>
 								</td>
 							</tr>
 						</tbody>

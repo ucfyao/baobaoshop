@@ -32,9 +32,9 @@ class site_control extends init_control{
 			}
 			showmessage(lang('_operation_success_'),url('base'),1);
 		} else {
-			$setting = $this->service->get();
+			$setting = $this->load->table('setting')->getField('key, value', TRUE);
 			// 获取所有已开启的支付方式
-			$payment = model('pay/payment','service')->get();
+			$payment = cache('payment_enable');
 			foreach ($payment as $k => $pay) {
 				$payment[$k] = $pay['pay_name'];
 			}
@@ -44,7 +44,6 @@ class site_control extends init_control{
 	/* 注册与访问 */
     public function reg() {
       if(checksubmit('dosubmit')){
-      		runhook('before_set_reg');
 			$_GET['reg_user_fields'] = isset($_GET['reg_user_fields']) ? $_GET['reg_user_fields'] : array();
 			$_GET['reg_pass_complex'] = isset($_GET['reg_pass_complex']) ? $_GET['reg_pass_complex'] : array();
       		$_GET['reg_user_censor'] = trim(preg_replace("/\s*(\r\n|\n\r|\n|\r)\s*/", "\r\n", $_GET['reg_user_censor']));
@@ -52,7 +51,7 @@ class site_control extends init_control{
 			if(!$result) showmessage($this->service->error);
 			showmessage(lang('_operation_success_'),url('reg'),1);
 		}else{
-			$setting = $this->service->get();
+			$setting = $this->load->table('setting')->getField('key, value', TRUE);
 			$this->load->librarys('View')->assign('setting',$setting)->display('site_reg');
 		}
     }
@@ -65,7 +64,7 @@ class site_control extends init_control{
 			if(!$result) showmessage($this->service->error);
 			showmessage(lang('_operation_success_'),url('seo'),1);
 		} else {
-			$seos = $this->service->get('seos');
+			$seos = $this->service->get_setting('seos');
 			$this->load->librarys('View')->assign('seos',$seos)->display('site_seo');
 		}
     }

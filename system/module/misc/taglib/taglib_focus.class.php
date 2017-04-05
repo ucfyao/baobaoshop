@@ -9,10 +9,24 @@
 class taglib_focus
 {
 	public function __construct() {
-		$this->service = model('misc/focus','service');
+		$this->model = model('misc/focus');
 	}
 	public function lists($sqlmap = array(), $options = array()) {
-		$lists = $this->service->focus_lists($sqlmap,$options);
-		return $lists;
+		$this->model->where($this->build_map($sqlmap));
+		if($options['limit']){
+			$this->model->limit($options['limit']);
+		}
+		if($sqlmap['order']){
+			$this->model->order($sqlmap['order']);
+		}		
+		return $this->model->select();
+	}
+	public function build_map($data){
+		$sqlmap = array();
+		$sqlmap['display'] = 1;
+		if($data['_string']){
+			$sqlmap['_string'] = $data['_string'];
+		}
+		return $sqlmap;
 	}
 }

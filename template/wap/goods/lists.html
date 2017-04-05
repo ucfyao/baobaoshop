@@ -48,10 +48,12 @@
     					html += '<li class="goods-item-list">'
 						    +		'<a class="list-item" href="'+ item.url +'">'
 							+			'<div class="list-item-pic">'
-							+				'<div class="square-item"><img src="{SKIN_PATH}statics/images/loading.gif" class="lazy" data-original="'+ item.thumb +'" /></div>'
+							+				'<img src="{SKIN_PATH}statics/images/loading.gif" class="lazy" data-original="'+ item.thumb +'" />'
 							+			'</div>'
 							+		'<div class="list-item-bottom">'
-							+		'<div class="list-item-title">'+ item.sku_name +'</div>'
+							+		'<div class="list-item-title">'
+							+			'<span>'+ item.sku_name +'</span>'
+							+		'</div>'
 							+		'<div class="list-item-text">'
 							+			'<span class="price-org">￥'+item.prom_price+'</span>'
 							+		'</div>'
@@ -60,11 +62,11 @@
 							+	'</li>';
 					})
 					if(type == 'up'){
-						$('#goods-lists').append(html);
+						$('.custom-goods-row').append(html);
 						page = page*1 + 1;
 						mui('#refreshContainer').pullRefresh().endPullupToRefresh(false);
 					}else{
-						$('#goods-lists').html(html);
+						$('.custom-goods-row').html(html);
 						page = 2;
 						mui('#refreshContainer').pullRefresh().endPulldownToRefresh(false);
 						mui('#refreshContainer').pullRefresh().refresh(true);
@@ -78,7 +80,7 @@
 						+	'<img src="{SKIN_PATH}statics/images/bg_6.png" />'
 						+	'<p class="text-black hd-h4">暂无此类商品</p>'
 						+	'</li>';
-						$('#goods-lists').html(html);
+						$('.custom-goods-row').html(html);
     				}
 					if(type == 'up'){
 						mui('#refreshContainer').pullRefresh().endPullupToRefresh(true);
@@ -88,6 +90,14 @@
     			}
     		},'json')
 		}
+		/*mui("#test").on('tap', function() {
+			var href = this.getAttribute('href');
+		  //打开关于页面
+		  mui.openWindow({
+		    url: href, 
+		    id:'info'
+		  });
+		});*/
     </script>
     <script type="text/javascript" src="{__ROOT__}statics/js/jquery.lazyload.js?v={HD_VERSION}"></script>
     <div class="hd-grid filter-items bg-white">
@@ -196,9 +206,9 @@
 	</div>
 	<!--下拉刷新容器-->
 	<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
-	  	<div class="mui-scroll">
+	  	<div class="mui-scroll has-scorll-top">
 	  		<!--数据列表-->
-		    <ul id="goods-lists" class="margin-top custom-goods-items <?php if(config('display_mode')===0){echo 'custom-goods-row custom-list-goods';};?> mui-clearfix"></ul>
+		    <ul class="margin-top custom-goods-items custom-goods-row custom-list-goods border-top mui-clearfix"></ul>
 	  	</div>
 	</div>
 	<script>
@@ -253,10 +263,11 @@
 				 			item ? params_arr[i] = '&' + item : '';
 				 		}
 				 		new_params += params_arr[i];
-					});
-					_this.attr("data-params", new_params);
+					})
+					_this.attr('data-params',new_params);
 				}
 			})
+			
 		})
 		
 	</script>

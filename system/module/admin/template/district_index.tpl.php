@@ -21,55 +21,44 @@
 						<div class="th check-option" data-resize="false">
 							<input id="check-all" type="checkbox" />
 						</div>
-						<?php foreach ($lists['th'] AS $th) {?>
-						<span class="th" data-width="<?php echo $th['length']?>">
-							<span class="td-con"><?php echo $th['title']?></span>
-						</span>
-						<?php }?>
+						<div class="th" data-width="10">
+							<div class="td-con">排序</div>
+						</div>
+						<div class="th" data-width="80">
+							<div class="td-con">名称</div>
+						</div>
 						<div class="th" data-width="10">
 							<div class="td-con">操作</div>
 						</div>
 					</div>
-					<?php foreach ($lists['lists'] AS $list) {?>
-					<div class="tr" data-tree-id="<?php echo $list['id'] ?>" data-tree-parent-id="<?php echo $list['parent_id'] ?>" data-id="<?php echo $list['id'] ?>">
-					<?php foreach ($list as $key => $value) {?>
-					<?php if($lists['th'][$key]){?>
-					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
-					<div class="td check-option"><input type="checkbox" name="id" value="<?php echo $list['id'] ?>" /></div>
+					<!--只展示第一级-->
+					<?php foreach ($districts as $district): ?>
+					<div class="tr" data-tree-id="<?php echo $district[id] ?>" data-tree-parent-id="<?php echo $district['parent_id'] ?>" data-id="<?php echo $district[id] ?>">
+						<div class="td check-option"><input type="checkbox" name="id" value="<?php echo $district['id'] ?>" /></div>
 						<div class="td">
 							<div class="tree-indenter">
-								<a class="tree-ind-status close" data-level="0" data-id="<?php echo $list['id'] ?>" href="javascript:;"></a>
+								<a class="tree-ind-status close" data-level="0" data-id="<?php echo $district[id] ?>" href="javascript:;"></a>
 								<div class="double-click">
 									<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-									<input class="input double-click-edit text-ellipsis" type="text" value="<?php echo $list['sort'] ?>" />
+									<input class="input double-click-edit text-ellipsis" type="text" value="<?php echo $district['sort'] ?>" />
 								</div>
 							</div>
 						</div>
-					<?php }elseif ($lists['th'][$key]['style'] == 'data') {?>
 						<div class="td">
 							<div class="tree-edit-input">
 								<div class="double-click">
 									<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-									<input class="input double-click-edit text-ellipsis" type="text" value="<?php echo $list['name'] ?>" />
+									<input class="input double-click-edit text-ellipsis" type="text" value="<?php echo $district['name'] ?>" />
 								</div>
-								<a class="tree-add-button" href="<?php echo url('add', array('parent_id' => $list['id'])) ?>" data-iframe="true" data-iframe-width="320"><em class="ico_add"></em>添加子地区</a>
+								<a class="tree-add-button" href="<?php echo url('add', array('parent_id' => $district['id'])) ?>" data-iframe="true" data-iframe-width="320"><em class="ico_add"></em>添加子地区</a>
 							</div>
 						</div>
-					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
-						<input type="hidden" name="id" value="<?php echo $value?>" />
-					<?php }else{?>
-					<span class="td">
-						<span class="td-con"><?php echo $value;?></span>
-					</span>
-					<?php }?>
-					<?php }?>
-					<?php }?>
-					<div class="td">
-							<a href="<?php echo url('edit', array("id" => $list['id']));?>" data-iframe="true" data-iframe-width="320">编辑</a>&nbsp;&nbsp;&nbsp;
-							<a href="<?php echo url('delete', array("id[]" => $list['id']));?>"  class="delete">删除</a>
+						<div class="td">
+							<a href="<?php echo url('edit', array("id" => $district['id']));?>" data-iframe="true" data-iframe-width="320">编辑</a>&nbsp;&nbsp;&nbsp;
+							<a href="<?php echo url('delete', array("id[]" => $district['id']));?>"  class="delete">删除</a>
 						</div>
-				</div>
-				<?php }?>
+					</div>
+					<?php endforeach ?>
 				</div>
 			</div>
 		</div>

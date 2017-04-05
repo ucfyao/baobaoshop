@@ -3,25 +3,26 @@ class money_control extends cp_control
 {
 	public function _initialize() {
 		parent::_initialize();
+		$this->table = $this->load->table('member/member_log');
 		$this->service = $this->load->service('pay/payment');
-		$this->member_log_service = $this->load->service('member/member_log');
 	}
 
 	public function log($sqlmap=array()) {
 		//配置文件
-		$_config = model('admin/setting','service')->get();
+		$_config = cache('setting');
 		$member = $this->member;
 		$sqlmap['mid'] = $member['id'];
 		$sqlmap['type'] = 'money';
-		$result = $this->member_log_service->lists($sqlmap, 15, $_GET['page'], "id DESC");
-		$pages = pages($result['count'],15);
+		$count = $this->table->where($sqlmap)->count();
+		$log = $this->table->where($sqlmap)->page($_GET['page'])->limit(15)->order("id DESC")->select();
+		$pages = pages($count,15);
 		$SEO = seo('账户余额 - 会员中心');
-		$this->load->librarys('View')->assign('_config',$_config)->assign('member',$member)->assign('pages',$pages)->assign('log',$result['lists'])->assign('SEO',$SEO)->display('money_log');
+		$this->load->librarys('View')->assign('_config',$_config)->assign('member',$member)->assign('pages',$pages)->assign('log',$log)->assign('SEO',$SEO)->display('money_log');
 	}
 
 	/* 余额充值 */
 	public function pay() {
-		$current = $this->load->service('admin/setting')->get('balance_deposit');
+		$current = $this->load->service('admin/setting')->get_setting('balance_deposit');
 		if(config('TPL_THEME') == 'wap'){
 			$payments = $this->service->getpayments('wap', $current);
 		}else{
@@ -72,7 +73,7 @@ class money_control extends cp_control
 		exit(json_encode(array('status' => (int)$status)));
 	}
 	public function success(){
-		$order = $this->load->service('member/member_deposit')->find(array('order_sn' => $_GET['order_sn']));
+		$order = $this->load->table('member/member_deposit')->where(array('order_sn' => $_GET['order_sn']))->find();
 		if (!$order) showmessage(lang('order_not_exist','order/language'));
 		if ($order['mid'] != $this->member['id']) showmessage(lang('no_promission_view','order/language'));
 		$SEO = seo('充值成功');
@@ -83,8 +84,8 @@ class money_control extends cp_control
 		$member = $this->member;
 		$sqlmap['mid'] = $member['id'];
 		$sqlmap['type'] = 'money';
-		$result = $this->member_log_service->lists($sqlmap, $_GET['limit'], $_GET['page'], "id DESC");
-		$this->load->librarys('View')->assign('log',$result['lists']);
+		$log = $this->table->where($sqlmap)->page($_GET['page'])->limit($_GET['limit'])->order("id DESC")->select();
+		$this->load->librarys('View')->assign('log',$log);
         $log = $this->load->librarys('View')->get('log');
 		echo json_encode($log);
 	}

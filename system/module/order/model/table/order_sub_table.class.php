@@ -45,7 +45,6 @@ class order_sub_table extends table {
         $sub['_status'] = $this->get_status($sub);
         $o_skus = $this->load->table('order/order_sku')->where(array('sub_sn' => $sub['sub_sn']))->order('id DESC')->select();
         foreach ($o_skus as $k => $val) {
-            $val['delivery_template_name'] = $this->load->table('order/delivery_template')->where(array('id' => $val['delivery_template_id']))->getField('name');
             $info[$val['delivery_id']][] = $val;
         }
         krsort($info);

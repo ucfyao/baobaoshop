@@ -47,7 +47,6 @@
 					<span class="mui-pull-right">运费：￥<em data-show="delivery_price">{$cart[delivery_price]}</em></span>
 				</li>
 				<li class="bg-white border-bottom padding-lr">
-					<div class="deliverys {if ($carts['deliverys'] == true)}mui-hidden{/if}"><p class="margin-top mui-text-center text-org">您所选择的收货地址暂时无法配送</p></div>
 					<div class="padding-tb order-note">
 						<input data-id="remarks" class="margin-none" type="text" placeholder="对商家的留言">
 					</div>
@@ -102,11 +101,11 @@
 	</nav>
 </body>
 </html>
-{hook/wap_settlement_info}
+{hook/wap_settlement_info data}
 <script type="text/javascript" src="{SKIN_PATH}statics/js/order.js?v={HD_VERSION}"></script>
 <script>
 	window.onload = function(){
-
+		
 		var hd_skuids = '<?php echo $_GET["skuids"] ?>';
 		var hd_prom = <?php echo json_encode($cart[_promos]); ?>;	//促销信息
 		var hd_key = '<?php echo md5($_GET[skuids]); ?>';
@@ -123,12 +122,13 @@
 			carts: <?php echo json_encode($carts); ?>,	//购物车信息
 			deliverys: <?php echo json_encode($carts["deliverys"])?>,	//配送方式，初始为空，默认选中第一个需要JS处理
 			orderList: <?php echo json_encode($cart[_promos]); ?>,		//订单促销列表
-			referer: '{url("order/order/settlement" ,array("skuids" => $_GET["skuids"]))}',
+			referer: '{url("order/order/settlement" ,array("skuids" => $_GET["skuids"]))}',	
 		};
 		hd_order.start(hd_key, hd_datas, hd_skuids);
 		//重新计算价格
 		function recount(){
 			var $params = hd_order.params();
+
 			$.each($params, function(k, v) {
 				hd_params[k] = v;
 			});
@@ -136,11 +136,6 @@
 				if(ret.status == 0) {
 					$.tips({icon: 'error',content: ret.message});
 				} else {
-					if(ret.result.deliverys === true){
-						$('.deliverys').addClass('mui-hidden');
-					}else{
-						$('.deliverys').removeClass('mui-hidden');
-					}
 					$("[data-show='real_amount']").text(ret.result.real_amount);
 					$("[data-show='sku_numbers']").text(ret.result.sku_numbers);
 					$.each(ret.result.skus ,function(sellerid, v) {
@@ -151,7 +146,7 @@
 		}
 		recount(); //重新计算价格
 
-		// 商家留言
+		// 商家留言 
 		function getRemarks(){
 			var _datas = JSON.parse(window.localStorage.getItem('hddatas'));
 			//这里应该属于多商家平台的，目前以这个格式传过去不显示
@@ -189,6 +184,6 @@
 				}
 			}, 'json');
 		});
-
+		
 	}
 </script>

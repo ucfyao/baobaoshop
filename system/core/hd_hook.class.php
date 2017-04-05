@@ -14,10 +14,10 @@ class hd_hook {
      *     key : {
      *         class 类型
      *     }
-     *
+     * 
      * }
      *
-     *
+     * 
      */
     static public function add($hook, $class){
         if(!isset(self::$hooks[$hook])){
@@ -30,7 +30,7 @@ class hd_hook {
                 self::$hooks[$hook] = array_merge(self::$hooks[$hook], $class);
             }else {
                 self::$hooks[$hook][] = $class;
-            }
+            }     
         }
     }
     /**
@@ -42,19 +42,19 @@ class hd_hook {
     static public function listen($hook,&$params = null) {
         if(!$hook) return FALSE;
         if(isset(self::$hooks[$hook])) {
-            foreach (self::$hooks[$hook] as $_hook) {
+            foreach (self::$hooks[$hook] as $_hook) {     
                 foreach ($_hook AS $class) {
-                    list($type,$identify,$name) = explode('/',$class);
+                    list($type,$identify,$name) = explode('/',$class);                                       
                     $classname = str_replace("/", "_", $class);
                     $filename = $name.EXT;
-
+                    
                     if($type == 'module'){
                         $path = APP_PATH.config('DEFAULT_H_LAYER').'/'.$identify.'/hooks/';
                     }elseif ($type == 'plugin') {
                         $path = APP_PATH.'plugin/'.$identify.'/hooks/';
                     }
                     if(require_cache($path.$filename)){
-                        $result = self::class_exec($classname,$hook,$identify,$params);
+                        $result = self::class_exec($classname,$hook,$params);
                         if(is_array($result)){
                             $return[] = $result;
                         }elseif(is_string($result)){
@@ -66,7 +66,7 @@ class hd_hook {
             }
             return $return;
         }
-        return FALSE;
+        return FALSE; 
     }
     /**
      * [class_exec 执行类]
@@ -75,8 +75,8 @@ class hd_hook {
      * @param  [type] &$params [description]
      * @return [type]          [description]
      */
-    public static function class_exec($class, $hook = '',$identify = '', &$params = null){
-        $obj = new $class($identify);
+    public static function class_exec($class, $hook = '', &$params = null){
+        $obj = new $class();
         if(is_callable(array($obj, $hook))){
             return  $obj->$hook($params);
         }

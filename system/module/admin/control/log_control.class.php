@@ -9,16 +9,16 @@
 class log_control extends init_control {
 	public function _initialize() {
 		parent::_initialize();
-		$this->service = $this->load->service('log');	
+		$this->model = $this->load->table('log');
+		//$this->service = model('log','service');	
 	}
 
 	/* 日志列表 */
 	public function index() {
 		$sqlmap = array();
-		$count = $this->service->count($sqlmap);
-		$limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
-		$log = $this->service->get_lists($sqlmap,$_GET['page'],$_GET['limit']);
-		$pages = $this->admin_pages($count, $limit);
+		$count = $this->model->where($sqlmap)->count();
+		$log = $this->model->where($sqlmap)->page($_GET['page'])->limit(10)->select();
+		$pages = $this->admin_pages($count, 10);
 		$this->load->librarys('View')->assign('log',$log)->assign('pages',$pages)->display('log_index');
 	}
 	
@@ -26,8 +26,8 @@ class log_control extends init_control {
 	public function del() {
 		$id = (array)$_GET['id'];
 		if(empty($_GET['formhash']) || $_GET['formhash'] != FORMHASH) showmessage('_token_error_');
-		$result = $this->service->delete($id);
-		if($result === false) showmessage($this->service->error);
+		if (in_array($id, 1))showmessage(lang('_del_admin_user_error_','admin/language'), url('index'), 0);
+		$this->model->where(array('id' => array('IN', $id)))->delete();
 		showmessage(lang('admin/_del_log_success_'), url('index'), 1);
 	}
 }

@@ -69,7 +69,7 @@
 						</div>
 					</th>
 				</tr>
-
+				
 				<tr>
 					<td class="padding">
 						<div id="statistics" style="height: 400px;">
@@ -200,7 +200,7 @@
 					data: search.series['averages']
 				}]
 			});
-
+			
 			//订单地区分部
 			myArea = ec.init(document.getElementById('area'), 'macarons');
 			myArea.setOption({
@@ -231,7 +231,7 @@
 		            itemStyle:{
 		                normal:{label:{show:true}}
 		            },
-					data: <?php echo json_encode($datas['districts']) ?>
+					data: <?php echo json_encode($datas['districts']) ?>			
 				}]
 			});
 			//支付方式类型统计
@@ -277,7 +277,7 @@
 					data: <?php echo json_encode($datas['payments']); ?>
 				}]
 			});
-
+			
 		}
 	}
 
@@ -301,7 +301,7 @@
 			}
 		});
 	}
-
+	
 	$(function(){
 		$('.count-date a').on('click',function(){
 			$(this).addClass('current').siblings().removeClass('current');

@@ -5,13 +5,18 @@ class index_control extends init_control
     {
         parent::_initialize();
         $this->service = $this->load->service('goods/goods_sku');
+        $this->goods_service = $this->load->service('goods/goods_spu');
+        $this->cate_db = $this->load->table('goods/goods_category');
         $this->cate_service = $this->load->service('goods/goods_category');
+        $this->type_service = $this->load->service('goods/type');
+        $this->goods_category = cache('goods_category');
         $this->brand_service = $this->load->service('goods/brand');
+        $this->favorite_service = $this->load->service('member/member_favorite');
     }
 
     public function index()
     {
-        $setting = model('admin/setting','service')->get();
+        $setting = cache('setting', '', 'common');
         $seos = $setting['seos'];
         $site_title = $setting['site_name'] . ' - ' . $seos['header_title_add'];
         $site_keywords = $seos['header_keywords'];
@@ -32,7 +37,7 @@ class index_control extends init_control
         if (!$category) {
             showmessage($this->cate_service->error, url('index'));
         }
-        $cat_form = $this->cate_service->detail($category['parent_id'],'name');
+        $cat_form = $this->cate_db->where(array('id' => $category['parent_id']))->getfield('name');
         $title = is_null($cat_form) ? $category['name'] : $category['name'] . ' - ' . $cat_form;
         $SEO = seo($title, $category['keywords'], $category['descript']);
         $brands = $this->cate_service->get_brand_info($_GET['id']);
@@ -53,7 +58,7 @@ class index_control extends init_control
             showmessage($this->service->error, url('index'));
         }
         if ($goods['prom_type'] == 'goods' && $goods['prom_id'] > 0) {
-            $goods_proms = $this->load->service('promotion/promotion_goods')->find(array('id' => $goods['prom_id']));
+            $goods_proms = model('promotion/promotion_goods')->where(array('id' => $goods['prom_id']))->find();
             $counts = 0;
             foreach ($goods_proms['rules'] as $key => $value) {
               if($value) $counts++;
@@ -77,19 +82,21 @@ class index_control extends init_control
             }
             $this->load->librarys('View')->assign('counts',$counts)->assign('goods_proms',$goods_proms);
         }
-        $count = $this->load->service('comment/comment')->get_count($goods['spu_id']);
+        if($goods['prom_type'] == 'time' && $goods['prom_id'] > 0){
+        $goods_time = model('promotion/promotion_time')->where(array('id' => $goods['prom_id']))->find();
+        $goods_time['end_time'] = date("Y/m/d h:i:s", $goods_time['end_time']);
+        $this->load->librarys('View')->assign('goods_time',$goods_time);
+        }
+        $count = model('comment/comment', 'service')->get_count($goods['spu_id']);
         $title = $goods['sku_name'] . ' - ' . $goods['cat_name'];
         $SEO = seo($title, $goods['keyword'], $goods['description']);
         $this->service->_history($_GET['sku_id']);
         $this->service->inc_hits($_GET['sku_id']);
+        $favorite = $this->service->is_favorite($this->member['id'], $_GET['sku_id']);
         runhook('goods_detail_extra');
-        $this->load->librarys('View')->assign('count',$count)->assign('SEO',$SEO)->assign('goods',$goods)->display('detail');
+        $this->load->librarys('View')->assign('count',$count)->assign('favorite',$favorite)->assign('SEO',$SEO)->assign('goods',$goods)->display('detail');
      }
 
-     public function ajax_get_favorite(){
-        $favorite = $this->service->is_favorite($this->member['id'], $_GET['sku_id']);
-        showmessage('获取收藏状态成功','',$favorite);
-     }
     /**
      * 商品快照
      * @param sku_id
@@ -98,8 +105,8 @@ class index_control extends init_control
     public function snapshot()
     {
         helper('order/function');
-        $info = $this->load->service('order/order_sku')->detail($_GET['order_sku_id']);
-        $sales = $this->service->getField('sales',array('sku_id' => $_GET['sku_id']));
+        $info = model('order/order_sku', 'service')->detail($_GET['order_sku_id']);
+        $sales = model('goods/goods_index')->where(array('sku_id' => $_GET['sku_id']))->getField('sales');
         $goods = json_decode($info['sku_info'], true);
         $spec = json_decode($goods['sku_spec'], true);
         $img_list = json_decode($goods['img_list']);
@@ -225,7 +232,7 @@ class index_control extends init_control
         $sqlmap['spu_id'] = $_GET['spu_id'];
         $options['limit'] = $_GET['limit'] ? $_GET['limit'] : 5;
         $options['page'] = $_GET['page'] ? $_GET['page'] : 1;
-        $result = $this->load->service('goods/goods_consult')->lists($sqlmap, $options);
+        $result = model('goods/goods_consult', 'service')->lists($sqlmap, $options);
         $this->load->librarys('View')->assign('result',$result);
         $result = $this->load->librarys('View')->get('result');
         echo json_encode($result);

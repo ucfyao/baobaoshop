@@ -28,23 +28,6 @@ class navigation_service extends service {
 		}
 		return $info;
 	}
-
-	public function get_lists($sqlmap){
-		$info = $this->lists($sqlmap); 
-		foreach ($info as $k => $v) {
-			$lists[] = array(
-				'id' => $v['id'],
-				'sort'=>$v['sort'],
-				'name'=>$v['name'],
-				'url'=>$v['url'],
-				'target'=>$v['target'],
-				'display'=>$v['display'],
-			);
-		}
-		return $lists;
-	}
-
-
 	private function build_map($data){
 		$sqlmap = array();
 		if($data['_string']) $sqlmap['_string'] = $data['_string'];

@@ -38,6 +38,7 @@
 			$.get(url,param,function(ret){
     			if(ret.lists && ret.lists.length > 0){
     				var html = '';
+    				var link = "<?php echo url('goods/index/detail')?>";
     				$.each(ret.lists,function(i,item){
     					var url = '',
     					service_detail = '{url("member/service/return_refund")}',
@@ -45,11 +46,11 @@
     					html += '<li class="goods-item-list padding-none">'
 							 +		'<div class="list-item">'
 							 + 		 	'<div class="list-item-pic">'
-							 +				'<a href="'+ item._skus[0]._sku_url +'"><img src="'+ item._skus[0].sku_thumb +'" /></a>'
+							 +				'<a href="'+ link +'&sku_id='+ item._skus[0].sku_id +'"><img src="'+ item._skus[0].sku_thumb +'" /></a>'
 							 +			'</div>'
 							 +		'<div class="list-item-bottom">'
 							 +			'<div class="list-item-title">'
-							 +				'<a href="'+ item._skus[0]._sku_url +'">'+ item._skus[0].sku_name +'</a>'
+							 +				'<a href="'+ link +'&sku_id='+ item._skus[0].sku_id +'">'+ item._skus[0].sku_name +'</a>'
 							 +			'</div>'
 							 +			'<div class="list-item-text text-ellipsis comment-list-text">'
 							 +				'<span class="text-gray hd-h6">'+ item._skus[0]._sku_spec +'</span>'

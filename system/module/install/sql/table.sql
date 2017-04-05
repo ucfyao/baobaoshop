@@ -1,4 +1,4 @@
-SET FOREIGN_KEY_CHECKS=0;
+SET FOREIGN_KEY_CHECKS=0; 
 
 -- ----------------------------
 -- Table structure for hd_admin_group
@@ -409,8 +409,6 @@ CREATE TABLE `hd_goods_sku` (
   `up_time` int(10) NOT NULL DEFAULT '0' COMMENT '上架时间',
   `update_time` int(10) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `edition` int(10) NOT NULL DEFAULT '1' COMMENT '版本号',
-  `weight` numeric(8,2) NOT NULL DEFAULT '0.00' COMMENT '体重',
-  `volume` numeric(8,2) NOT NULL DEFAULT '0.00' COMMENT '体积',
   PRIMARY KEY (`sku_id`),
   UNIQUE KEY `sn` (`sn`) USING BTREE,
   KEY `goods_id` (`spu_id`) USING BTREE
@@ -442,10 +440,6 @@ CREATE TABLE `hd_goods_spu` (
   `warn_number` tinyint(3) NOT NULL DEFAULT '2' COMMENT '库存警告数量',
   `sort` int(8) unsigned NOT NULL DEFAULT '100' COMMENT '排序',
   `spec_id` int(10) NOT NULL DEFAULT '0' COMMENT '上传图片时与规格关联的id',
-  `type_id` int(10) NOT NULL DEFAULT '0' COMMENT '关联类型id',
-  `weight` decimal(8,2) NOT NULL COMMENT '重量',
-  `volume` decimal(8,2) NOT NULL COMMENT '体积',
-  `delivery_template_id` mediumint(8) NOT NULL COMMENT '运费模板id',
   PRIMARY KEY (`id`),
   KEY `brand_id` (`brand_id`) USING BTREE
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='商品表';
@@ -931,7 +925,6 @@ CREATE TABLE `hd_order_sku` (
   `dateline` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '系统时间',
   `promotion` text NOT NULL COMMENT '促销活动详情',
   `is_give` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `delivery_template_id` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '运费模板id',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`) USING BTREE,
   KEY `order_sn` (`order_sn`) USING BTREE
@@ -1154,9 +1147,8 @@ CREATE TABLE `hd_order_trade` (
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '支付状态[-1:取消,0:未支付,1:完成支付]',
   `time` int(10) NOT NULL DEFAULT '0' COMMENT '支付时间',
   `method` varchar(200) NOT NULL DEFAULT '' COMMENT '支付方式',
-  `pay_sn` varchar(50) NOT NULL DEFAULT '' COMMENT '第三方支付号',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for hd_app
@@ -1176,83 +1168,19 @@ CREATE TABLE `hd_app` (
   `sort` smallint(3) unsigned NOT NULL DEFAULT '100' COMMENT '排序',
   `is_system` tinyint(1) NOT NULL,
   `menu` text NOT NULL,
-  `server_version` varchar(200) NOT NULL DEFAULT '' COMMENT '服务版本',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for hd_appvar
 -- ----------------------------
 DROP TABLE IF EXISTS `hd_appvar`;
 CREATE TABLE `hd_appvar` (
-  `id` mediumint(8) NOT NULL AUTO_INCREMENT,
   `type` varchar(50) NOT NULL,
   `value` text NOT NULL,
   `appid` smallint(6) NOT NULL,
   `title` varchar(100) NOT NULL,
   `description` varchar(255) NOT NULL,
   `variable` varchar(40) NOT NULL,
-  `extra` text NOT NULL,
-  `displayorder` int(8) NOT NULL DEFAULT '100' COMMENT '排序',
-  PRIMARY KEY (`id`)
+  `extra` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for hd_wap_template
--- ----------------------------
-DROP TABLE IF EXISTS `hd_wap_template`;
-CREATE TABLE `hd_wap_template` (
-  `id` int(8) unsigned NOT NULL AUTO_INCREMENT,
-  `content` text NOT NULL,
-  `identifier` varchar(100) NOT NULL DEFAULT '' COMMENT '应用标示',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for hd_xiaoneng_config
--- ----------------------------
-DROP TABLE IF EXISTS `hd_xiaoneng_config`;
-CREATE TABLE `hd_xiaoneng_config` (
-  `name` varchar(200) NOT NULL DEFAULT '',
-  `identifier` varchar(200) NOT NULL DEFAULT ''
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for hd_xiaoneng_service
--- ----------------------------
-DROP TABLE IF EXISTS `hd_xiaoneng_service`;
-CREATE TABLE `hd_xiaoneng_service` (
-  `id` tinyint(1) NOT NULL AUTO_INCREMENT,
-  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否开启',
-  `config` text NOT NULL COMMENT '客服配置情况',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for hd_notify_driver
--- ----------------------------
-DROP TABLE IF EXISTS `hd_notify_driver`;
-CREATE TABLE `hd_notify_driver` (
-  `code` varchar(50) NOT NULL DEFAULT '',
-  `name` varchar(250) NOT NULL DEFAULT '',
-  `description` varchar(250) NOT NULL DEFAULT '',
-  `dateline` int(10) unsigned NOT NULL DEFAULT '0',
-  `sort` int(8) unsigned NOT NULL DEFAULT '100',
-  `config` text NOT NULL,
-  PRIMARY KEY (`code`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='附件驱动';
-
--- ----------------------------
--- Table structure for `hd_delivery_template`
--- ----------------------------
-DROP TABLE IF EXISTS `hd_delivery_template`;
-CREATE TABLE `hd_delivery_template` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '地区id',
-  `name` varchar(20) NOT NULL DEFAULT '' COMMENT '物流名称',
-  `type` varchar(20) NOT NULL DEFAULT '' COMMENT '类型',
-  `delivery_info` text NOT NULL COMMENT '地区模板',
-  `enabled` tinyint(1) NOT NULL DEFAULT '1' COMMENT '开关(1:开启,0:关闭)',
-  `sort` int(8) NOT NULL DEFAULT '100' COMMENT '排序',
-  `isdefault` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否默认',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='运费模板表';

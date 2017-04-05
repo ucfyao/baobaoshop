@@ -10,21 +10,13 @@ class district_control extends init_control {
 	public function _initialize() {
 		parent::_initialize();
 		$this->service = $this->load->service('admin/district');
+		$this->model = $this->load->table('admin/district');
 	}
 
 	/* 地区管理 */
 	public function index() {
-		$districts = $this->service->get_lists();
-		 $lists = array(
-			'th' => array(
-				'sort' => array('title' => '排序','length' => 10,'style'=>'double_click'),
-				'name' => array('title' => '名称','length' => 80,'style'=>'data'),
-			),
-			'lists' => $districts,
-			);
-
-
-		$this->load->librarys('View')->assign('lists',$lists)->display('district_index');
+		$districts = $this->service->get_children();
+		$this->load->librarys('View')->assign('districts',$districts)->display('district_index');
 	}
 
 	/* 添加地区 */
@@ -78,9 +70,9 @@ class district_control extends init_control {
 	public function ajax_sort() {
 		$id = (int)$_GET['id'];
 		$sort = (int)$_GET['sort'];
-		$result = $this->service->setField(array('sort' => $sort),array('id' => $id));
+		$result = $this->model->where(array('id' => $id))->setField('sort', $sort);
 		if ($result === FALSE) {
-			showmessage($this->service->error);
+			showmessage($this->model->getError());
 		} else {
 			showmessage(lang('edit_sort_success','admin/language'), url('index'), 1);
 		}
@@ -96,9 +88,9 @@ class district_control extends init_control {
 		}
 		$pinyin = pinyin($params['name']);
 		$params['pinyin'] = implode($pinyin, '');
-		$result = $this->service->setField($params);
+		$result = $this->model->update($params);
 		if ($result === FALSE) {
-			showmessage($this->service->error);
+			showmessage($this->model->getError());
 		} else {
 			showmessage(lang('edit_region_success','admin/language'), url('index'), 1);
 		}
@@ -109,7 +101,7 @@ class district_control extends init_control {
 		$result = (array)$this->service->get_children($id);
 		if ($result) {
 			foreach ($result as $key => $value) {
-				$value['_child'] = $this->service->count(array('parent_id' => $value['id']));
+				$value['_child'] = $this->model->where(array('parent_id' => $value['id']))->count();
 				$result[$key] = $value;
 			}
 		}

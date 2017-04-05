@@ -73,5 +73,4 @@ return array(
 	'consignee_name_not_empty'			=> '收货人姓名不能为空',
 	'receiving_area_not_correct'		=> '收货地区不正确',
 	'receiving_address_not_empty'		=> '收货地址不能为空',
-	'choose_empty'						=> '请选择要标记所选为已读'
 );

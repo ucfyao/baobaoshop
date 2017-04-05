@@ -12,7 +12,6 @@ class public_control extends init_control
 	public function _initialize() {
 		parent::_initialize();
 		$this->service = $this->load->service('admin');
-		$this->admin_menu_service = $this->load->service('admin/admin_menu');
 	}
     
     /* 管理登录 */
@@ -42,9 +41,9 @@ class public_control extends init_control
 		extract($_GET,EXTR_IF_EXISTS);
 		$data['admin_id'] = ADMIN_ID;
 		$data['url'] = url("$_m/$_c/$_a");
-		$data['title'] = $this->load->service('admin/node')->getField('name', array('m'=>$_m,'c'=>$_c,'a'=>$_a));
-		if($this->admin_menu_service->count($data) == 0 ){
-			$this->admin_menu_service->update($data);
+		$data['title'] = $this->load->table('node')->where(array('m'=>$_m,'c'=>$_c,'a'=>$_a))->getField('name');
+		if($this->load->table('admin_menu')->where($data)->count() == 0 ){
+			$this->load->table('admin_menu')->update($data);
 			showmessage(lang('add_menu_success','admin/language'),'',1);
 		}
 		showmessage(lang('menu_exist','admin/language'),'',0);
@@ -55,12 +54,12 @@ class public_control extends init_control
 		$ids = '';
 		extract($_GET,EXTR_IF_EXISTS);
 		$ids = explode(',', $ids);
-		$this->admin_menu_service->delete($ids);
+		$this->load->table('admin_menu')->where(array('id'=>array('IN',$ids)))->delete();
 	}
 	//获取自定义菜单
 	public function ajax_menu_refresh(){
 		if(empty($_GET['formhash']) || $_GET['formhash'] != FORMHASH) showmessage('_token_error_');
-		$menus = $this->admin_menu_service->setAdminid(ADMIN_ID)->getAll();
+		$menus = $this->load->service('admin/admin_menu')->setAdminid(ADMIN_ID)->getAll();
 		$html = '';
 		foreach($menus as $k=>$v){
 			$html.="<li><a href='{$v["url"]}'>{$v["title"]}</a></li> ";

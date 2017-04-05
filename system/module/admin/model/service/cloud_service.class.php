@@ -6,13 +6,12 @@
  *      http://www.haidao.la
  *      tel:400-600-2042
  */
-class cloud_service extends service {
-
+class cloud_service extends service {   
+   
     protected $_cloud = '';
-
+    
     public function _initialize() {
         $this->_cloud = $this->load->librarys('cloud');
-        $this->setting = $this->load->service('admin/setting');
         $this->config =  unserialize(authcode(config('__cloud__','cloud'),'DECODE'));
     }
     /**
@@ -21,14 +20,14 @@ class cloud_service extends service {
     public function get_account_info(){
         return $this->_cloud->get_account_info();
     }
-
+    
     /**
-     * 服务器通讯状态
+     * 服务器通讯状态 
      */
     public function getcloudstatus(){
         return $this->_cloud->getcloudstatus();
-    }
-
+    }  
+    
     /**
      * 登录远程用户
      * @param type $account
@@ -89,7 +88,7 @@ class cloud_service extends service {
                 'expires_in' => $expires_in,
                 'identifier' => $site_info['result']['identifier'],
                 'key'        => $site_info['result']['key'],
-                'domain'     => $site_info['result']['domain'] ? $site_info['result']['domain'] : (is_ssl() ? 'https://' : 'http://').get_url(),
+                'domain'     => $site_info['result']['domain'] ? $site_info['result']['domain'] : 'http://'.get_url(),
                 'authorize'  => (int) $site_info['result']['authorize_status'],
                 'authorize_endtime'     => $site_info['result']['authorize_endtime']
             );
@@ -101,6 +100,7 @@ class cloud_service extends service {
                 return true;
             }
         }else{
+            $this->error = $site_info['msg'];
             return FALSE;
         }
     }
@@ -166,10 +166,10 @@ class cloud_service extends service {
             $this->error = 'token不能为空';
             return false;
         }
-        $setting = model('admin/setting','service')->get();
+        $setting = cache('setting');
         $data = array();
         $data['access_token'] = $access_token;
-        $data['domain'] = (is_ssl() ? 'https://' : 'http://').get_url();
+        $data['domain'] = 'http://'.get_url();
         $data['site_name'] = $setting['site_name'];
         $data['version'] = HD_VERSION;
         $data['branch'] = HD_BRANCH;
@@ -221,7 +221,6 @@ class cloud_service extends service {
         $data = array();
         $data['access_token'] = $this->config['token'];
         $data['identifier'] = $this->config['identifier'];
-        $data['domain'] = (is_ssl() ? 'https://' : 'http://').get_url();
         $data['branch'] = HD_BRANCH;
         $data['version']    = HD_VERSION;
         $data['server_ip'] = get_client_ip();
@@ -279,8 +278,8 @@ class cloud_service extends service {
         return $this->_cloud->type('post')->data($data)->api('sms/send');
     }
 
-
-
+    
+    
     //获取最新版本
     public function api_product_version(){
         $data = array();
@@ -288,7 +287,7 @@ class cloud_service extends service {
         $data['identifier'] = $this->config['identifier'];
         $data['version']      = HD_VERSION;
         $data['branch']       = HD_BRANCH;
-        $data['allow_type']   = 'domain';
+        $data['allow_type']   = 'domain'; 
         return $this->_cloud->type('get')->data($data)->api('product/version');
     }
 
@@ -299,10 +298,10 @@ class cloud_service extends service {
         $data['identifier'] = $this->config['identifier'];
         $data['version']      = HD_VERSION;
         $data['branch']      = $branch;
-        $data['allow_type']   = 'domain';
+        $data['allow_type']   = 'domain'; 
         return $this->_cloud->type('get')->data($data)->api('product/downpack');
     }
-
+    
     //获取最新通知
     public function api_product_notify($version = HD_VERSION,$branch=HD_BRANCH){
         $data['version']      = $version;
@@ -326,13 +325,6 @@ class cloud_service extends service {
         $expires_in = $token['expires_in'];
         $result = $this->bind_site($access_token,$expires_in,$identifier);
         cache('_cloud',null);
-
-        //绑定成功返回 获取绑定用户信息
-        $this->_cloud->__construct();
-        $cloud = $this->_cloud->get_account_info();
-        $cloud['site_isclosed'] = (int)$this->setting->get('site_isclosed');//获取是否关闭站点
-        $cloud_status = $this->_cloud->getcloudstatus(); // 服务器通讯状态
-        $cloud['cloud_status'] = $cloud_status ? $cloud_status : false ;
-        return $cloud;
+        return true;
     }
 }

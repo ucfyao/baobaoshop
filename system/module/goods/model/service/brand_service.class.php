@@ -11,8 +11,6 @@
 class brand_service extends service {
 	public function _initialize() {
 		$this->db = $this->load->table('goods/brand');
-		$this->goods_spu_model = $this->load->table('goods/goods_spu');
-		$this->cate_service = $this->load->service('goods/goods_category');
 	}
 	/**
 	 * [get_lists 获取品牌列表]
@@ -37,7 +35,7 @@ class brand_service extends service {
     		$this->error = $this->db->getError();
     		return FALSE;
     	}
-    	return $result;
+    	return $result;	
 	}
 	/**
 	 * [edit_spec 编辑品牌]
@@ -169,7 +167,7 @@ class brand_service extends service {
 		if(!$result){
 			$this->error = lang('_operation_fail_');
     	}
-		return $result;
+		return $result; 
 	}
 	/**
 	 * [get_brand_by_id 根据id获取品牌信息]
@@ -186,57 +184,5 @@ class brand_service extends service {
 			$this->error = lang('goods/no_found_brand');
 		}
 		return $result;
-	}
-
-	public function detail($id, $field=''){
-    	return $this->db->detail($id, $field)->output();
-    }
-    /**
-     * 条数
-     * @param  [arra]   sql条件
-     * @return [type]
-     */
-    public function count($sqlmap = array()){
-        $result = $this->db->where($sqlmap)->count();
-        if($result === false){
-            $this->error = $this->db->getError();
-            return false;
-        }
-        return $result;
-    }
-
-
-	public function lists($sqlmap = array(), $options = array()) {
-        if(isset($sqlmap['catid']) && is_numeric($sqlmap['catid']) && $sqlmap['catid'] > 0) {
-            $catids = $this->cate_service->get_child($sqlmap['catid']);
-            if(empty($catids)) return FALSE;
-            foreach ($catids as $catid) {
-                $join[] = "catid =".$catid;
-            }
-            $brand_map = array();
-            $brand_map['status'] = 1;
-            $brand_map['brand_id'] = array("GT", 0);
-            $brand_map['_string'] = implode(' OR ', $join);
-            $brand_ids = $this->goods_spu_model->where($brand_map)->group('brand_id')->getField('brand_id', TRUE);
-            if(!$brand_ids) return FALSE;
-        }
-        $map = array();
-        $map['isrecommend']=1;
-        if($brand_ids) {
-            $map['id'] = array("IN", $brand_ids);
-
-        }
-        if(!isset($sqlmap['order'])){
-           $sqlmap['order'] = 'sort asc,id desc';
-        }
-        $this->db->order($sqlmap['order']);
-        if(isset($options['limit'])){
-            $this->db->limit($options['limit']);
-        }
-        if(isset($options['page'])){
-            $this->db->page($options['page']);
-        }
-        $result = $this->db->where($map)->select();
-        return $result;
 	}
 }

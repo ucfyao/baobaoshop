@@ -210,7 +210,7 @@
 		var _selected = new Array();
 		var _var_arr = new Array();
 		var $html = $lists = _selected_txt = _selected_val = '';
-
+		
 		$.each(_default, function(i, item) {
 			var flog = (i == _this.data('selected') || item == _this.data('selected')) ? true : false;
 			if(i==_this.data('selected')||item==_this.data('selected')){
@@ -224,7 +224,7 @@
 			}
 			$lists += '<span class="listbox-item"'+ (flog?' data-selected="true"':'') +'" data-val="'+ i +'">'+ item +'</span>';
 		});
-
+		
 		$html = '<div class="form-select-edit"'+(_this.id()!=undefined?_this.id():'')+'>';
 		$html += '<div class="form-buttonedit-popup"><input class="input" type="text" value="'+(_selected_txt!=''?_selected_txt:_selected[0])+'" readonly="readonly" /><span class="ico_buttonedit"></span></div>';
 		$html += '<div class="listbox-items">';
@@ -233,9 +233,9 @@
 		$html += 	'</div>'
 				+	'<input class="form-select-name" type="hidden" name="'+(_this.name()!=undefined?_this.name():'')+'" value="'+(_selected_val!=''?_selected_val:_var_arr[0])+'" />'
 				+'</div>';
-
+					
 		return $html;
-
+		
 	};
 	//模拟下拉框触发事件
 	$.fn.selectSimulation = function(){
@@ -244,14 +244,7 @@
 			var _content = $(this).children(".listbox-items");
 			var _name = $(this).children(".form-select-name");
 	 		var _now = 0;
-	 		var select=_content.find('.listbox-item[data-selected="true"]');
-			for(var i=0;i<select.length;i++){
-				if(select.eq(i)){
-		 			var parent=select.eq(i).closest('.form-select-edit');
-		 			parent.find(".form-buttonedit-popup").children("input").val(select.eq(i).html())
-		 		}
-			}
-	 		
+
 			_input.on('click',function(e){
 				var num = $(this).index(".form-buttonedit-popup");
 				if(!$(this).parent().hasClass('disabled')){
@@ -277,16 +270,15 @@
 				e.stopPropagation();
 			});
 
-			_this.on('click', ".listbox-item", function(){
+			_this.find(".listbox-item").bind('click',function(){
 				_input.removeClass("buttonedit-popup-hover");
-
 				$(this).parent().prev(".form-buttonedit-popup").children("input").val($(this).html());
 				$(this).parent().next(".form-select-name").val($(this).attr("data-val")).change();
 				$(this).attr("data-selected","true");
 				$(this).siblings().removeAttr("data-selected");
 				_content.hide();
 			});
-			_this.on('mouseover', ".listbox-item", function(){
+			_this.find(".listbox-item").bind('mouseover',function(){
 				$(this).addClass("listbox-item-selected").siblings().removeClass("listbox-item-selected");
 			});
 
@@ -303,10 +295,10 @@
 		var _val =  _this.val();
 		var _default = jQuery.parseJSON(_val);
 		var flog = 0;
-
+		
 		var $html = '';
 		$.each(_default, function(i, item) {
-
+			
 			flog++;
 			i = String(i);
 			var _checked = ($.inArray(i, _this.data('checked')) != -1 || $.inArray(item, _this.data('checked')) != -1) || (_this.typetxt()=='radio'&&_this.data("checked")==undefined&&flog==1) ? ' checked' : '';
@@ -319,10 +311,10 @@
 			if(flog % _itemrows == 0){
 				$html += '</br>';
 			}
-
+			
 		});
 		return $html;
-
+		
 	};
 
 	$.fn.inputAttributes = function(){
@@ -620,10 +612,10 @@
 	}
 
 	$.fn.formSubmit = function(type,url,data,callback,errorback){
-
+		
 		callback = callback || 'ajax_success';
 		errorback = errorback || 'ajax_error';
-
+		
 		//loading状态
 		$("body").ajaxStart(function(){
 			$(this).append('<div class="form-loading">提交中...</div>');
@@ -674,7 +666,6 @@ function isExitsFunction(funcName) {
 
 $(document).ready(function(){
 	$(".form-select-edit").selectSimulation();
-	
 	$(document).otherEvent();
 	//$("form").reRenderForm();
 })

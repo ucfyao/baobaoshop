@@ -5,11 +5,10 @@
 	<item id="pay_desc"><![CDATA[买家可直接通过网上银行进行支付，无需通过京东就能完成交易。]]></item>
 	<item id="enabled"><![CDATA[0]]></item>
 	<item id="isonline"><![CDATA[1]]></item>
-	<item id="applie"><![CDATA[pc]]></item>
+	<item id="applie"><![CDATA[all]]></item>
 	<item id="sort"><![CDATA[7]]></item>
 	<item id="version"><![CDATA[1.0]]></item>
-	<item id="config[banks]"><![CDATA[
-ABC,CCB,ICBCB2C,BOCBTC,COMM,POSTGC,CMB,SPDB,BJBANK,BJRCB,CEB-DEBIT,CITIC,CMBC,GDB,HZCBB2C,SHBANK,SHRCB,SPABANK,NJCB,NBCB,CQRCB,HZBANK,BOCD,HFBANK,QDCCB]]></item>
+	<item id="config[banks]"><![CDATA[ABC,ICBCB2C,BOCBTC,COMM,POSTGC,CMB,SPDB,BJBANK,BJRCB,CEB-DEBIT,CITIC,CMBC,GDB,HZCBB2C,NBBANK,SHBANK,SHRCB,SPABANK]]></item>
 	<item id="setup">
 		<item id="mid">
 			<item id="name"><![CDATA[商户号(mid)]]></item>

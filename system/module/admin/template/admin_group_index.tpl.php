@@ -21,71 +21,54 @@
 					<span class="th check-option" data-resize="false">
 						<span><input id="check-all" type="checkbox" /></span>
 					</span>
-					<?php foreach ($lists['th'] AS $th) {?>
-					<span class="th" data-width="<?php echo $th['length']?>">
-						<span class="td-con"><?php echo $th['title']?></span>
+					<span class="th" data-width="20">
+						<span class="td-con">权限名</span>
 					</span>
-					<?php }?>
+					<span class="th" data-width="50">
+						<span class="td-con">权限描述</span>
+					</span>
+					<span class="th" data-width="10">
+						<span class="td-con">是否启用</span>
+					</span>
 					<span class="th" data-width="20">
 						<span class="td-con">操作</span>
 					</span>
 				</div>
-				<?php foreach ($lists['lists'] AS $list) {?>
+				<?php foreach($data as $k=>$v):?>
 				<div class="tr">
 					<div class="td check-option">
-						<?php if($list['id']==1):?>
-							-
+						<?php if($v['id']!=1):?>
+						<input type="checkbox" name="id" value="<?php echo $v['id']?>" />
 						<?php else:?>
-							<input type="checkbox" name="id" value="<?php echo $list['id']?>" />
+							-
 						<?php endif;?>
 					</div>
-					<?php foreach ($list as $key => $value) {?>
-					<?php if($lists['th'][$key]){?>
-					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
 					<span class="td">
-						<div class="double-click">
-							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-							<input class="input double-click-edit text-ellipsis text-center" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
-						</div>
+						<span class="td-con"><?php echo $v['title']?></span>
 					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'status') {?>
-						<span class="td">
-							<?php if($list['id']!=1):?>
-							<?php if($value == 1):?>
-								<a class="ico_up_rack" href="javascript:;" title="点击启用/禁用角色" data-id="<?php echo $list['id'];?>"></a>
-								<?php else:?>
-								<a class="ico_up_rack cancel" href="javascript:;" title="点击启用/禁用角色" data-id="<?php echo $list['id'];?>"></a>
-							<?php endif;?>
+					<span class="td">
+						<span class="td-con"><?php echo $v['description']?></span>
+					</span>
+					<span class="td">
+						<?php if($v['id']!=1):?>
+						<?php if($v['status']==1):?>
+							<a class="ico_up_rack" href="javascript:;" title="点击启用/禁用角色" data-id="<?php echo $v['id'];?>"></a>
 							<?php else:?>
-								--
-							<?php endif;?>
-						</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
-					<span class="td">
-						<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
+							<a class="ico_up_rack cancel" href="javascript:;" title="点击启用/禁用角色" data-id="<?php echo $v['id'];?>"></a>
+						<?php endif;?>
+						<?php else:?>
+							--
+						<?php endif;?>
 					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
 					<span class="td">
-						<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
-						<input type="hidden" name="id" value="<?php echo $value?>" />
-					<?php }else{?>
-					<span class="td">
-						<span class="td-con"><?php echo $value;?></span>
-					</span>
-					<?php }?>
-					<?php }?>
-					<?php }?>
-					<span class="td">
-						<?php if($list['id']==1):?>
+						<?php if($v['id']==1):?>
 						<span class="td-con">--</span>
 						<?php else:?>
-						<span class="td-con"><a href="<?php echo url('edit',array('id'=>$list['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确定删除？" href="<?php echo url('del',array('id'=>$list['id']))?>">删除</a></span>
+						<span class="td-con"><a href="<?php echo url('edit',array('id'=>$v['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确定删除？" href="<?php echo url('del',array('id'=>$v['id']))?>">删除</a></span>
 						<?php endif;?>
 					</span>
 				</div>
-				<?php }?>
+				<?php endforeach;?>
 			</div>
 		</div>
 		<script>
@@ -111,7 +94,7 @@
 							status =  false;
 						}
 					},'json');
-
+					
 					return status;
 				}
 			})

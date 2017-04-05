@@ -1,19 +1,39 @@
+<?php include template('header','admin');?>
 <link type="text/css" rel="stylesheet" href="./statics/js/upload/uploader.css" />
 <script type="text/javascript" src="./statics/js/upload/uploader.js"></script>
+<script type="text/javascript" src="./statics/js/goods/goods_add.js" ></script>
+		<div class="fixed-nav layout">
+			<ul>
+				<li class="first">商品设置</li>
+				<li class="spacer-gray"></li>
+				<li>1.填写基本信息</li>
+				<li>&nbsp;&nbsp;&nbsp;→&nbsp;&nbsp;&nbsp;</li>
+				<li>2.设置商品规格</li>
+				<li>&nbsp;&nbsp;&nbsp;→&nbsp;&nbsp;&nbsp;</li>
+				<li class="goods-step">3.上传商品图册</li>
+				<li>&nbsp;&nbsp;&nbsp;→&nbsp;&nbsp;&nbsp;</li>
+				<li>4.编辑商品类型</li>
+				<li>&nbsp;&nbsp;&nbsp;→&nbsp;&nbsp;&nbsp;</li>
+				<li>5.完善商品详情</li>
+			</ul>
+			<div class="hr-gray"></div>
+		</div>
+		<div class="content padding-big have-fixed-nav">
+		<form action="<?php echo url('goods_add',array('step' => 2,'id' => $_GET['id']))?>" method="POST" name="goods_album" data-validate='true' data-handkey="goods_spec">
 			<div class="atlas-wrap">
-				<div class="upload-pic-wrap border bg-white margin-big-top spu_imgs">
+				<div class="upload-pic-wrap border bg-white margin-big-top">
 					<div class="title border-bottom bg-gray-white text-default">
 						<b>默认图片（如商品多个规格图片一致，仅需上传默认图片；多个规格图片不一致，默认图片可不传）</b>
 					</div>
 					<div class="upload-pic-content clearfix">
-					<?php if(!empty($goods['spu']['imgs'])){?>
-					<?php foreach ($goods['spu']['imgs'] AS $url) {?>
+					<?php if(!empty($info['spu_imgs'])){?>
+					<?php foreach ($info['spu_imgs'] AS $url) {?>
 						<div class="box">
 							<img src="<?php echo $url?>" />
 							<div class="operate">
 								<i>×</i>
 								<a href="javascript:;">默认主图</a>
-								<input type="hidden" data-name="0" name="album[0][]" value="<?php echo $url?>"/>
+								<input type="hidden" data-name="0" name="goodsphoto[0][]" value="<?php echo $url?>"/>
 							</div>
 						</div>
 					<?php }?>
@@ -23,104 +43,68 @@
 						</div>
 					</div>
 				</div>
-				<div class="spec_box"></div>
-				<div class="album_box"></div>
-				<script id="spec_select" type="text/html">
+				<?php if(!empty($info['extra']['specs'])){?>
 				<div class="margin-big-top padding-top padding-left padding-right border border-gray border-dashed spec-right-body bg-white">
 					<div class="wrap padding-none clearfix">
-					<%for(var item in templateData){%>
-        			<%item = templateData[item]%>
-						<a <%if(_spec == item['id']){%>class="current"<%}%> data-id="<%=item['id']%>" href="javascript:;"><%=item['name']%></a>
-					<%}%>
-					<input type="hidden" name="spu[spec_id]" value="<%=_spec%>" />
+					<?php foreach ($info['extra']['specs'] as $k => $spec) {?>
+						<a <?php if($k == $info['spec_id']){?>class="current"<?php }?> data-id="<?php echo $k?>" href="javascript:;"><?php echo $spec['name']?></a>
+						<input type="hidden" name="spec_id" value="<?php echo $info['spec_id']?>" />
+					<?php }?>
 					</div>
 				</div>
-				</script>
-
-				<script id="spec_album" type="text/html">
-				<%for(var i in goods_specs){%>
-        		<%item = goods_specs[i]%>
-        		<%if(typeof(item['value']) == 'object'){%>
-	        		<%for(var n in item['value']){%>
-	        		<%spec_val = item['value'][n]%>
-	        		<div class="upload-pic-wrap border bg-white margin-big-top <%if(item['id'] != _spec){%>hidden<%}%> spec_atlas" data-id="<%=item['id']%>" data-md="<%=item['md5'][n]%>">
-						<div class="title border-bottom bg-gray-white text-default">
-							<b>商品SKU规格：<%=spec_val%></b>
+				<?php }?>
+				<?php foreach ($info['extra']['specs'] as $key => $value) {?>
+				<?php foreach ($value['value'] as $k => $spec) {?>
+				<div class="upload-pic-wrap border bg-white margin-big-top <?php if($key != $info['spec_id']){?>hidden<?php }?> spec_atlas" data-id="<?php echo $key?>" data-md="<?php echo $value['spec_md5'][$k]?>">
+					<div class="title border-bottom bg-gray-white text-default">
+						<b>商品SKU规格：<?php echo $spec?></b>
+					</div>
+					<div class="upload-pic-content clearfix">
+						<?php if(!empty($info['skus']['imgs'])){?>
+						<?php foreach ($info['skus']['imgs'][$value['spec_md5'][$k]] AS $url) {?>
+						<div class="box">
+							<img src="<?php echo $url?>" />
+							<div class="operate">
+								<i>×</i>
+								<a href="javascript:;">默认主图</a>
+							</div>
+							<input type="hidden" data-name="<?php echo $value['spec_md5'][$k]?>" name="goodsphoto[<?php echo $value['spec_md5'][$k]?>][]" value="<?php echo $url?>"/>
 						</div>
-						<div class="upload-pic-content clearfix">
-							<%for(var j in extra_album[item['md5'][n]]){%>
-							<%imgs = extra_album[item['md5'][n]][j]%>
-							<div class="box">
-								<img src="<%=imgs%>" />
-								<div class="operate">
-									<i>×</i>
-									<a href="javascript:;">默认主图</a>
-								</div>
-								<input type="hidden" data-name="<%=item['md5'][n]%>" name="album[<%=item['md5'][n]%>][]" value="<%=imgs%>"/>
-							</div>
-							<%}%>
-
-							<div class="loadpic">
-								<label class="load-button" data-id="<%=item['md5'][n]%>" id="upload_<%=item['md5'][n]%>"></label>
-							</div>
+						<?php }?>
+						<?php }?>
+						<div class="loadpic">
+							<label class="load-button" data-id="<?php echo $value['spec_md5'][$k]?>" id="upload_<?php echo $value['spec_md5'][$k]?>"></label>
 						</div>
 					</div>
-					<%}%>
-        		<%}else{%>
-        			<div class="upload-pic-wrap border bg-white margin-big-top <%if(item['id'] != _spec){%>hidden<%}%> spec_atlas" data-id="<%=item['id']%>" data-md="<%=item['md5']%>">
-						<div class="title border-bottom bg-gray-white text-default">
-							<b>商品SKU规格：<%=item['value']%></b>
-						</div>
-						<div class="upload-pic-content clearfix">
-							<%for(var j in extra_album[item['md5']]){%>
-							<%imgs = extra_album[item['md5']][j]%>
-							<div class="box">
-								<img src="<%=imgs%>" />
-								<div class="operate">
-									<i>×</i>
-									<a href="javascript:;">默认主图</a>
-								</div>
-								<input type="hidden" data-name="<%=item['md5']%>" name="album[<%=item['md5']%>][]" value="<%=imgs%>"/>
-							</div>
-							<%}%>
-
-							<div class="loadpic">
-								<label class="load-button" data-id="<%=item['md5']%>" id="upload_<%=item['md5']%>"></label>
-							</div>
-						</div>
-					</div>
-        		<%}%>
-				<%}%>
-				</script>
-
-
+				</div>
+				<?php }?>
+				<?php }?>
 			</div>
+			<div class="margin-big-top">
+				<input type="submit" class="button bg-main" name="dosubmit" id="goods_atlas" value="下一步" />
+				<a class="button margin-left bg-gray" data-back="false" id="back">上一步</a>
+			</div>
+		</form>
+		</div>
 		<script>
-			var _spec = <?php echo (int) $goods['spu']['spec_id'] ?>;
-			var goods_specs = goods.spu ? goods.spu.specs : null;
-			for(var k in goods_specs){
-				goods_specs[k].md5 = [];
-				if(typeof goods_specs[k].value == "object"){
-					for(var i=0;i<goods_specs[k].value.length;i++){
-						var md = $.md5(goods_specs[k].name+':'+goods_specs[k].value[i]);
-						goods_specs[k].md5.push(md);
+			//点击
+			var goods_album = $("[name=goods_album]").Validform({
+				ajaxPost:true,
+				callback:function(result) {
+					if(result.status == 1){
+						var nexturl = "<?php echo url('goods_add',array('step' => 3,'id' => $_GET['id']))?>";
+						window.location = nexturl;
+					}else{
+						alert(result.message);
 					}
-				}else{
-					var md = $.md5(goods_specs[k].name+':'+goods_specs[k].value);
-					goods_specs[k].md5.push(md);
 				}
-			}
-			var spec_select = template('spec_select', {'templateData': goods_specs,'_spec': _spec});
-
-			if(goods_specs && goods_specs.length !== 0){
-				$('.spec_box').html(spec_select);
-			}
-
-            var extra_album = goods.extra ? goods.extra.album : [];
-            var spec_album = template('spec_album', {'goods_specs': goods_specs,'_spec': _spec,'extra_album': extra_album});
-			$('.album_box').html(spec_album);
-
-			$(".spec-right-body a").live('click',function(){
+			});
+			var url = "<?php echo url('goods_add',array('id'=>$_GET['id'],'step'=>2))?>";
+			var back = "<?php echo url('goods_add',array('id'=>$_GET['id'],'step'=>1))?>";
+			save_back(url,back);
+			setInterval("auto_save(url)",30000);
+			var _spec =  <?php echo $info['spec_id'] ? $info['spec_id'] : ($goods['spec_id'] ? $goods['spec_id'] : 0)?>;
+			$(".spec-right-body a").click(function(){
 				var $id = parseInt($(this).data('id'));
 				if($(this).hasClass("current")){
 					$(this).removeClass('current');
@@ -133,7 +117,7 @@
 					if(_spec != $id){
 						if(confirm("更改规格将清空该规格已上传的图片，是否确认更改？")){
 							$(this).addClass('current').siblings().removeClass('current');
-							var _input = '<input type="hidden" name="spu[spec_id]" value="' + $(this).data('id') + '"/>'
+							var _input = '<input type="hidden" name="spec_id" value="' + $(this).data('id') + '"/>'
 							$(this).parent().find('input').remove();
 							$(this).parent().append(_input);
 							$(".spec_atlas").each(function(){
@@ -148,7 +132,7 @@
 						}
 					}else{
 						$(this).addClass('current').siblings().removeClass('current');
-							var _input = '<input type="hidden" name="spu[spec_id]" value="' + $(this).data('id') + '"/>'
+							var _input = '<input type="hidden" name="spec_id" value="' + $(this).data('id') + '"/>'
 							$(this).parent().find('input').remove();
 							$(this).parent().append(_input);
 							$(".spec_atlas").each(function(){
@@ -161,20 +145,20 @@
 					}
 				}
 			})
-
+			
 			$(".box").live('mouseover',function(){
 				$(this).children('.operate').show();
 			}).live('mouseout',function(){
 				$(this).children('.operate').hide();
 			});
-
+			
 			$('.operate a').live('click',function(){
 				if($(this).parents(".upload-pic-content").find('.box').length > 1 && !$(this).parents(".box").hasClass("set")){
 					$(this).parents(".upload-pic-content").find('.box:first').before($(this).parents(".box"));
 				}
 				$(this).parents(".box").addClass('set').siblings().removeClass('set');
 			});
-
+			
 			$('.operate i').live('click',function(){
 				if(confirm("是否删除此图片？"))
 				$(this).parents('.box').remove();
@@ -182,80 +166,78 @@
 			/*上传图片*/
 			var imgs = $('.atlas-wrap').find('.load-button');
 			var $progress = $('.upload-pic-content').find('.loading').hide();
-			init_upload();
-			function init_upload(){
-				$.each($('.load-button'),function(index,val){
-					var i = $(val).attr('data-id');
-					var uploader = WebUploader.create({
-				        auto:true,
-				        fileVal:'upfile',
-				        // swf文件路径
-				        swf: './statics/js/upload/uploader.swf',
-				        // 文件接收服务端。
-				        server: "<?php echo url('upload')?>",
-				        // 选择文件的按钮。可选
-				        formData:{
-				            img_id : i,
-				            code : '<?php echo $goods["extra"]["attachment_init"]; ?>'
-				        },
-				        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
-				        pick: {
-				            id: '#upload_' + i,
-				        },
-				        accept:{
-				            title: '图片文件',
-				            extensions: 'jpg,jpeg,bmp,png',
-				            mimeTypes: 'image/*'
-				        },
-				        thumb:{
-				            width: '110',
-				            height: '110'
-				        },
-				        chunked: false,
-				        chunkSize:1000000,
-				        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
-				        resize: false
-				    });
-				   uploader.onUploadSuccess = function( file, response ) {
-				   		$('#'+file.id).find('.loading').hide();
-				   		var pickid = this.options.pick.id;
-				    	var obj = eval("(" + response._raw + ")")
-				    	var result = obj.result;
-				        if(result.url.length > 0) {
-				        	var html =  '<img src="'+ result.url +'" />'
-								+		'<div class="operate">'
-								+		'<i>×</i>'
-								+		'<a href="javascript:;">默认主图</a>'
-								+		'</div>'
-								+		'<input type="hidden" data-name="' + result.img_id + '" name="album['+ result.img_id +'][]" value="'+ result.url +'"/>';
-							$('#'+file.id).append(html);
-				        }
-				    }
-				    uploader.onUploadError = function(file, reason) {
-				        alert(reason);
-				    }
-				    uploader.onError = function( code ) {
-				    	if(code == 'Q_TYPE_DENIED'){
-				    		alert('图片类型被禁止！');
-				    	}else if(code == 'Q_EXCEED_SIZE_LIMIT'){
-				    		alert('图片大小超过限制！');
-				    	}else{
-			            	alert( '图片已在列表，请勿重复上传！');
-				    	}
-			        };
-			        uploader.onUploadProgress = function(file, percentage) {
-
-	                };
-			        uploader.onFileQueued = function(file) {
-			        	var pickid = this.options.pick.id;
-			        	var html = 		'<div class="box" id="' + file.id + '">'
-			        			 +		'<div class="loading">'
-								 +		'<em>上传中...</em>'
-								 +		'<span></span>'
-								 +		'</div>';
-			        			 +		'</div>';
-			            $(pickid).parent().before(html);
-			        };
-				})
-			}
+			$.each($('.load-button'),function(index,val){
+				var i = $(val).attr('data-id');
+				var uploader = WebUploader.create({
+			        auto:true,
+			        fileVal:'upfile',
+			        // swf文件路径
+			        swf: './statics/js/upload/uploader.swf',
+			        // 文件接收服务端。
+			        server: "<?php echo url('upload')?>",
+			        // 选择文件的按钮。可选
+			        formData:{
+			            img_id : i,
+			            code : '<?php echo $info["extra"]["attachment_init"]; ?>'
+			        },
+			        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+			        pick: {
+			            id: '#upload_' + i,
+			        },
+			        accept:{
+			            title: '图片文件',
+			            extensions: 'jpg,jpeg,bmp,png',
+			            mimeTypes: 'image/*'
+			        },
+			        thumb:{
+			            width: '110',
+			            height: '110'
+			        },
+			        chunked: false,
+			        chunkSize:1000000,
+			        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+			        resize: false
+			    });
+			   uploader.onUploadSuccess = function( file, response ) {
+			   		$('#'+file.id).find('.loading').hide();
+			   		var pickid = this.options.pick.id;
+			    	var obj = eval("(" + response._raw + ")")
+			        var result = obj.result;
+			        if(result.url.length > 0) {
+			        	var html =  '<img src="'+ result.url +'" />'
+							+		'<div class="operate">'
+							+		'<i>×</i>'
+							+		'<a href="javascript:;">默认主图</a>'
+							+		'</div>'
+							+		'<input type="hidden" data-name="' + result.img_id + '" name="goodsphoto['+ result.img_id +'][]" value="'+ result.url +'"/>';
+						$('#'+file.id).append(html);
+			        }
+			    }
+			    uploader.onUploadError = function(file, reason) {
+			        alert(reason);
+			    }
+			    uploader.onError = function( code ) {
+			    	if(code == 'Q_TYPE_DENIED'){
+			    		alert('图片类型被禁止！');
+			    	}else if(code == 'Q_EXCEED_SIZE_LIMIT'){
+			    		alert('图片大小超过限制！');
+			    	}else{
+		            	alert( '图片已在列表，请勿重复上传！');
+			    	}
+		        };
+		        uploader.onUploadProgress = function(file, percentage) {
+		        	
+                };
+		        uploader.onFileQueued = function(file) {
+		        	var pickid = this.options.pick.id;
+		        	var html = 		'<div class="box" id="' + file.id + '">'
+		        			 +		'<div class="loading">'
+							 +		'<em>上传中...</em>'
+							 +		'<span></span>'
+							 +		'</div>';
+		        			 +		'</div>';
+		            $(pickid).parent().before(html);
+		        };
+			})
 		</script>
+<?php include template('footer','admin');?>

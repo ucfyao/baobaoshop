@@ -87,15 +87,15 @@ img { display: block; }
 .cart-btn:hover{ color: #fff; background-color: #e74447; }
 
 /***toper***/
-.toper { position: relative; height:150px;}
+.toper { position: relative; height:50px;}
 
 /***header_slogan***/
-.header_slogan { position: relative; display:block; font-size: 22px; text-align: left; line-height: 46px; top:35px; left:120px; }
+.header_slogan { position: relative; display:block; font-size: 22px; text-align: left; line-height: 46px; top:-96px; left:212px; }
 .header_slogan p {  }
 .header_slogan h1 {   }
 
 /***site-bar***/
-.site-bar { height: 80px; line-height: 50px; #margin-top: 10px; background: url(../images/topimg.png) no-repeat 200 0px; background-size: 467px auto; }
+.site-bar { height: 50px; line-height: 50px; #margin-top: 10px; background: url(../images/topimg.png) no-repeat 200 0px; background-size: 467px auto; }
 .site-bar ul li { float: left; }
 .site-bar ul li.spacer { margin: 24px 16px; background: #fff; }
 .site-bar a { color: #666; }
@@ -103,14 +103,14 @@ img { display: block; }
 
 /***header***/
 .header { position: relative; height: 80px; }
-.logo { margin: 0px 0; height: 160px; position: relative; z-index: 99; }
-.search-wrap { position: absolute; z-index: 199; top: 0px; left: 184px; width: 511px; background: #fff;border-top-right-radius: 0;border-bottom-right-radius: 0;}
+.logo { position: relative; z-index: 99; position: relative; top:-50px; }
+.search-wrap { position: absolute; z-index: 199; top: 100px; left: 184px; width: 511px; background: #fff;border-top-right-radius: 0;border-bottom-right-radius: 0;}
 .keyword { line-height: 12px; }
 .keyword li { float: left; }
 .keyword li.spacer { margin: 0 10px; background: #999; }
 .keyword a { margin: 0 5px; }
 
-.user {     position: relative; top: 0px; width: 43%;height: 77px;background: #fff; }
+.user {     position: relative; top: 100px; left:246px; width: 43%;height: 77px;background: #fff; }
 .user i { width: 14px; height: 14px; background-size: 14px 14px; filter:Alpha(opacity=60); -moz-opacity:.6; opacity:0.6; }
 .user .user-box { float: right; position: relative; right:20px; top:20px; }
 .user .icon-down { margin: 9px 12px 10px 7px; background: url(../images/icon_down.svg) no-repeat; background-size: 13px 13px; }
@@ -151,7 +151,7 @@ img { display: block; }
 
 /***nav***/
 .nav { #height: 27px; position: relative; }
-.category { position: absolute; z-index: 99; top: -80px;  }
+.category { position: absolute; z-index: 99; top: 20px;  }
 .category .dt { position: relative; width: 175px; height: 77px; line-height: 77px; cursor: pointer; border-radius: 4px; }
 .category .dt i {     float: left;margin: 32px 22px 7px 20px;line-height: 22px;font-size: 14px; }
 .category .dd { display: none; position: absolute; top: 75px; left: 0; border: 1px solid #EE260D; border-top: 0; background-color: #EE260D;}
@@ -708,7 +708,7 @@ img { display: block; }
 
 /*============  会员中心板块   =============*/
 .member-head .header { height: 85px; }
-.member-head .header .logo, .back-shop { height: 45px; margin-top: 20px; }
+.member-head .header .logo, .back-shop { height: 45px;  margin-top: 20px;  position: relative;  top: 0px;  width: 236px;}
 .member-head .header .logo img{height: 45px;}
 .back-shop { width: 95px; }
 .back-shop a { float: left; display: block; margin-top: 3px; padding: 0 5px; height: 20px; line-height: 18px; border-radius: 2px;color: #B12518; line-height: 20px; border: 0; background-color: #fff;  }
@@ -721,8 +721,8 @@ img { display: block; }
 /*用户名称*/
 .member-head .member-user  {}
 .member-head .member-user li { float: left;  }
-.member-head .user { background: none; top:0px; }
-.member-head .member-user { margin: 29px 0 0 -75px; }
+.member-head .user { background: none; top:5px;left: 20px; width: 40%; }
+.member-head .member-user { left:-28px; top:24px; position: relative; }
 .member-head .member-user li { float: left; margin-right: 50px; }
 .member-head .member-user a { display: block; height: 32px; color: #fff; line-height: 30px; font-size: 14px; }
 .member-head .member-user a:hover { border-bottom: 2px solid #fff; }
@@ -987,7 +987,7 @@ img { display: block; }
 .member-slider .slider-items p.text-tip { text-indent: 142px; line-height: 130px; }
 
 /***********************首页***********************/
-.banner { width: 100%; height: 400px; overflow: hidden; margin-top: 18px; }
+.banner { width: 100%; height: 400px; overflow: hidden; position: relative; top: -14px; }
 .shade-slider { position: relative; margin: auto; width: 1200px; height: 400px; }
 .shade-slider .shade-left, .shade-slider .shade-right { position: absolute; top: 0; height: 100%; background: rgba(0,0,0,0.6); z-index: 4; }
 .shade-slider .prev, .shade-slider .next { display: block; position: absolute; top: 50%; margin-top: -31px; width: 32px; height: 63px; background: url(../images/ico_general.png) no-repeat; z-index: 5; }
@@ -1019,7 +1019,7 @@ img { display: block; }
 .index-pic-1:hover img, .index-pic-2:hover img, .list-wrap .list-h li:hover img { -webkit-transform:scale(1.2) ; -moz-transform:scale(1.2) ; -o-transform:scale(1.2) ; -webkit-transition:all 0.3s; -moz-transition:all 0.3s; -o-transition:all 0.3s; z-index: 1;}
 .index-pic-1 .price i, .index-pic-2 .price i, .lh-wrap .p-price i {font-size: 12px; text-decoration:line-through; margin-left: 20px; color:#999;}
 
-.index-activity { margin-top: 60px; margin-left: 0px; width: 974px; overflow: hidden;  }
+.index-activity { margin-top: 20px; margin-left: 0px; width: 974px; overflow: hidden;  }
 .index-activity .tab li { margin-bottom: -1px; #margin-right: 14px; width: 194px; height: 38px; line-height: 32px;  }
 .index-activity .tab li b { display: none; }
 .index-activity .tab li.current { position: relative; border-bottom: 1px solid #EE260D; }
@@ -1030,7 +1030,7 @@ img { display: block; }
 .index-activity ul.tag li { float: left; #padding: 30px 0px 15px 0px; width: 193px; background: #fff; }
 .index-activity ul.tag li:hover a { color: #B12518; }
 
-.notice { margin-top: 80px; width: 210px; }
+.notice { margin-top: 20px; width: 210px; }
 .news-plate .title { padding: 30px 0 13px; color: #B12518; font-size:18px; }
 .news-plate .content { height: 180px; line-height: 24px; }
 .news-plate .content .hot { color: #ef4481; }

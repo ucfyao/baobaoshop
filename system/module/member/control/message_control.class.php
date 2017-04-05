@@ -19,10 +19,11 @@ class message_control extends cp_control {
 			$sqlmap['status'] = (int)$_GET['status'];
 		}
 		$_GET['limit'] = $_GET['limit'] ? $_GET['limit'] : 15;
-		$result = $this->service->lists($sqlmap, $_GET['limit'], $_GET['page'], 'dateline desc');
-		$pages = pages($result['count'],$_GET['limit']);
+		$result = $this->load->table('member_message')->where($sqlmap)->order('dateline desc')->page($_GET['page'])->limit($_GET['limit'])->select();
+		$count = $this->load->table('member_message')->where($sqlmap)->count();
+		$pages = pages($count,$_GET['limit']);
 		$SEO = seo('我的消息 - 会员中心');
-		$this->load->librarys('View')->assign('result',$result['lists'])->assign('pages',$pages)->assign('SEO',$SEO)->display('message');
+		$this->load->librarys('View')->assign('result',$result)->assign('pages',$pages)->assign('SEO',$SEO)->display('message');
 	}
 	/* 已读 */
 	public function ajax_update(){
@@ -31,9 +32,6 @@ class message_control extends cp_control {
 			return FALSE;
 		}
 		$result = $this->service->ajax_update($_GET['id']);
-		if($result === FALSE){
-			showmessage($this->service->error,'',0);
-		}
 		showmessage(lang('_operation_success_'),'',1);
 	}
 	/* 删除 */

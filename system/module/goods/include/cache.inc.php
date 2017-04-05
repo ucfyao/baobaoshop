@@ -1,3 +1,3 @@
 <?php
-/* 删除商品分类缓存 */
-cache('goods_category',NULL);
+/* 更新商品分类缓存 */
+model('goods/goods_category','service')->build_cache();

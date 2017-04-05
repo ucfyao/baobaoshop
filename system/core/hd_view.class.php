@@ -10,7 +10,7 @@ class hd_view {
 	//模版变量
 	private $data = array();
     protected static $_instance;
-
+    
     private function __construct(){}
 
     private function __clone(){}
@@ -63,10 +63,10 @@ class hd_view {
      * @param  string $type     [description]
      * @return [type]           [description]
      */
-    public function display($_hd_display_template = '',$_hd_display_module = ''){
+    public function display($_display_template = ''){
         // 视图开始
-        runhook('pre_output',$this->data);
+        runhook('pre_output');
         extract($this->data, EXTR_OVERWRITE);
-    	include template($_hd_display_template,$_hd_display_module);
+    	include template($_display_template);
     }
 }

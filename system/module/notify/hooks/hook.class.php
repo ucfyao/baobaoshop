@@ -7,7 +7,9 @@ class module_notify_hook
 		$queue = $load->librarys('queue');
 		$queue->run();
 	}
-	public function after_register(&$member){
+	public function after_register(&$mid){
+		$member = array();
+		$member['member'] = model('member/member')->where(array('id' => $mid))->find();
 		model('notify/notify','service')->execute('after_register', $member);
 	}
 }

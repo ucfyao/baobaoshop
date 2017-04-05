@@ -60,7 +60,7 @@ class module_order_hook
 		$order = model('order/order')->where(array('sn' => $order_sn))->find();
 		/* 增加会员经验值 */
 		// 获取后台经验获取比例配置
-		$exp_rate = (float) model('admin/setting','service')->get('exp_rate');
+		$exp_rate = (float) model('admin/setting','service')->get_setting('exp_rate');
 		if ($order && $exp_rate) {
 			$exps = sprintf('%.2f', $order['paid_amount'] * $exp_rate);
 			model('member/member')->where(array('id'=>$order['buyer_id']))->setInc('exp',$exps);
@@ -81,7 +81,7 @@ class module_order_hook
 	public function after_login(&$params) {
 		model('order/cart','service')->cart_sync($params['id']);
 	}
-	public function after_register(&$member){
-		model('order/cart','service')->cart_sync($member['id']);
+	public function after_register(&$mid){
+		model('order/cart','service')->cart_sync($mid);
 	}
 }

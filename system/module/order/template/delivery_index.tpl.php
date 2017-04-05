@@ -34,62 +34,66 @@
 						<span class="th check-option" data-resize="false">
 							<span><input id="check-all" type="checkbox" /></span>
 						</span>
-						<?php foreach ($lists['th'] AS $th) {?>
-						<span class="th" data-width="<?php echo $th['length']?>">
-							<span class="td-con"><?php echo $th['title']?></span>
+						<span class="th w7" data-width="70">
+							<span class="td-con">配送方式</span>
 						</span>
-						<?php }?>
+						<span class="th w1" data-width="10">
+							<span class="td-con">排序</span>
+						</span>
+						<span class="th w0_5" data-width="5">
+							<span class="td-con">状态</span>
+						</span>
 						<span class="th w1_5" data-width="15">
 							<span class="td-con">操作</span>
 						</span>
 					</div>
-					<?php foreach ($lists['lists'] AS $list) {?>
-				<div class="tr">
-					<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $list['id']?>" /></span>
-					<?php foreach ($list as $key => $value) {?>
-					<?php if($lists['th'][$key]){?>
-					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
-					<span class="td">
-						<div class="double-click">
-							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-							<input class="input double-click-edit text-ellipsis text-center" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
-						</div>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'data') {?>
-						<span class="td">
+					<?php foreach ($deliverys as $key => $delivery) : ?>
+						<div class="tr" data-id="<?php echo $delivery['id']; ?>">
+							<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $delivery['id']; ?>" /></span>
+							<span class="td">
 								<span class="td-con td-pic text-left">
 									<span class="pic">
-										<img src="<?php echo $list['logo'];?>" onerror="javascript:this.src='./statics/images/default_no_upload.png';"/>
+										<img src="<?php echo !empty($delivery['logo']) ? $delivery['logo'] : './statics/images/deliverys/'.$delivery['identif'].'.png'?>" onerror="javascript:this.src='./statics/images/default_no_upload.png';"/>
 									</span>
-									<span class="title"><?php echo $list['name']; ?></span>
+									<span class="title txt"><?php echo $delivery['name']; ?></span>
+									<span class="icon">
+										<em class="text-main">物流保价</em>
+										<?php if ($delivery['insure'] > 0) : ?>
+											（费率：<?php echo $delivery['insure'] ?>	%）
+										<?php else: ?>
+											：未开启
+										<?php endif; ?>
+									</span>
 								</span>
 							</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
-					<span class="td">
-						<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
-						<input type="hidden" name="id" value="<?php echo $value?>" />
-					<?php }else{?>
-					<span class="td">
-						<span class="td-con"><?php echo $value;?></span>
-					</span>
-					<?php }?>
-					<?php }?>
-					<?php }?>
-					<span class="td">
-						<span class="td-con">
-							<a href="<?php echo url('order/admin_delivery/update',array('id'=>$list['id'])) ?>">编辑</a>&nbsp;&nbsp;&nbsp;
-							<a href="<?php echo url('order/admin_delivery/delivery_tpl',array('id'=>$list['id'])) ?>">模板</a>&nbsp;&nbsp;
-							<a data-confirm="是否确定删除？" href="<?php echo url('deletes',array('ids'=>$list['id'])) ?>">删除</a>
-						</span>
-					</span>
-				</div>
-				<?php }?>
+							<span class="td">
+								<div class="td-con">
+									<div class="double-click">
+										<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
+										<input class="input double-click-edit text-ellipsis text-center" type="text" value="<?php echo $delivery['sort'] ?>" />
+									</div>
+								</div>
+							</span>
+							<span class="td">
+								<?php if ($delivery['enabled'] == 1) : ?>
+									<a class="ico_up_rack" href="javascript:;" title="点击关闭物流"></a>
+								<?php else: ?>
+									<a class="ico_up_rack cancel" href="javascript:;" title="点击开启流"></a>
+								<?php endif; ?>
+							</span>
+							<span class="td">
+								<span class="td-con">
+									<a href="<?php echo url('order/admin_delivery/update',array('id'=>$delivery['id'])) ?>">编辑</a>&nbsp;&nbsp;&nbsp;
+									<a href="<?php echo url('order/admin_delivery/delivery_tpl',array('id'=>$delivery['id'])) ?>">模板</a>&nbsp;&nbsp;
+									<a data-confirm="是否确定删除？" href="<?php echo url('deletes',array('ids'=>$delivery['id'])) ?>">删除</a>
+								</span>
+							</span>
+						</div>
+					<?php endforeach; ?>
 				</div>
 				<!-- 分页 -->
 				<div class="paging padding-tb body-bg clearfix">
-					<ul class="fr"><?php echo $lists['pages'];?></ul>
+					<ul class="fr"><?php echo $pages; ?></ul>
 					<div class="clear"></div>
 				</div>
 			</div>
@@ -107,7 +111,7 @@
 			// 要设置的值
 			var set_val = ($(obj).hasClass('cancel') == true) ? 1 : 0 ;
 			$.post(ajax_url, {
-					id : $(obj).attr('data-id'),
+					id : $(obj).parents('.tr').attr('data-id'),
 					field : 'enabled',
 					val : set_val
 				}, function(ret) {
@@ -134,7 +138,7 @@
 				return false;
 			}
 			$.post(ajax_url, {
-					id : $(obj).attr('data-id'),
+					id : $(obj).parents('.tr').attr('data-id'),
 					field : 'sort',
 					val : $(obj).val()
 				}, function(ret) {

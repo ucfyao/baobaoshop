@@ -183,7 +183,7 @@
 			sendData[val] = $('[name="'+val+'"]').val();
 		}
 
-		$.getJSON("<?php echo url('ajax_check_mysql');?>",sendData,function(content)
+		$.getJSON('<?php echo url('ajax_check_mysql')?>',sendData,function(content)
 		{
 			var dis_inputs = {'db_address':'','db_port':'','db_user':'','db_pwd':'','db_name':'','db_pre':''};
 			if(content.status == 1)
@@ -191,18 +191,14 @@
 				for(val in dis_inputs){
 					$('[name="'+val+'"]').attr('readonly','readonly');
 				}
-				if(content.sql_mode == 2){
-					$('#error_p').show().text("当前数据库为严格模式，请更改为非严格模式再安装");
-					return false;
-				}else if(content.sql_mode == 1){
-					db_info = true;
-					$('.checkmysql').removeAttr('onclick').removeClass('agree-btn2').addClass('db_disabled');
-					$('.next').removeAttr('disabled','').removeClass('disabled');
-					$('#error_p').hide();
-					$('#right_p').show().text(content.info);
-					//检测错误
-					$('[name="site_name"]').focus();
-				}
+
+				db_info = true;
+				$('.checkmysql').removeAttr('onclick').removeClass('agree-btn2').addClass('db_disabled');
+				$('.next').removeAttr('disabled','').removeClass('disabled');
+				$('#error_p').hide();
+				$('#right_p').show().text(content.info);
+				//检测错误
+				$('[name="site_name"]').focus();
 			}else{
 				for(val in dis_inputs){
 					$('[name="'+val+'"]').removeAttr('disabled');

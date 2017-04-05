@@ -34,69 +34,51 @@
 					<div class="th check-option" data-resize="false">
 						<input id="check-all" type="checkbox" />
 					</div>
-					<?php foreach ($lists['th'] AS $th) {?>
-						<span class="th" data-width="<?php echo $th['length']?>">
-							<span class="td-con"><?php echo $th['title']?></span>
-						</span>
-					<?php }?>
+					<div class="th" data-width="20"><span class="td-con">广告名称</span></div>
+					<div class="th" data-width="15"><span class="td-con">所属广告位</span></div>
+					<div class="th" data-width="10"><span class="td-con">类别</span></div>
+					<div class="th" data-width="20"><span class="td-con">开始时间</span></div>
+					<div class="th" data-width="20"><span class="td-con">结束时间</span></div>
+					<div class="th" data-width="5"><span class="td-con">点击数</span></div>
 					<div class="th" data-width="10"><span class="td-con">操作</span></div>
 				</div>
-				<?php foreach ($lists['lists'] AS $list) {?>
-				<div class="tr">
-					<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $list['id']?>" /></span>
-					<?php foreach ($list as $key => $value) {?>
-					<?php if($lists['th'][$key]){?>
-					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
-					<span class="td">
-						<div class="double-click">
-							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-							<input class="input double-click-edit text-ellipsis" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
-						</div>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ident') {?>
-						<span class="td ident">
-							<span class="ident-show">
-								<em class="ico_pic_show"></em>
-								<div class="ident-pic-wrap">
-									<img src="<?php echo $list['logo'] ? $list['logo'] : '../images/default_no_upload.png'?>" />
-								</div>
-							</span>
+				<?php foreach($ads as $k=>$v):?>
+					<div class="tr">
+					<div class="td check-option"><input type="checkbox" name="id" value="<?php echo $v['id']?>" /></div>
+					<div class="td">
+						<div class="td-con">
 							<div class="double-click">
 								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" type="text" value="<?php echo $value?>" />
+								<input class="input double-click-edit text-ellipsis" data-id='<?php echo $v['id']?>' type="text" value="<?php echo $v['title']?>" />
 							</div>
-						</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
-					<span class="td">
-						<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
-					<span class="td">
-						<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'left_text') {?>
-						<span class="td">
-							<span class="td-con text-left"><?php echo $value;?></span>
-						</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
-						<input type="hidden" name="id" value="<?php echo $value?>" />
-					<?php }else{?>
-					<span class="td">
-						<span class="td-con"><?php echo $value;?></span>
-					</span>
-					<?php }?>
-					<?php }?>
-					<?php }?>
-					<span class="td">
-						<span class="td-con">
-						<a href="<?php echo url('edit',array('id'=>$list['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('del', array('id[]' => $list['id'])); ?>">删除</a><?php echo $lists['option']?></span>
-					</span>
+						</div>
+					</div>
+					<div class="td">
+						<span class="td-con text-left"><?php echo $v['position_name']?></span>
+					</div>
+					<div class="td">
+						<span class="td-con"><?php echo $v['type_text']?></span>
+					</div>
+					<div class="td">
+						<span class="td-con"><?php echo $v['startime_text']?></span>
+					</div>
+					<div class="td">
+						<span class="td-con"><?php echo $v['endtime_text']?></span>
+					</div>
+					<div class="td">
+						<span class="td-con"><?php echo $v['hist']?></span>
+					</div>
+					<div class="td">
+						<span class="td-con"><span class="td-con"><a href="<?php echo url('edit',array('id'=>$v['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;
+						<a data-confirm="是否确定删除？" href="<?php echo url('del',array('id'=>$v['id'],'formhash'=>FORMHASH))?>">删除</a>
+						</span></span>
+					</div>
 				</div>
-				<?php }?>
-
+				<?php endforeach;?>
+				
 				<div class="paging padding-tb body-bg clearfix">
 					<ul class="fr">
-						<?php echo $lists['pages']?>
+						<?php echo $pages?>
 					</ul>
 					<div class="clear"></div>
 				</div>
@@ -124,7 +106,7 @@
 			$(function(){
 				//双击编辑
 				$('.double-click-edit').on('blur',function(){
-					$.post(save_title_url,{id:$(this).data('id'),title:""+$(this).val()+"",formhash:""+formhash+""},function(data){
+					$.post(save_title_url,{id:$(this).attr('data-id'),title:""+$(this).val()+"",formhash:""+formhash+""},function(data){
 					})
 				})
 			})

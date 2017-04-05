@@ -7,10 +7,14 @@ class service_control extends cp_control
 			redirect(url('cp/index'));
 		}
 		$this->service = $this->load->service('order/order_server');
-		$this->order_service = $this->load->service('order/order');
-		$this->order_sku_service = $this->load->service('order/order_sku');
+		$this->db = $this->load->table('order/order_server');
+		$this->order_sku_db = $this->load->table('order/order_sku'); 
+		$this->return_db = $this->load->table('order/order_return');
+		$this->return_service = $this->load->service('order/order_server');
+		$this->refund_db = $this->load->table('order/order_refund');
 		$this->track_service = $this->load->service('order/order_track');
-		$this->delivery_service = $this->load->service('order/delivery');
+		$this->return_log = $this->load->table('order/order_return_log');
+		$this->refund_log = $this->load->table('order/order_refund_log');
 		$this->load->helper('attachment');
 		$this->load->helper('order/function');
 	}
@@ -47,23 +51,22 @@ class service_control extends cp_control
 	public function return_refund(){
 		if(!$_GET['id']) redirect(url('goods/index/index'));
 		$SEO = seo('售后服务 - 会员中心');
-		$sku = $this->order_sku_service->find(array('id' => $_GET['id']));
+		$sku = $this->order_sku_db->find($_GET['id']);
 		$spec = '';
 		foreach ($sku['sku_spec'] AS $sku_spec) {
 			$spec .= $sku_spec['name'] .':'.$sku_spec['value'].';';
 		}
-		$servers = $this->service->find(array('o_sku_id' => $_GET['id']),'return_id,refund_id,status');
+		$servers = $this->db->where(array('o_sku_id' => $_GET['id']))->field('return_id,refund_id,status')->find();
 		$this->load->librarys('View')->assign('SEO',$SEO)->assign('sku',$sku)->assign('spec',$spec)->assign('servers',$servers);
         //发起售后申请
 		if(!$servers){
 			$attachment_init = attachment_init(array('module' => 'member','path' => 'member', 'mid' => $this->member['id'],'allow_exts'=>array('bmp','jpg','jpeg','gif','png')));
-			$price = $this->order_sku_service->getfield('real_price', array('id' => $_GET['id']));
+			$price = $this->order_sku_db->where(array('id' => $_GET['id']))->getfield('real_price');
 			$this->load->librarys('View')->assign('attachment_init',$attachment_init)->assign('price',$price)->display('return_refund');
 		}else{
 			$sqlmap = array();
 			$sqlmap['enabled'] = 1;
-			$deliverys = $this->delivery_service->table_list($sqlmap);
-
+			$deliverys = $this->load->table('order/delivery')->lists($sqlmap);
 			foreach ($deliverys as $key => $delivery) {
 				$deliverys[$delivery['identif']] = $delivery['name'];
 				unset($deliverys[$key]);
@@ -74,7 +77,7 @@ class service_control extends cp_control
 				$this->load->librarys('View')->display('return_refund_3');
 			//提交退货信息
 			}elseif($servers['return_id'] && $servers['refund_id']){
-				$server = $this->order_service->order_return_find(array('o_sku_id' => $_GET['id']), 'delivery_name,delivery_sn');
+				$server = $this->return_db->where(array('o_sku_id' => $_GET['id']))->field('delivery_name,delivery_sn')->find();
 				$track = $this->track_service->kuaidi100($server['delivery_name'],$server['delivery_sn']);
 				$this->load->librarys('View')->assign('server',$server)->assign('track',$track)->display('return_refund_4');
 			//通过退货申请
@@ -88,11 +91,11 @@ class service_control extends cp_control
 	 * @return [type] [description]
 	 */
 	public function ajax_delivery(){
-		$operator = get_operator();	// 获取操作者信息
-		$return_id = $this->order_service->order_return_field('id', array('o_sku_id'=>$_GET['id']));
-		$result = $this->service->return_goods($return_id,$_GET['delivery_name'],$_GET['delivery_sn'], $operator['id'], $operator['operator_type']);
-		$refund = $this->order_service->order_refund_find(array('o_sku_id'=>$_GET['id']));
+		$return_id = $this->return_db->where(array('o_sku_id'=>$_GET['id']))->getfield('id');
+		$result = $this->return_service->return_goods($return_id,$_GET['delivery_name'],$_GET['delivery_sn']);
+		$refund = $this->refund_db->where(array('o_sku_id'=>$_GET['id']))->find();
 		// 创建退款日志
+		$operator = get_operator();	// 获取操作者信息
 		$log['refund_id']     = $refund['id'];
 		$log['order_sn']      = $refund['order_sn'];
 		$log['sub_sn']        = $refund['sub_sn'];
@@ -102,7 +105,7 @@ class service_control extends cp_control
 		$log['operator_type'] = $operator['operator_type'];
 		$log['action']           = '用户发货完毕';
 		$log['msg'] = $_GET['delivery_desc'];
-		$this->order_service->order_refund_log_update($log);
+		$this->refund_log->update($log);
 		if(!$result){
 			showmessage($this->service->error,'',0);
 		}else{
@@ -110,10 +113,9 @@ class service_control extends cp_control
 		}
 	}
 	public function ajax_return_cancel(){
-		$return = $this->order_service->order_return_find(array('o_sku_id'=>$_GET['id']));
-		$result = $this->order_service->order_return_update(array('status' => -1,'id'=>$return['id']));
-		if($result === FALSE) showmessage($this->order_service->error,'',0);
-		$this->service->setField(array('status'=>-1), array('return_id' => $return['id']));
+		$result = $this->return_db->where(array('o_sku_id'=>$_GET['id']))->save(array('status' => -1));
+		$return = $this->return_db->where(array('o_sku_id'=>$_GET['id']))->find();
+		$this->db->where(array('return_id' => $return['id']))->setField('status',-1);
 		// 写入退货日志
 		$operator = get_operator();	// 获取操作者信息
 		$log['return_id']     = $return['id'];
@@ -124,7 +126,7 @@ class service_control extends cp_control
 		$log['operator_id']   = $operator['id'];
 		$log['operator_name'] = $operator['username'];
 		$log['operator_type'] = $operator['operator_type'];		
-		$result = $this->order_service->order_return_log_update($log);
+		$result = $this->return_log->update($log);
 		if(!$result){
 			showmessage($this->service->error,'',0);
 		}else{
@@ -132,10 +134,9 @@ class service_control extends cp_control
 		}
 	}
 	public function ajax_refund_cancel(){
-		$refund = $this->order_service->order_refund_find(array('o_sku_id'=>$_GET['id']));
-		$result = $this->order_service->order_refund_update(array('status' => -1,'id'=>$refund['id']));
-		if($result === FALSE) showmessage($this->order_service->error,'',0);
-		$this->service->setField(array('status' => -1), array('refund_id' => $refund['id']));
+		$result = $this->refund_db->where(array('o_sku_id'=>$_GET['id']))->save(array('status' => -1));
+		$refund = $this->refund_db->where(array('o_sku_id'=>$_GET['id']))->find();
+		$this->db->where(array('refund_id' => $refund['id']))->setField('status',-1);
 		// 创建退款日志
 		$operator = get_operator();	// 获取操作者信息
 		$log['refund_id']     = $refund['id'];
@@ -146,7 +147,7 @@ class service_control extends cp_control
 		$log['operator_name'] = $operator['username'];
 		$log['operator_type'] = $operator['operator_type'];
 		$log['action']           = '用户取消退款申请';
-		$this->order_service->order_refund_log_update($log);
+		$this->refund_log->update($log);
 		if(!$result){
 			showmessage($this->service->error,'',0);
 		}else{
@@ -158,8 +159,7 @@ class service_control extends cp_control
 	 * @return [type] [description]
 	 */
 	public function ajax_return(){
-		$operator = get_operator();
-		$result = $this->service->create_return($_GET['id'] ,$_GET['amount'] ,$_GET['cause'] ,$_GET['desc'],$_GET['imgs'],$operator['id'],$operator['operator_type']);
+		$result = $this->service->create_return($_GET['id'] ,$_GET['amount'] ,$_GET['cause'] ,$_GET['desc'],$_GET['imgs']);
 		if($result === FALSE){
 			showmessage($this->service->error,'',0);
 		}else{
@@ -172,9 +172,8 @@ class service_control extends cp_control
 	 * @return [type] [description]
 	 */
 	public function ajax_refund(){
-		$operator = get_operator();
-		$sn = $this->order_sku_service->getfield('sub_sn', array('id'=>$_GET['id']));
-		$result = $this->service->create_refund($_GET['type'] ,$sn ,$_GET['amount'] ,$_GET['cause'] ,$_GET['desc'] ,$_GET['id'],$_GET['imgs'],$operator['id'],$operator['operator_type']);
+		$sn = $this->order_sku_db->where(array('id'=>$_GET['id']))->getfield('sub_sn');
+		$result = $this->service->create_refund($_GET['type'] ,$sn ,$_GET['amount'] ,$_GET['cause'] ,$_GET['desc'] ,$_GET['id'],$_GET['imgs']);
 		if($result === FALSE) showmessage($this->service->error,'',0);
 		$this->load->service('attachment/attachment')->attachment($_GET['imgs'], '',false);
 		showmessage(lang('_operation_success_'),url('index'),1);
@@ -183,7 +182,7 @@ class service_control extends cp_control
 	public function delivery_detail(){
 		$sqlmap = array();
 		$sqlmap['enabled'] = 1;
-		$deliverys = $this->load->service('order/delivery')->table_list($sqlmap);
+		$deliverys = $this->load->table('order/delivery')->lists($sqlmap);
 		foreach ($deliverys as $key => $delivery) {
 			$deliverys[$delivery['identif']] = $delivery['name'];
 			unset($deliverys[$key]);

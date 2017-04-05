@@ -16,8 +16,6 @@ function update_total() {
 		var price = 0,num = 0;
 		price = parseFloat($(v).parents("dd").find(".price > em").text());
 		num = parseInt($(v).parents("dd").find("input[data-id='buy-num']").val());
-		max_nums = parseInt($(v).parents("dd").find("input[data-id='buy-num']").data("max"));
-		num = (num < 1 || !num) ? 1 : ((num > max_nums) ? max_nums : num);
 		total += price * num;
 		numbers += num;
 	});
@@ -40,7 +38,8 @@ $(function(){
 		now_nums = parseInt($(this).parent(".number").find("[data-id='buy-num']").val());
 		// 最大购买数
 		max_nums = parseInt($(this).parent(".number").find("[data-id='buy-num']").data("max"));
-		now_nums = (now_nums < 1 || !now_nums) ? 1 : ((now_nums > max_nums) ? max_nums : now_nums);
+		now_nums = (now_nums < 1) ? 1 : now_nums;
+		now_nums = (now_nums > max_nums) ? max_nums : now_nums;
 		// 更改数据库或 cookie
 		$.getJSON('?m=order&c=cart&a=set_nums', {sku_id:$(this).parents('dd').data("skuid"), nums:now_nums},function(ret){
 			if (ret.status == 1) update_total();
@@ -53,7 +52,8 @@ $(function(){
 		now_nums = parseInt($(this).val());
 		// 最大购买数
 		max_nums = parseInt($(this).data("max"));
-		now_nums = (now_nums < 1 || !now_nums) ? 1 : ((now_nums > max_nums) ? max_nums : now_nums);
+		now_nums = (now_nums < 1) ? 1 : now_nums;
+		now_nums = (now_nums > max_nums) ? max_nums : now_nums;
 		// 更改数据库或 cookie
 		$.getJSON('?m=order&c=cart&a=set_nums', {sku_id:$(this).parents('dd').data("skuid"), nums:now_nums},function(ret){
 			if (ret.status == 1) update_total();

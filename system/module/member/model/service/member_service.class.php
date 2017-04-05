@@ -12,6 +12,7 @@ class member_service extends service {
     public function _initialize() {
 		$this->vcode_table = $this->load->table('vcode');
         $this->model = $this->load->table('member/member');
+        $this->setting = $this->load->service('admin/setting')->get_setting();
         $this->group_model = $this->load->table('member/member_group');
 	}
 
@@ -32,13 +33,31 @@ class member_service extends service {
         );
         $authkey = cookie('member_auth');
         if($authkey) {
-	        list($mid, $rand) = explode("\t", authcode($authkey));
+	        list($mid, $password) = explode("\t", authcode($authkey));
+	        $this->dologin($mid, $password);
 	        $_member = $this->model->setid($mid)->address()->group()->output();
         }
         $_member['avatar'] = getavatar($_member['id']);
         runhook('member_init', $_member);
         return $_member;
     }
+
+    /**
+     * 检测登录状态
+     * @return 返回用户ID
+     */
+	public function check_login() {
+        $authkey = cookie('member_auth');
+        if($authkey) {
+            list($mid, $password, $token) = explode("\t", $authkey);
+            if(is_numeric($mid) && $password && $token) {
+                if($this->model->fetch_by_id($mid, 'password') == $password) {
+                    return $mid;
+                }
+            }
+        }
+        return FALSE;
+	}
 
     /**
      * 注册
@@ -63,9 +82,9 @@ class member_service extends service {
 	        $this->error = lang('two_passwords_differ','member/language');
 	        return false;
         }
-        $setting = model('admin/setting','service')->get();
-        $data = $params;
-
+        $setting = cache('setting', '', 'common');
+        $data = array();
+        
         $sms_enabled = model('notify')->where(array('code'=>'sms','enabled'=>1))->find();
 
         $sms_reg = false;
@@ -90,26 +109,18 @@ class member_service extends service {
         $data['email'] = $params['email'] ? $params['email'] : '';
         $data['mobile'] = $params['mobile'] ? $params['mobile'] : '';
 		$data['encrypt'] = random(6);
-        $data['group_id'] = 1;
-        $data['money'] = 0;
-        $data['exp'] = 0;
-        $data['frozen_money'] = 0;
-        runhook('before_register',$data);
-        if($data['_callback'] === false){
-            $this->error = $params['_message'];
-            return false;
-        }
-		 if(!isset($data['id'])) {
-            $data['password'] = md5(md5($params['password']).$data['encrypt']);
-            $data['id'] = $this->model->update($data);
-            if($data['id'] === false) {
-                $this->error = $this->table->getError();
-                return false;
-            }
-        }
-		$this->dologin($data['id']);
-        runhook('after_register',$data);
-		return $data['id'];
+		$data['password'] = md5(md5($params['password']).$data['encrypt']);
+		$data['group_id'] = 1;
+		$data['islock'] = 0;
+		$result = $this->model->update($data);
+		if($result === false) {
+			$this->error = $this->table->getError();
+			return false;
+		}
+		$this->dologin($result, $data['password']);
+        $this->login_inc($result);
+        runhook('after_register',$result);
+		return true;
     }
 
     public function login($account, $password) {
@@ -121,61 +132,50 @@ class member_service extends service {
 			$this->error = lang('login_password_empty','member/language');
 			return false;
 		}
-        $member = array();
-        runhook('before_login',$member);
-        if(empty($member)) {
-            $sqlmap = array();
-            if(is_mobile($account)) {
-                $sqlmap['mobile|username'] = $account;
-                $sqlmap['mobile_status'] = 1;
-            } elseif(is_email($account)) {
-                $sqlmap['email|username'] = $account;
-                $sqlmap['email_status'] = 1;
-            } else {
-                $sqlmap['username'] = $account;
-            }
-            $member = $this->model->where($sqlmap)->find();
-            if(!$member || md5(md5($password).$member['encrypt']) != $member['password']) {
-                $this->error = lang('username_not_exist','member/language');
-                return false;
-            }
-            if($member['islock'] == 1) {
-                $this->error = lang('user_ban_login','member/language');
-                return false;
-            }
-        }
-		$this->dologin($member['id']);
+
+		$sqlmap = array();
+		if(is_mobile($account)) {
+			$sqlmap['mobile'] = $account;
+			$sqlmap['mobile_status'] = 1;
+		} elseif(is_email($account)) {
+			$sqlmap['email'] = $account;
+			$sqlmap['email_status'] = 1;
+		} else {
+			$sqlmap['username'] = $account;
+		}
+		$member = $this->model->where($sqlmap)->find();
+		if(!$member || md5(md5($password).$member['encrypt']) != $member['password']) {
+			$this->error = lang('username_not_exist','member/language');
+			return false;
+		}
+		if($member['islock'] == 1) {
+			$this->error = lang('user_ban_login','member');
+			return false;
+		}
+		$this->dologin($member['id'], $password);
+        $this->login_inc($member['id']);
         runhook('after_login',$member);
-		return $member['id'];
+		return true;
     }
-    /**
-     * 判断并实现会员自动升级
-     * @param  int $mid 会员主键
-     * @return [bool]
-     */
-    public function dologin($mid) {
-        if((int) $mid < 1){
-            $this->error = lang('_param_error_');
-            return FALSE;
-        }
-        $rand = random(6);
-		$auth = authcode($mid."\t".$rand, 'ENCODE');
+
+    private function dologin($mid, $password) {
+		$auth = authcode($mid."\t".$password, 'ENCODE');
 		cookie('member_auth', $auth, 86400);
 		$login_info = array(
 			'id' => $mid,
 			'login_time' => TIMESTAMP,
 			'login_ip'	=> get_client_ip(),
-            'login_num' => array('exp','login_num+1')
 		);
 		$this->model->update($login_info);
         return true;
     }
-    /**
-     * 退出登陆
-     */
     public function logout() {
-        runhook('after_logout');
 	    return cookie('member_auth', null);
+    }
+
+    private function login_inc($mid){
+        $this->model->where(array('id' => $mid))->setInc('login_num');
+        return true;
     }
 
     /**
@@ -214,7 +214,6 @@ class member_service extends service {
      */
     public function delete_by_id($id) {
         $ids = (array) $id;
-        runhook('member_info_del',$ids);
         foreach($ids AS $id) {
             if($this->model->delete($id)) {
                 /* 删除财务流水 */
@@ -342,16 +341,9 @@ class member_service extends service {
             $this->error = lang('_param_error_');
             return false;
         }
-        $valid = array('name' => $name, 'value' => $value);
-        runhook('before_member'.$method, $valid);
-        if($this->$method($value) === false){
+        if($this->$method($value) === false) {
             return false;
         }
-        if($valid['_callback'] === false) {
-            $this->error = $valid['_message'];
-            return false;
-        }
-        runhook('after_member'.$method, $valid);
         return true;
 	}
 
@@ -361,9 +353,8 @@ class member_service extends service {
             $this->error = lang('username_length_require','member/language');
             return false;
         }
-        $setting = $this->load->service('admin/setting')->get();
-        $censorexp = '/^('.str_replace(array('\\*', "\r\n", ' '), array('.*', '|', ''), preg_quote(($setting['reg_user_censor'] = trim($setting['reg_user_censor'])), '/')).')$/i';
-        if($setting['reg_user_censor'] && @preg_match($censorexp, $value)) {
+        $censorexp = '/^('.str_replace(array('\\*', "\r\n", ' '), array('.*', '|', ''), preg_quote(($this->setting['reg_user_censor'] = trim($this->setting['reg_user_censor'])), '/')).')$/i';
+        if($this->setting['reg_user_censor'] && @preg_match($censorexp, $value)) {
             $this->error = lang('username_disable_keyword','member/language');
             return false;
         }
@@ -377,9 +368,8 @@ class member_service extends service {
 
     /* 校验密码 */
     private function _valid_password($value) {
-        $setting = $this->load->service('admin/setting')->get();
-	    $reg_pass_lenght = max(3, (int) $setting['reg_pass_lenght']);
-	    $reg_pass_complex = $setting['reg_pass_complex'];
+	    $reg_pass_lenght = max(3, (int) $this->setting['reg_pass_lenght']);
+	    $reg_pass_complex = $this->setting['reg_pass_complex'];
 	    if(strlen($value) < $reg_pass_lenght ) {
 		    $this->error = '密码至少为 '. $reg_pass_lenght. ' 位字符';
 		    return false;
@@ -405,10 +395,7 @@ class member_service extends service {
 	    }
 	    return true;
     }
-    /**
-     * 校验邮箱
-     */
-    public function _valid_email($value) {
+    private function _valid_email($value) {
         if(!is_email($value)) {
             $this->error = lang('email_format_error','member/language');
             return false;
@@ -422,10 +409,17 @@ class member_service extends service {
         }
         return true;
     }
-    /**
-     * 校验手机号
-     */
-    public function _valid_mobile($value) {
+
+
+    public function valid_mobile($value) {
+        return $this->_valid_mobile($value);
+    }
+    
+    public function valid_email($value) {
+	    return $this->_valid_email($value);
+    }
+
+    private function _valid_mobile($value) {
 	    if(!is_mobile($value)) {
 		    $this->error = lang('mobile_format_error','member/language');
 		    return false;
@@ -444,7 +438,7 @@ class member_service extends service {
 			$this->error = lang('captcha_empty','member/language');
             return false;
 		}
-		$setting = model('admin/setting','service')->get();
+		$setting = cache('setting', '', 'common');
         if(in_array('phone',$setting['reg_user_fields'])){
             $sqlmap = array();
             $sqlmap['mobile'] = $mobile;
@@ -507,9 +501,9 @@ class member_service extends service {
             $sqlmap['enabled'] = array('like','%mobile_validate%');
             $mobile_validate = model('notify_template')->where($sqlmap)->find();
         }
-        if(!$this->_valid_mobile($params['mobile'])) return false;
         if($mobile_validate){
             extract($params,EXTR_IF_EXISTS);
+            if(!$this->_valid_mobile($params['mobile'])) return false;
             $sqlmap = $data = array();
             $sqlmap['mid'] = $mid;
             $sqlmap['action'] = 'resetmobile';
@@ -521,7 +515,6 @@ class member_service extends service {
                 return false;
             }
         }
-
 		$data['id'] = $mid;
 		$data['mobile'] = $params['mobile'];
 		$r = $this->load->table('member')->update($data,FALSE);
@@ -562,7 +555,7 @@ class member_service extends service {
         }
         return $member;
     }
-
+    
     /**
      * 发送系统信息
      * @param string $type 信息类型
@@ -584,7 +577,7 @@ class member_service extends service {
         $data = array();
         if(is_email($username)){
             $key = base64_encode(authcode($code, 'ENCODE', $member['encrypt'], 3600 * 5)) ;
-            $mobile_validate = (is_ssl() ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].url('member/public/reset_password',array('mid' => $member['id'],'key' => $key));
+            $mobile_validate = 'http://'.$_SERVER['HTTP_HOST'].url('member/public/reset_password',array('mid' => $member['id'],'key' => $key));
             $data['email_validate'] = $mobile_validate;
             $data['email'] = $member['email'];
         }elseif(is_mobile($username)){
@@ -634,7 +627,8 @@ class member_service extends service {
             $this->error = '验证码不能为空或手机号错误';
             return false;
         }
-        $setting = model('admin/setting','service')->get();
+        $setting = cache('setting', '', 'common');
+
         $sqlmap = array();
         $sqlmap['mobile'] = $mobile;
         $sqlmap['dateline'] = array('EGT',time()-1800);
@@ -647,139 +641,5 @@ class member_service extends service {
         $mid = model('vcode')->where($sqlmap)->order('dateline desc')->getField('mid');
         $key = base64_encode(authcode($code, 'ENCODE', $member['encrypt'], 3600 * 5));
         return array('params'=>array('mid'=>$mid,'key'=>$key));
-    }
-
-    public function get_lists($sqlmap,$page,$limit){
-        $members = $this->load->table('member/member')->where($sqlmap)->page($page)->order('id DESC')->limit($limit)->select();
-        $lists = array();
-        foreach ($members AS $member) {
-            $lists[] = array(
-                'id' => $member['id'],
-                'username' => $member['username'],
-                'member_level' => $member['group_name'],
-                'money' => money($member['money']),
-                'login' => date('Y-m-d H:i:s', $member['register_time']),
-                'lock' => $member['islock'] == 1 ? '锁定' : '正常',
-                'exp' => $member['exp'],
-                'frozen_money' => money($member['frozen_money']),
-                'login_time' => date('Y-m-d H:i:s', $member['login_time']),
-                'avatar' => $member['avatar'],
-                'login_num' => $member['login_num'],
-                'email' => $member['email'],
-                'mobile' => $member['mobile'],
-                'has_address' => $member['has_address']
-            );
-        }
-        return $lists;
-    }
-    /**
-     * [update 更新数据]
-     * @param  [type] $params [参数]
-     * @return [type]         [description]
-     */
-    public function update($params ,$bool = true){
-        if(empty($params)){
-            $this->error = lang('_params_error_');
-            return false;
-        }
-        $result = $this->model->update($params ,$bool);
-        if($result === false){
-            $this->error = $this->model->getError();
-            return false;
-        }
-        return $result;
-    }
-    public function vcode_delete($sqlmap){
-        return $this->vcode_table->where($sqlmap)->delete();
-    }
-    /**
-     * 条数
-     * @param  [arra]   sql条件
-     * @return [type]
-     */
-    public function count($sqlmap = array()){
-        $result = $this->model->where($sqlmap)->count();
-        if($result === false){
-            $this->error = $this->model->getError();
-            return false;
-        }
-        return $result;
-    }
-    /**
-     * @param  string  获取的字段
-     * @param  array    sql条件
-     * @return [type]
-     */
-    public function get_vcode_field($field = '', $sqlmap = array()) {
-        if(substr_count($field, ',') < 2){
-            $result = $this->vcode_table->where($sqlmap)->getfield($field);
-        }else{
-            $result = $this->vcode_table->where($sqlmap)->field($field)->select();
-        }
-        if($result===false){
-            $this->error = $this->vcode_table->getError();
-            return false;
-        }
-        return $result;
-    }
-    /**
-     * @param  array    sql条件
-     * @param  integer  读取的字段
-     * @return [type]
-     */
-    public function find($sqlmap = array(), $field = "") {
-        $result = $this->model->where($sqlmap)->field($field)->find();
-        if($result===false){
-            $this->error = $this->model->getError();
-            return false;
-        }
-        return $result;
-    }
-
-    public function user($mid){
-        $_member = $this->model->setid($mid)->address()->group()->output();
-        $_member['avatar'] = getavatar($_member['id']);
-        return $_member;
-    }
-
-    public function avatar($sqmap){
-        $site_url = model('admin/setting','service')->get('site_url');
-        $avatar = $sqmap['avatar'];
-        runhook('oss_avatar',$avatar);
-        $x = (int) $sqmap['x'];
-        $y = (int) $sqmap['y'];
-        $w = (int) $sqmap['w'];
-        $h = (int) $sqmap['h'];
-        $avatar = str_replace($site_url.'/', DOC_ROOT, $avatar);
-        if(!is_file($avatar) || !file_exists($avatar)) {
-            $this->error = lang('head_portrait_data_exception','member/language');
-            return false;
-        }
-
-        $ext = strtolower(pathinfo($avatar, PATHINFO_EXTENSION));
-        $name = basename($avatar, '.'.$ext);
-        $dir = dirname($avatar);
-
-        if(!in_array($ext, array('gif','jpg','jpeg','bmp','png'))){
-            $this->error = lang('illegal_image','member/language');
-            return false;
-        }
-
-        $name = $name.'_crop_200_200.'.$ext;
-        $file = $dir.'/'.$name;
-        $image = new image($avatar);
-        $image->crop($w, $h, $x, $y, 200, 200);
-        $image->save($file);
-
-        if(!file_exists($file)) {
-            $this->error = lang('edit_head_portrait_error','member/language');
-            return false;
-        }
-
-        $avatar = getavatar($sqmap['mid'], false);
-        $avatar = str_replace($site_url.'/', DOC_ROOT, $avatar);
-        dir::create(dirname($avatar));
-        @rename($file, $avatar);
-        return true;
     }
 }

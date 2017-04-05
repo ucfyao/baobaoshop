@@ -12,6 +12,7 @@ class time_control extends init_control {
     public function _initialize() {
         parent::_initialize();
         $this->service = $this->load->service('promotion_time');
+        $this->db = $this->load->table('promotion_time');
         $this->sku_service = $this->load->service('goods/goods_sku');
 	}
 	/**
@@ -20,23 +21,11 @@ class time_control extends init_control {
 	 */
 	public function index(){
 		$limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 20;
-        $info = $this->service->lists();
-        $count = $this->service->count($sqlmap);
+        $info = $this->service->get_lists();
+        $count = $this->db->where($sqlmap)->count();
         $pages = $this->admin_pages($count, $limit);
-		$lists = array(
-			'th' => array(
-				'name' => array('title' => '促销名称','length' => 40,'style' => 'double_click'),
-				'time' => array('title' => '促销时间','length' => 40),
- 				'status' => array('title' => '状态','length' => 10)
-			),
-			'lists' => $info['lists'],
-            'pages' => $pages,
-			);
-		$this->load->librarys('View')->assign('lists',$lists)->display('time_lists');
+        $this->load->librarys('View')->assign('info',$info)->assign('pages',$pages)->display('time_lists');
 	}
-
-
-
 	/**
 	 * [add 添加]
 	 * @return [type] [description]
