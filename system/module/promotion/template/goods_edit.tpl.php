@@ -2,7 +2,7 @@
 <script type="text/javascript" src="./statics/js/template.js" ></script>
 		<div class="fixed-nav layout">
 			<ul>
-				<li class="first">商品促销管理<a id="addHome" title="添加到首页快捷菜单">[+]</a></li>
+				<li class="first">单品促销管理<a id="addHome" title="添加到首页快捷菜单">[+]</a></li>
 				<li class="spacer-gray"></li>
 				<li><a class="current" href="javascript:;"></a></li>
 			</ul>

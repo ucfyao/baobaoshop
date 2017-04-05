@@ -19,17 +19,17 @@ class module_goods_hook
 	}
 
 	public function pre_output(){
-
+		
 	}
 
 	public function pre_response(){}
 
 	public function pre_input(){
-
+		
 	}
 	/* 检测站点运营状态：{站点已关闭&非后台管理员 => 跳转到提示页面} */
 	public function site_isclosed() {
-		$setting = model('admin/setting','service')->get();
+		$setting = model('admin/setting','service')->get_setting();
 		if ($setting['site_isclosed'] != 1) {
 			$this->admin = model('admin/admin','service')->init();
 			if ($this->admin['id'] == 0) {

@@ -11,24 +11,15 @@ class member_group_control extends init_control {
     public function _initialize() {
         parent::_initialize();
         $this->service = $this->load->service('member_group');
+        $this->model = $this->load->table('member_group');
     }
 
     public function index() {
         $sqlmap = array();
-        $groups = $this->service->get_lists($sqlmap,$_GET['page'],$_GET['limit']);
-        $count = $this->service->count($sqlmap);
+        $groups = $this->model->where($sqlmap)->page($_GET['page'])->limit(10)->order("id ASC")->select();
+        $count = $this->model->where($sqlmap)->count();
         $pages = $this->admin_pages($count, 10);
-        $lists = array(
-            'th' => array(
-                'name' => array('title' => '等级名称','length' => 25),
-                'min_points' => array('title' => '最小经验','length' => 20),
-                'max_points' => array('length' => 15,'title' => '最大经验'),
-                'discount' => array('title' => '折扣率','length' => 20),
-            ),
-            'lists' => $groups,
-            'pages' => $pages,
-        );
-        $this->load->librarys('View')->assign('lists',$lists)->assign('pages',$pages)->display('member_group');
+        $this->load->librarys('View')->assign('groups',$groups)->assign('pages',$pages)->display('member_group');
     }
 
     public function add(){

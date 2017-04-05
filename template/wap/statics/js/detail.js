@@ -106,6 +106,7 @@ var hdTouch = {
 		this.opts = opts;
 		this.elem = opts.outer;
 		this.childs = this.elem.getElementsByClassName('hd-scroller');
+		this.maxScrollY = [this.childs[0].clientHeight + opts.footer + opts.pullHeight, this.childs[1].clientHeight];
 		this.startY = 0;
 	    this.switchView = false; //是否切屏
 		this.initScreenH = window.innerHeight;//屏幕初始高度，以解决如UC浏览器有地址栏时屏幕高度不同的问题
@@ -113,15 +114,12 @@ var hdTouch = {
 		this.tips = opts.pull;
 		
 		//设置容器最小高度
-//		var minHeight = window.innerHeight - this.opts.toper - this.opts.footer - this.opts.pullHeight;
-		var minHeight = window.innerHeight - this.opts.toper - this.opts.footer;
+		var minHeight = window.innerHeight - this.opts.toper - this.opts.footer - this.opts.pullHeight;
 		this.childs[0].style.minHeight = minHeight + "px";
 		this.childs[1].style.minHeight = minHeight + "px";
-		var fontSize = $("body").css("font-size").split('p')[0];
-		var l_padding=fontSize*0.04/0.24;
-		this.maxScrollY = [this.childs[0].clientHeight + opts.footer + opts.pullHeight - l_padding.toFixed(), this.childs[1].clientHeight];
-		this.resetHeight(this.maxScrollY[0]);
 		
+		this.resetHeight(this.maxScrollY[0]);
+
 		var that = this;
 
 		//切屏动画中禁止触屏滑动
@@ -181,8 +179,8 @@ var hdTouch = {
 					that.slideTo(0, opts.returnTime);
 				}else if(Math.abs(that.slideY) >= opts.pullHeight){
 					//切换到第二屏
-					that.tips.innerText = opts.tips[4];
 					that.pull = true;
+					that.tips.innerText = opts.tips[4];
 					if(screenHeight > that.initScreenH) screenHeight = that.initScreenH;
 					document.body.scrollTop = 0;
 					that.slideTo(-that.maxScrollY[0] + screenHeight - opts.toper + that.slideY, 0);
@@ -243,8 +241,7 @@ var hdTouch = {
 		o.style.transitionDuration = "500ms";
 	},
 	resetHeight: function(h){
-//		if(h < window.innerHeight) h = window.innerHeight - this.opts.footer;
-		if(h < window.innerHeight) h = window.innerHeight - this.opts.footer + this.opts.pullHeight;
+		if(h < window.innerHeight) h = window.innerHeight - this.opts.footer;
 		this.elem.style.height = h + "px";
 		this.elem.style.transitionDuration = "0ms";
 	}

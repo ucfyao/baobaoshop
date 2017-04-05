@@ -10,7 +10,6 @@ class consult_control extends cp_control {
     public function _initialize() {
         parent::_initialize();
 		$this->user_consult = $this->load->service('goods/goods_consult');
-		$this->goods_consult_service = $this->load->service('goods/goods_consult');
     }
 
     public function index() {
@@ -20,7 +19,7 @@ class consult_control extends cp_control {
 		   showmessage(lang('_param_error_'));
 	   }
 	   $userinfo = $this->user_consult->user_consult($_GET['id'],$_GET['page']);
-	   $count = $this->goods_consult_service->count(array('mid' => array('eq',$_GET['id'])));
+	   $count = $this->load->table('goods_consult')->where(array('mid' => array('eq',$_GET['id'])))->count();
 	   $pages = pages($count,10);
 	   $SEO = seo('我的咨询 - 会员中心');
 	   $this->load->librarys('View')->assign('SEO',$SEO)->assign('userinfo',$userinfo)->assign('pages',$pages)->display('consult');

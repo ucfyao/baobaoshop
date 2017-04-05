@@ -71,8 +71,7 @@ class admin_control extends init_control
 			$_GET['template'] = unit::json_encode($template);
 			$_GET['enabled'] = json_encode($enabled);
 			$_GET['name'] = $notify['name'];
-			$result = $this->temlage_service->update($_GET);
-			if($result === false) showmessage($this->temlage_service->error);
+			$result = $this->load->table('notify_template')->update($_GET);
 			showmessage(lang('upload_message_success','notify/language'),url('index'));
 		}else{
 			$template = $this->temlage_service->fetch_by_code($_GET['code']);
@@ -91,25 +90,6 @@ class admin_control extends init_control
 		}
 	}
 
-    /**
-     *  设置通知模板数据入库【ajax】
-     */
-    public function set_notify()
-    {
-        $data = $_GET['data']['result'][0];
-        $data['enabled'] = json_encode($data['enabled']);
-        model('notify_template')->update($data);
-        showmessage('ok','',1);
-	}
-
-	// 根据模板id获取模板配置信息
-    public function get_notify()
-    {
-        $map['id'] = $_GET['code'];
-        $data = model('notify_template')->where($map)->select();
-        showmessage('ok','',1,$data);
-    }
-
 	/* 开启或关闭 */
 
     public function ajax_enabled() {
@@ -121,15 +101,15 @@ class admin_control extends init_control
             showmessage(lang('_operation_fail_'), '', 0);
         }
     }
-
+	
 	/**
      * 卸载支付方式
      */
     public function uninstall() {
     	if(empty($_GET['formhash']) || $_GET['formhash'] != FORMHASH) showmessage('_token_error_');
-        $code = $_GET['code'];
-        $this->service->delete($code);
-        $this->temlage_service->delete($code);
+        $code = $_GET['code'];        
+        $this->load->table('notify')->where(array('code'=>$code))->delete();
+        $this->load->table('notify_template')->where(array('id'=>$code))->delete();        
         showmessage(lang('uninstall_success','notify/language'), url('index'), 1);
     }
 }

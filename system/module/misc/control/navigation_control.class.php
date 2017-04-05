@@ -14,21 +14,11 @@ class navigation_control extends init_control {
 		$this->service = $this->load->service('navigation');
 	}
 	/**
-	 * [index 导航设置]
+	 * [index 文章列表]
  	 */
 	public function index(){
-		$navigation = $this->service->get_lists(array('order'=>'sort ASC'));
-		$lists = array(
-            'th' => array(
-                'sort' => array('title' => '排序','length' => 10,'style' => 'double_click'),
-                'name' => array('title' => '导航名称','length' => 10,'style' => 'double_click'),
-                'url'=>array('title' => '导航链接','length' => 60,'style' => 'double_click'),
-                'target' => array('title' => '新窗口打开','length' => 10,'style' => 'ico_up_rack'),
-            ),
-            'lists' => $navigation,
-            );
-
-		$this->load->librarys('View')->assign('lists',$lists)->display('navigation_index');
+		$navigation = $this->service->lists(array('order'=>'sort ASC'));
+		$this->load->librarys('View')->assign('navigation',$navigation)->display('navigation_index');
 	}
 	/**
 	 * [add 添加]

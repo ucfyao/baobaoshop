@@ -7,7 +7,7 @@ var goods_detail = (function() {
         
         /* 获取购物车总数 */
 		getCartCount : function () {
-			$.getJSON('index.php?m=order&c=cart&a=get_carts',{format:'json'}, function(ret) {
+			$.getJSON('?m=order&c=cart&a=get_carts',{format:'json'}, function(ret) {
 				cart_nums = ret.sku_counts;
 				$('.nums').text(cart_nums);
 			});
@@ -20,7 +20,7 @@ var goods_detail = (function() {
                 sku_id = goods.sku_id,
                 num = $('.number .num-input').val();
             params[sku_id] = num;
-			$.getJSON("index.php?m=order&c=cart&a=cart_add", {params:params}, function(ret) {
+			$.getJSON("?m=order&c=cart&a=cart_add", {params:params}, function(ret) {
 				if (ret.status == 1) {
                     $.tips({
                     	content : '添加购物车成功',
@@ -53,7 +53,7 @@ var goods_detail = (function() {
 			var params = {};
 			params[skuids] = buy_nums;
 			$.ajax({
-				url: 'index.php?m=order&c=cart&a=cart_add',
+				url: '?m=order&c=cart&a=cart_add',
 				data: {params : params ,buynow : true},
 				type: 'GET',
 				dataType: 'json',
@@ -63,7 +63,7 @@ var goods_detail = (function() {
 						return false;
 					}
 					// 直接跳转到结算页面
-					window.location.href = 'index.php?m=order&c=order&a=settlement&skuids=' + skuids + ',' + buy_nums;
+					window.location.href = '?m=order&c=order&a=settlement&skuids=' + skuids + ',' + buy_nums;
 				}
 			});
 		},

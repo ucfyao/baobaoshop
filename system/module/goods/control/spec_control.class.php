@@ -4,6 +4,7 @@ class spec_control extends init_control {
 	protected $service = '';
 	public function _initialize() {
 		parent::_initialize();
+		$this->db = $this->load->table('spec');
 		$this->service = $this->load->service('spec');
 	}
 	/**
@@ -13,14 +14,9 @@ class spec_control extends init_control {
 		$sqlmap = array();
 		$limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 20;
 		$spec = $this->service->spec_list($_GET['page'],$limit);
-		$count = $this->service->count($sqlmap);
+		$count = $this->db->where($sqlmap)->count();
 		$pages = $this->admin_pages($count, $limit);
-		$lists = array(
-			'th' => array('name' => array('style' => 'double_click','title' => '规格名称','length' => 20),'value' => array('title' => '规格属性','length' => 50),'sort' => array('style' => 'double_click','length' => 10,'title' => '排序'),'status' => array('title' => '启用','style' => 'ico_up_rack','length' => 10)),
-			'lists' => $spec,
-			'pages' => $pages,
-		);
-		$this->load->librarys('View')->assign('lists',$lists)->assign('pages',$pages)->display('spec_list');
+		$this->load->librarys('View')->assign('spec',$spec)->assign('pages',$pages)->display('spec_list');
 	}
 	/**
 	 * [add 添加规格]

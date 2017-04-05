@@ -15,42 +15,6 @@ class delivery_service extends service {
 		$this->table_delivery = $this->load->table('order/order_delivery');
 	}
 
-
-
-	/**
-	 * 获取物流列表
-	 */
-	public function get_list($page,$limit,$sqlmap = array()){
-		$data = $this->table->where($sqlmap)->page($page)->limit($limit)->order('sort ASC')->select();
-		$lists = array();
-		foreach ($data AS $v) {
-			if($v['logo']){
-				$logo = $v['logo'];
-			}else{
-				$logo = './statics/images/deliverys/'.$v['identif'].'.png';
-			}
-			if($v['insure']>0){
-				$insure = "（费率：".$v['insure']. "	%）";
-			}else{
-				$insure ='：未开启';
-			}
-			$lists[] =array(
-				'id'=>$v['id'],
-				'name'=>$v['name'],
-				'sort'=>$v['sort'],
-				'enabled' =>$v['enabled'],
-				'logo'=>$logo,
-				'insure'=>$insure,
-				'tpl'=>$v['tpl'],
-				'systime'=>$v['systime'],
-				'method'=>$v['method'],
-				'pays'=>$v['pays'],
-				);
-			
-		}
-		return $lists;
-	}
-
 	/**
 	 * [添加|编辑]物流
 	 * @param array $params - 物流相关参数 (必传参数)
@@ -97,13 +61,13 @@ class delivery_service extends service {
 			$this->error = lang('logistics_id_empty','order/language');
 			return FALSE;
 		}
-
+		
 		$params['add'] = (array) $params['add'];
 		$params['edit'] = (array) $params['edit'];
 		$params['delete'] = (array) $params['delete'];
-
+		
 		$delivery_district = $this->table_district->where(array('delivery_id' => $delivery_id))->getField('id', TRUE);
-
+		
 		if ($params['add']) {	// 添加记录
 			$add_array = array();
 			foreach ($params['add'] as $k => $v) {
@@ -118,11 +82,11 @@ class delivery_service extends service {
 				$this->table_district->addAll($add_array);
 			}
 		}
-
+		
 		if ($params['edit']) {	// 编辑记录
 			$edit_array = array();
 			foreach ($params['edit'] as $k => $v) {
-				if(in_array($k, (array) $params['delete'])) continue;
+				if(in_array($k, (array) $params['delete'])) continue;				
 				$edit_array = array(
 					'id'          => $k,
 					'delivery_id' => $delivery_id,
@@ -131,13 +95,13 @@ class delivery_service extends service {
 					'sort'        => 100
 				);
 				$this->table_district->update($edit_array);
-			}
+			}			
 		}
-
+		
 		// 通过差集计算出需要删除的
 		$edit_ids = array_keys($params['edit']);
 		$del_array = array_diff($delivery_district, $edit_ids);
-
+		
 		if($params['delete']) $del_array = array_merge($del_array, $params['delete']);
 		if($del_array) {
 			$this->del_district($del_array);
@@ -321,92 +285,6 @@ class delivery_service extends service {
 				$v['add_time'] = date('Y-m-d H:i:s' ,$v['add_time']);
 				$result['logs'][$k] = $v;
 			}
-		}
-		return $result;
-	}
-
-	public function get_lists($sqlmap,$page,$limit){
-		$o_deliverys = $this->table_delivery->page($page)->order('id DESC')->limit($limit)->where($sqlmap)->select();
-		$lists = array();
-		foreach ($o_deliverys as $k => $v) {
-			$o_deliverys[$k]['_sub_order'] = $this->load->table('order/order_sub')->where(array('sub_sn' => $v['sub_sn']))->find();
-			$lists[] = array(
-				'id' => $v['id'],
-				'order_sn' => $o_deliverys[$k]['_sub_order']['order_sn'],
-				'delivery_name' => $v['delivery_name'],
-				'delivery_sn' => $v['delivery_sn'],
-				'delivery_time' => $v['delivery_time'],
-				'receive_time' => $v['receive_time'] == 0 ? '未收货' : '已收货',
-				'print_time' => $v['print_time'] == 0 ? '未打印' : '已打印'
-			);
-		}
-		return $lists;
-	}
-	/**
-	 * @param  array 	sql条件
-	 * @param  integer 	读取的字段
-	 * @return [type]
-	 */
-	public function find($sqlmap = array(), $field = "") {
-		$result = $this->table->where($sqlmap)->field($field)->find();
-		if($result===false){
-			$this->error = $this->table->getError();
-			return false;
-		}
-		return $result;
-	}
-	/**
-	 * @param  array 	sql条件
-	 * @param  integer 	读取的字段
-	 * @return [type]
-	 */
-	public function order_delivery_find($sqlmap = array(), $field = "") {
-		$result = $this->table_delivery->where($sqlmap)->field($field)->find();
-		if($result===false){
-			$this->error = $this->table_delivery->getError();
-			return false;
-		}
-		return $result;
-	}
-	public function table_list($sqlmap){
-		return $this->table->lists($sqlmap);
-	}
-	/**
-     * 条数
-     * @param  [arra]   sql条件
-     * @return [type]
-     */
-    public function count($sqlmap = array()){
-        $result = $this->table->where($sqlmap)->count();
-        if($result === false){
-            $this->error = $this->table->getError();
-            return false;
-        }
-        return $result;
-    }
-    /*修改*/
-	public function setField($data, $sqlmap = array()){
-		if(empty($data)){
-			$this->error = lang('_param_error_');
-			return false;
-		}
-		$result = $this->table->where($sqlmap)->save($data);
-		if($result === false){
-			$this->error = $this->table->getError();
-			return false;
-		}
-		return $result;
-	}
-	/**
-	 * @param  string  获取的字段
-	 * @param  array 	sql条件
-	 * @return [type]
-	 */
-	public function getField($field = '', $sqlmap = array()) {
-		$result = $this->table->where($sqlmap)->getfield($field);
-		if($result === false){
-			$this->error = $this->table->getError();
-			return false;
 		}
 		return $result;
 	}

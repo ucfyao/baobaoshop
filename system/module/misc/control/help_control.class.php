@@ -12,7 +12,6 @@ class help_control extends init_control {
 	public function _initialize() {
 		parent::_initialize();
 		$this->service = $this->load->service('help');
-		$this->attachment_service = $this->load->service('attachment/attachment');
 	}
 	/**
 	 * [index 帮助列表]
@@ -31,7 +30,7 @@ class help_control extends init_control {
 			if(!$result){
 				showmessage($this->service->error);
 			}else{
-				$this->attachment_service->attachment($_GET['content'],$info['content']);
+				$this->load->service('attachment/attachment', 'service')->attachment($_GET['content'],$info['content']);
 				showmessage(lang('_operation_success_'),url('misc/help/index'),'1');
 			}
 		}else{

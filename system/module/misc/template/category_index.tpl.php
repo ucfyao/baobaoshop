@@ -74,7 +74,7 @@
 				<?php }?>
 				<div class="paging padding-tb body-bg clearfix">
 					<?php echo $pages;?>
-					<div class="clear"></div>
+					<div class="clear"></div>	
 				</div>
 			</div>
 		</div>
@@ -94,7 +94,7 @@
 						$(this).attr("title","点击关闭");
 					}
 				});
-
+				
 			})
 			//ajax修改分类信息
 			var ajax_edit = "<?php echo url('ajax_edit')?>";
@@ -146,11 +146,11 @@
 						level = 4;
 						className = "tree-three";
 					}
-
+					
 					/*
 					 * 点击加号触发AJAX事件，加载下级分类
 					 * 通过传递当前点击的地区的ID通过ajax获取它的下一级地区然后循环输出
-					 *
+					 * 
 					 * */
 					$.ajax({
 						type: "GET",

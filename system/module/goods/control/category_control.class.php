@@ -4,19 +4,15 @@ class category_control extends init_control {
 	protected $service = '';
 	public function _initialize() {
 		parent::_initialize();
-		$this->service = $this->load->service('goods/goods_category');
+		$this->service = $this->load->service('goods_category');
+		$this->type_service =$this->load->service('type');
 	}
 	/**
 	 * [lists 分类列表]
 	 */
 	public function index(){
 		$result = $this->service->category_lists();
-		$lists = array(
-			'th' => array('sort' => array('title' => '排序','length' => 10,'style' => 'level_sort'),'name' => array('title' => '名称','length' => 55,'style' => 'level_name'),'type_name' => array('length' => 15,'title' => '关联属性'),'status' => array('title' => '启用','style' => 'ico_up_rack','length' => 10)),
-			'lists' => $result,
-			'pages' => $pages,
-		);
-		$this->load->librarys('View')->assign('lists',$lists)->display('category_list');
+		$this->load->librarys('View')->assign('result',$result)->display('category_list');
 	}
 	/**
 	 * [ajax_category ajax获取分类]
@@ -58,10 +54,8 @@ class category_control extends init_control {
 			}
 		}else{
 			if($_GET['pid']){
-				$categorys = $this->service->get_parent($_GET['pid']);
-				array_unshift($categorys,$_GET['pid']);
-				$parent_name = $this->service->create_cat_format($categorys,TRUE);
-				$cat_format = $this->service->create_format_id($categorys,TRUE);
+				$parent_name = $this->service->create_cat_format($_GET['pid'],TRUE);
+				$cat_format = $this->service->create_parent_format_id($_GET['pid']);
 				$this->load->librarys('View')->assign('parent_name',$parent_name)->assign('cat_format',$cat_format);
 			}
 			$this->load->librarys('View')->display('goods_category_edit');
@@ -112,7 +106,7 @@ class category_control extends init_control {
 	 * @return [type] [description]
 	 */
 	public function ajax_name(){
-		$result = $this->service->change_info($_GET);
+		$result = $this->service->change_name($_GET);
 		if(!$result){
 			showmessage($this->service->error,'',0,'','json');
 		}else{
@@ -123,7 +117,7 @@ class category_control extends init_control {
 	 * [ajax_sort 改变排序]
 	 */
 	public function ajax_sort(){
-		$result = $this->service->change_info($_GET);
+		$result = $this->service->change_sort($_GET);
 		if(!$result){
 			showmessage($this->service->error);
 		}else{
@@ -135,8 +129,7 @@ class category_control extends init_control {
 	 * @return [type] [description]
 	 */
 	public function category_popup(){
-		$cache = $this->service->get();
-		$category = $this->service->get_category_tree($cache);
+		$category = $this->service->get_category_tree();
 		$this->load->librarys('View')->assign('category',$category)->display('add_category_popup');
 	}
 	/**
@@ -144,9 +137,7 @@ class category_control extends init_control {
 	 * @return [type] [description]
 	 */
 	public function category_main(){
-		$cache = $this->service->get();
-		$cache[0] = array('id' => 0,'name' => '顶级分类','level' => 0,'parent_id' => -1);
-		$category = $this->service->get_category_tree($cache);
+		$category = $this->service->get_parent_tree();
 		$this->load->librarys('View')->assign('category',$category)->display('add_category');
 	}
 	/**
@@ -154,7 +145,7 @@ class category_control extends init_control {
 	 * @return [type] [description]
 	 */
 	public function category_relation(){
-		$type = $this->load->service('goods/type')->get_all_type();
+		$type = $this->type_service->get_all_type();
 		$this->load->librarys('View')->assign('type',$type)->display('category_relation_type');
 	}
 }

@@ -12,12 +12,12 @@ class consult_control extends init_control {
 		if($_GET['sku_id'] < 1){
 			showmessage(lang('_param_error_'));
 		}
-		$goods_detail = $this->load->service('goods/goods_sku')->fetch_by_id($_GET['sku_id'],'price');
-		$cart_jump = $this->load->service('admin/setting')->get('cart_jump');
+		$goods_detail = $this->load->table('goods_sku')->detail($_GET['sku_id'],true,'goods')->create_spec()->output();
+		$cart_jump = $this->load->service('admin/setting')->get_setting('cart_jump');
 		if($goods_detail === FALSE){
 			showmessage(lang('goods/goods_goods_not_exist'));
 		}
-		if(checksubmit('dosubmit')){
+		if(checksubmit('dosubmit')){	
 			if($this->member['id']){
 				$_GET['mid'] = $this->member['id'];
 				$_GET['username'] = $this->member['username'];
@@ -48,7 +48,7 @@ class consult_control extends init_control {
 			showmessage(lang('_operation_success_'),'',1,'','json');
 		}
 	}
-
+	
 	/*
 	 *	[统计咨询总数]
 	 */

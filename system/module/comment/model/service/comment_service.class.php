@@ -13,7 +13,6 @@ class comment_service extends service
 	public function _initialize () {
 		$this->table = $this->load->table('comment/comment');
 		$this->goods = $this->load->service('order/order_sku');
-		$this->sku_service = $this->load->service('goods/goods_sku');
 	}
 
 	public function lists($sqlmap = array(), $limit = 20, $order = 'id DESC', $page = 1) {
@@ -22,8 +21,7 @@ class comment_service extends service
 		$lists = &$DB->page((int)$page)->limit($limit)->order($order)->select();
 		$count = $this->table->where($this->sqlmap)->count();
         foreach ($lists as $key => $value) {
-        	$sku = $this->sku_service->fetch_by_id($value['sku_id'],'spu');
-            $value['_username'] = $value['username'];
+            $sku = $this->load->service('goods/goods_sku')->goods_detail($value['sku_id']);
             $value['username'] = cut_str($value['username'], 1, 0).'**'.cut_str($value['username'], 1, -1);
             $value['imgs'] = ($value['imgs']) ? json_decode($value['imgs']) : array();
         	$value['_sku'] = $sku;
@@ -33,37 +31,6 @@ class comment_service extends service
         }
         $result = array('count' => $count, 'lists' => $lists);
         return $result;
-	}
-
-	public function getlists($sqlmap = array(), $option = array()) {
-		return $this->lists($sqlmap, $option['limit']);
-	}
-
-	public function get_lists($sqlmap = array(), $limit = 20, $order = 'id DESC', $page = 1){
-		$result = $this->lists($sqlmap,$limit,$order,$page);
-		$lists = array();
-		$moods = array(
-					'positive' => '好评',
-					'neutral' => '中评',
-					'negative' => '差评'
-				);
-		foreach ($result['lists'] AS $value) {
-			$lists[] = array(
-				'id' => $value['id'],
-				'sku_name' => $value['_sku']['name'],
-				'mood' => $moods[$value['mood']],
-				'username' => $value['_username'],
-				'dateline' => $value['datetime'],
-				'is_shield' => $value['is_shield'],
-				'sku_id' => $value['_sku']['sku_id'],
-				'thumb' => $value['_sku']['thumb'],
-				'spec' => $value['_sku']['spec'],
-				'content' => $value['content'],
-				'imgs' => $value['imgs'],
-				'reply_content' => $value['reply_content']
-			);
-		}
-		return array('lists' => $lists,'count'=>$result['count']);
 	}
 
 	public function get($id) {
@@ -82,7 +49,7 @@ class comment_service extends service
 			return false;
 		}
 		if($r['iscomment'] == 1) {
-			$this->error = lang('repeat_publish','comment/language');
+			$this->error = lang('repeat_publish','attachment/language');
 			return false;
 		}
 		$params['spu_id'] = $this->load->table('goods/goods_sku')->where(array('sku_id'=>$r['sku_id']))->getField('spu_id');
@@ -191,21 +158,5 @@ class comment_service extends service
 	public function add_comment($params){
 		$data = $this->table->create($params);
 		return $this->table->add($data);
-	}
-
-	/**
-	 * @param  array 	sql条件
-	 * @param  integer 	条数
-	 * @param  integer 	页数
-	 * @param  string 	排序
-	 * @return [type]
-	 */
-	public function fetch($sqlmap = array(), $limit = 10, $page = 1, $order = "") {
-		$result = $this->table->where($sqlmap)->limit($limit)->page($page)->order($order)->select();
-		if($result===false){
-			$this->error = lang('_param_error_');
-			return false;
-		}
-		return $result;
 	}
 }

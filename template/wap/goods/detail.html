@@ -16,7 +16,7 @@
 	<span class="mui-col-xs-4 active" data-scroll="0"><a href="javascript:;" data-id="detail">商品详情</a></span>
 	<span class="mui-col-xs-4" data-scroll="0"><a href="javascript:;" data-id="comment">商品评价</a></span>
 	<span class="mui-col-xs-4" data-scroll="0"><a href="javascript:;" data-id="consult">商品咨询</a></span>
-</div>
+</div>		
 <div class="hd-detail-content">
 	<div id="hd_detail">
 		<div class="hd-scroller">
@@ -34,7 +34,7 @@
 					{/loop}
 			    </div>
 			</div>
-
+				
 			<div class="basic-info list-col-10 margin-none mui-clearfix">
 				<p class="pro-title text-black" data-skuid="{$goods[sku_id]}">{$goods[sku_name]}{hook/detail_price_right}</p>
 				<div class="pro-act act-link lh-18" style="color:<?php echo $goods['style'] ? $goods['style'] : '#000'?>">
@@ -46,10 +46,10 @@
                 </div> -->
 				<div class="pro-price hd-h3">
 					<span class="price-org">￥<em id="prom_price">{$goods['prom_price']}</em></span>
-					{if $goods[prom_type] == 'time' && $goods[prom_id] > 0 && $goods['prom_time'] > 0}
+					{if $goods[prom_type] == 'time' && $goods[prom_id] > 0}
 					<span class="price-promotion">限时促销</span>
 					<p class="price-origin">￥{$goods['shop_price']}</p>
-					<p class="count-down timer" data-time="{$goods['prom_time']}">还剩<em class="text-org t-d">00</em>天<em class="text-org t-h">00</em>小时<em class="text-org t-m">00</em>分<em class="text-org t-s">00</em>秒结束</p>
+					<p class="count-down" data-time="{$goods_time['end_time']}">还剩<em class="text-org t-d">00</em>天<em class="text-org t-h">00</em>小时<em class="text-org t-m">00</em>分<em class="text-org t-s">00</em>秒结束</p>
 					{/if}
 				</div>
 			</div>
@@ -100,7 +100,11 @@
 		</div>
 		<div class="hd-scroller" style="display: none;">
 			<div id="detail" class="mui-control-content goods-detail mui-active">
-				<?php echo $str = str_replace(' src', ' src="template/wap/statics/images/loading.gif" class="de-lazy" data-original', $goods['content']);?>
+				<script>
+					var $detail = '{$goods[content]}';
+					$detail = $detail.replace(/ src/g, ' src="{SKIN_PATH}statics/images/loading.gif" class="de-lazy" data-original');
+					document.getElementById("detail").innerHTML = $detail;
+				</script>
 			</div>
 			<div id="comment" class="mui-control-content goods-evaluate">
 				<div class="top mui-clearfix">
@@ -147,7 +151,7 @@
 		<dl class="goods-spec-item">
 			<dt>{$specs['name']}：</dt>
 			<dd>
-				{loop $specs['value'] $k $spec}
+				{loop explode(',',$specs['value']) $k $spec}
 				<label data-id="{$specs['id']}" data-name="{$specs['name']}" data-value="{$spec}">{$spec}</label>
 				{/loop}
 			</dd>
@@ -200,32 +204,20 @@
 	var sku_json = "<?php echo $goods['spec_str']?>";
 	var sku_id = "<?php echo $goods['sku_id']?>";
 
-	//倒计时插件，使用时间戳
-	$(".timer").each(function(){
-		var $this = $(this);
-		window.setInterval(function(){
-			$this.each(function(){
-				var timer = $(this).data("time");//总时间
-				if(timer<=0) return false;
-				timer--;
-				var d = parseInt(timer/3600/24);
-			    var h = parseInt(timer/3600%24);
-			    var m = parseInt(timer%3600/60);
-			    var s = timer%60;
-			    $(this).children(".t-d").text((d>9?d:"0"+d));
-			    $(this).children(".t-h").text((h>9?h:"0"+h));
-			    $(this).children(".t-m").text((m>9?m:"0"+m));
-			    $(this).children(".t-s").text((s>9?s:"0"+s));
-				$(this).data("time",timer)
-			});
-		},1000);
-	});
+	//倒计时
+	mui(".count-down").each(function(){
+	   var $time=$(this).data('time');
+	   var $_this = $(this);
+	   countDown($_this,$time);
+	})
+
 	//加入收藏
-	mui("body").on('tap','.collect-btn',function(){
+	mui(".foot-bar").on('tap','.collect-btn',function(){
 		var $_this = $(this);
 		var _this = $(this).find('.mui-icon');
+		var url = "<?php echo url('member/favorite/delete')?>";
 		if($_this.hasClass('cancel_favorite')){
-			$.post("<?php echo url('member/favorite/delete')?>",{sku_id:sku_id},function(ret){
+			$.post(url,{sku_id:sku_id},function(ret){
 				if(ret.status == 1){
 					$('.collect-btn img').attr('src','{SKIN_PATH}statics/images/ico_35.png');
 					$('.collect_text').text('收藏');
@@ -235,7 +227,7 @@
 				}
 			},'json');
 		}else{
-			var url = "<?php echo url('member/favorite/add')?>";
+			var url = "?m=member&c=favorite&a=add";
 			var sku_price = _this.attr('data-price');
 			var url_forward =  _this.data('url');
 			$.post(url,{sku_id:sku_id,sku_price:sku_price,url_forward:url_forward},function(data){
@@ -256,7 +248,7 @@
 			},'json');
 		}
 	});
-
+	
 	//评价商品
 	mui("#comment").on('tap','.comment_btn',function(){
 		var url_forward = $(this).data('url');
@@ -274,27 +266,9 @@
 			}
 		},'json')
 	})
-	$(window).load(function(){
-		hdTouch.init({
-			outer: document.getElementById("hd_detail"),
-			pull: document.getElementById("pull-text"),
-			toper: document.getElementsByClassName("header")[0].clientHeight,
-			footer: document.getElementsByClassName("foot-bar")[0].clientHeight,
-			pullHeight: document.getElementsByClassName("detail-tips")[0].clientHeight
-		})
-	})
+	
 	$(function(){
-		$.get("<?php echo url('ajax_get_favorite')?>",{sku_id:'<?php echo $_GET["sku_id"]?>'},function(ret){
-			if(ret.status == 1){
-				$('.collect-btn img').attr('src','{SKIN_PATH}statics/images/ico_35a.png');
-				$('.collect_text').text('取消收藏');
-				$('.collect-btn').addClass('cancel_favorite');
-			}else{
-				$('.collect-btn img').attr('src','{SKIN_PATH}statics/images/ico_35.png');
-				$('.collect_text').text('收藏');
-				$('.collect-btn').removeClass('cancel_favorite');
-			}
-		},'json');
+		
 		//商品详情页面加载完后加载图片
 		$(".de-lazy").each(function(){
 			var $this = $(this);
@@ -318,22 +292,30 @@
 				}
 			});*/
 		});
-
+		
+		hdTouch.init({
+			outer: document.getElementById("hd_detail"),
+			pull: document.getElementById("pull-text"),
+			toper: document.getElementsByClassName("header")[0].clientHeight,
+			footer: document.getElementsByClassName("foot-bar")[0].clientHeight,
+			pullHeight: document.getElementsByClassName("detail-tips")[0].clientHeight
+		})
+		
 		var page = {
 			comment : 1,
 			consult : 1
 		};
-
+		
 		var cart_nums = 0;
-
+		
 		goods_detail.init();
-
+		
 		$('.mui-control-item').on('tap','a',function(){
 			var obj = $(this).data('id');
 			$(".goods-intro .mui-control-content").removeClass("mui-active");
 			$("#"+obj).addClass("mui-active");
 		})
-
+		
 		mui('.option').on('tap','.mui-btn',function(){
 			if(!$(this).hasClass('disabled')){
 				var url = window.location.href;
@@ -346,7 +328,7 @@
 				}
 			}
 		});
-
+		
 		mui("#detail-nav").on('tap','span',function(e){
 			var $cid = $(this).children("a").data("id");
 			$(this).addClass("active").siblings().removeClass("active");
@@ -354,7 +336,7 @@
 			$('#'+$cid).addClass("mui-active");
 			hdTouch.resetHeight($('#'+$cid).height() + hdTouch.opts.footer + hdTouch.opts.pullHeight);
 		});
-
+		
 		mui(".mui-control-content").on('tap','.more',function(){
 			var mark = $(this).data("mark");
 			loadLists(mark);
@@ -455,7 +437,7 @@
 		loadLists("consult");
 
 	});
-
+	
 	$(".number").numberSet();
 
 	mui("#comment").on('tap','.comment-imgs span',function(){
@@ -473,5 +455,27 @@
 		$(".comment-slider").addClass("hide");
 	});
 
-
+	function countDown(that,time){
+		var day_elem = that.find('.t-d');
+	    var hour_elem = that.find('.t-h');
+	    var minute_elem = that.find('.t-m');
+	    var second_elem = that.find('.t-s');
+	    var end_time = new Date(time).getTime(),//月份是实际月份-1
+	    sys_second = (end_time-new Date().getTime())/1000;
+	    var timer = setInterval(function(){
+		    if (sys_second > 1) {
+			    sys_second -= 1;
+			    var day = Math.floor((sys_second / 3600) / 24);
+			    var hour = Math.floor((sys_second / 3600) % 24);
+			    var minute = Math.floor((sys_second / 60) % 60);
+			    var second = Math.floor(sys_second % 60);
+			    day_elem && $(day_elem).text(day<10?"0"+day:day);//计算天
+			    $(hour_elem).text(hour<10?"0"+hour:hour);//计算小时
+			    $(minute_elem).text(minute<10?"0"+minute:minute);//计算分钟
+			    $(second_elem).text(second<10?"0"+second:second);//计算
+		    } else {
+		    	clearInterval(timer);
+		    }
+	    }, 1000);
+	}
 </script>

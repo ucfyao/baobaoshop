@@ -20,10 +20,8 @@ class app_service extends service {
     	$app_path = $type == 'plugin' ? PLUGIN_PATH : MODULES_PATH;
 		$app_folder = dir($app_path);
 		$addons = $this->app_db->where(array('identifier' => array('like',$type.'.%')))->select();
-		$build_in_array = include MODULES_PATH.'admin/config/'.$type.'.php';
 		foreach($addons as $app) {
 			$app['identifier'] = str_replace($type.'.','',$app['identifier']);
-			if(in_array($app['identifier'], $build_in_array)) $app['is_system'] = 1;
 			$apps[$app['identifier']] = $app;
 		}
 		while($entry = $app_folder->read()) {
@@ -41,13 +39,12 @@ class app_service extends service {
 						'description' => $xmldata['description'],
 						'author'      => $xmldata['author'],
 						'copyright'   => $xmldata['copyright'],
-						'version' 	  => $xmldata['version'],
-						'server_version'=> $xmldata['server_version'],
+						'version' => $xmldata['version'],
 					);
 				} else {
 					$app = $apps[$entry];
 				}
-				$app['new_ver'] = $xmldata['version'];
+				$app['new_ver'] = $xmldata['version'];				
 				$apps[$entry] = $app;
 			}
 		}
@@ -77,7 +74,7 @@ class app_service extends service {
     	$shop = $this->load->librarys('market');
     	$shop->check_sign();
     	$data = $params['data'];
-    	$plugins = $this->ajax_upgrade();
+    	$plugins = cache('plugin_lists');
     	if(empty($data) || !is_array($data)){
     		$this->code = -20006;
     		$this->error = '参数错误';
@@ -87,7 +84,7 @@ class app_service extends service {
     		$plugins[$plugin['branch_id']]['start_time'] = $plugin['start_time'];
     		$plugins[$plugin['branch_id']]['end_time'] = $plugin['end_time'];
     	}
-    	cache('app_lists',$plugins,'common',array('expire' => 86400));
+    	cache('plugin_lists',$plugins);
     	return true;
     }
     /**
@@ -95,7 +92,6 @@ class app_service extends service {
      * @return [type] [description]
      */
     public function upgrade($params){
-    	if(!is_dir(CACHE_PATH.'plugin')) mkdir(CACHE_PATH.'plugin');
     	$shop = $this->load->librarys('market');
     	$shop->check_sign();
 		$data = $params['data'];
@@ -119,7 +115,7 @@ class app_service extends service {
 		    	if(!$expfile){
 					continue;
 				}
-
+				
 				$result = $this->_upgrade($identifier,$apps['type'],$apps['branch_id']);
 				if(!$result){
 					continue;
@@ -160,7 +156,7 @@ class app_service extends service {
 			if(!$expfile){
 				continue;
 			}
-
+			
 			$result = $this->_install($identifier,$plugin['type'],$plugin['branch_id']);
 			if(!$result){
 				continue;
@@ -284,7 +280,7 @@ class app_service extends service {
 				$this->code = -20008;
 				$this->error = lang('admin/upload_file_no_exist');
 				return false;
-			}
+			} 
 			@unlink($file);
 			return true;
 		}else{
@@ -341,7 +337,6 @@ class app_service extends service {
 			'menu' => serialize($xmldata['menu']),
 			'version' => $xmldata['version'],
 			'author' => $xmldata['author'],
-			'server_version' => $xmldata['server_version'] ? $xmldata['server_version'] : '',
 			'sort' => $xmldata['sort'] ? $xmldata['sort'] : 100,
 		);
 		if($branch_id) $plugin_data['branch_id'] = $branch_id;
@@ -366,10 +361,10 @@ class app_service extends service {
 			$this->code = -20011;
 			$this->error = $this->app_db->getError();
 			return false;
-		} else {
+		} else {			
 			/* 创建插件字段 */
 			$vars = array();
-			foreach ($xmldata['var'] as $v) {
+			foreach ($xmldata['setting'] as $v) {
 				$v['appid'] = $appid;
 				$vars[] = $v;
 			}
@@ -402,8 +397,7 @@ class app_service extends service {
 			@unlink($app_folder.'/'.$xmldata['upgradesql']);
 			@unlink($app_folder.'/config.xml');
 			/* 更新缓存 */
-			$this->synchro_branch();
-			$this->clear_cache();
+			$this->build_cache();
 			return true;
 		}
 	}
@@ -469,10 +463,9 @@ class app_service extends service {
 			'copyright' => $xmldata['copyright'],
 			'version' => $xmldata['version'],
 			'author' => $xmldata['author'],
-			'server_version' => $xmldata['server_version'] ? $xmldata['server_version'] : '',
 			'sort' => $xmldata['sort'] ? $xmldata['sort'] : 100,
 		);
-
+		
 		if($xmldata['upgradesql'] && file_exists($app_folder.'/'.$xmldata['upgradesql'])) {
 			$sql = file_get_contents($app_folder.'/'.$xmldata['upgradesql']);
 			if ($sql) {
@@ -493,10 +486,10 @@ class app_service extends service {
 			$this->code = -20011;
 			$this->error = $this->app_db->getError();
 			return false;
-		} else {
+		} else {			
 			/* 创建插件字段 */
 			$vars = array();
-			foreach ($xmldata['var'] as $v) {
+			foreach ($xmldata['setting'] as $v) {
 				$v['appid'] = $appid;
 				$vars[] = $v;
 			}
@@ -528,8 +521,7 @@ class app_service extends service {
 			@unlink($app_folder.'/'.$xmldata['installsql']);
 			@unlink($app_folder.'/config.xml');
 			/* 更新缓存 */
-			$this->synchro_branch();
-			$this->clear_cache();
+			$this->build_cache();
 			return true;
 		}
 	}
@@ -587,8 +579,7 @@ class app_service extends service {
 		if($app['branch_id'] > 0){
 			$this->uninstall_branch_cache($app['branch_id']);
 		}
-		$this->synchro_branch();
-		$this->clear_cache();
+		$this->build_cache();
 		return true;
 	}
 
@@ -610,22 +601,21 @@ class app_service extends service {
 			$msg = '禁用';
 		}else {
 			$available = 1;
-			$msg = '启用';
+			$msg = '启用';			
 		}
 		$result = $this->app_db->where($sqlmap)->setField('available', $available);
 		if(!$result) {
 			$this->error = '插件'.$msg.'失败';
 			return false;
 		}
-		$this->synchro_branch();
-		$this->clear_cache();
+		$this->build_cache();
 		return true;
 	}
 	/**
-	 * [synchro_branch 同步应用状态]
+	 * [build_cache 生成缓存]
 	 * @return [type] [description]
 	 */
-	public function synchro_branch() {
+	public function build_cache() {
 		$shop = $this->load->librarys('market');
 		$lists = $shop->get_branch_auth();
 		$branch = $end = array();
@@ -640,17 +630,31 @@ class app_service extends service {
 		$sqlmap['identifier'] = array('NOT IN',$end);
 		$sqlmap['branch_id'] = array('NEQ',0);
 		$this->app_db->where($sqlmap)->setField('available',0);
+		
+		$sqlmap = array();
+		$sqlmap['available'] = 1;
+		$app_lists = $this->app_db->where($sqlmap)->select();
+		
+		if($app_lists) {
+			$apps = array();
+			foreach ($app_lists as $app_list) {
+				$plugins[$app_list['identifier']] = $app_list;
+				$pluginvars[$app_list['identifier']] = $this->get_pluginvar($app_list['identifier']);
+			}
+		}
+		cache('plugins', $plugins);
+		cache('appvars', $pluginvars);
 	}
 
 	/**
 	 * [get_pluginvar 获取指定插件设置]
-	 * @param  [type] $appid [description]
+	 * @param  [type] $pluginid [description]
 	 * @return [type]           [description]
 	 */
-	private function get_pluginvar($appid) {
+	private function get_pluginvar($identifier) {
 		$sqlmap = array();
-		$sqlmap['appid'] = $appid;
-		return $this->load->table('admin/appvar')->where($sqlmap)->find();
+		$sqlmap['appid'] = $identifier;
+		return $this->load->table('appvar')->where($sqlmap)->getfield('type, value', TRUE);
 	}
 	/**
 	 * [get_xml_config 获取指定插件配置文件]
@@ -691,12 +695,11 @@ class app_service extends service {
 	    	foreach ($info['result'] AS $key => $result) {
 	    		$versions = array();
 		    	$plugins[$result['id']] = $result;
-		    	$version = $this->app_db->where(array('branch_id' => $result['id']))->getfield('version');
 	    		if($result['_history']){
 			    	foreach ($result['_history'] AS $_history) {
 			    		$versions[] = $_history['version'];
 			    	}
-			    	if($version < max($versions)){
+			    	if($result['now_version'] < max($versions)){
 	    				$plugins[$result['id']]['new_version'] = max($versions);
 			    	}
 	    		}
@@ -750,7 +753,7 @@ class app_service extends service {
 			cache('branch_lists',$branches);
 		}
 		return TRUE;
-	}
+	} 
 	/**
 	 * [install_branch_cache description]
 	 * @param  [type] $branch_id [description]
@@ -771,190 +774,4 @@ class app_service extends service {
 	public function get_apps() {
 		return $this->app_db->where(array('available' => 1))->getField('identifier',TRUE);
 	}
-	/**
-	 * [develop description]
-	 * @return [type] [description]
-	 */
-	public function develop($params){
-		$this->fieldtype = array(
-			'text'      => '字串(text)',
-			'textarea'  => '文本(textarea)',
-			'enabled'     => '开启/关闭(enabled)',
-			'radio'     => '单选(radio)',
-			'checkbox'  => '复选(checkbox)',
-			'select'    => '下拉框(select)',
-			'calendar'  => '日期/时间(calendar)',
-			'color'  => '颜色(color)',
-			'editor'  => '编辑器(editor)',
-			'file'  => '文件选择(file)',
-		);
-
-		$modules = array();
-		foreach ($params['module'] as $key => $module) {
-			$module['displayorder'] = (int) $module['displayorder'];
-			if(!$module['name']) continue;
-			$modules[] = $module;
-		}
-		$modules = multi_array_sort($modules, 'displayorder', SORT_ASC);
-		$identifier = $params['setting']['identifier'];
-		$params['setting']['menu'] = serialize($modules);
-		if($params['id'] > 0){
-			$params['setting']['id'] = $params['id'];
-		}
-		$params['setting']['identifier'] = $identifier ? 'plugin.'.$identifier : '';
-		/* 基本配置 */
-		$result = $this->app_db->update($params['setting']);
-		if($result === FALSE){
-			$this->error = $this->app_db->getError();
-			return FALSE;
-		}
-		if((int)$params['id'] == 0) {
-			$appid = $result;
-			dir::create(PLUGIN_PATH.$identifier);
-		}
-		$appid = ($params['id'] > 0) ? $params['id'] : $result;
-		/* 变量配置 */
-		if ($params['vars']) {
-			$del_ids = $params['vars']['del_pluginvar'];
-			if($del_ids){
-				$this->appvar_db->where(array('id'=>array('IN',$del_ids)))->delete();
-			}
-			if(!empty($params['vars']['new_pluginvar'])){
-				foreach ($params['vars']['new_pluginvar'] AS $new_pluginvar) {
-					if(isset($this->fieldtype[$new_pluginvar['type']]) && $this->appvar_db->where(array('appid' => $appid, 'variable' => $new_pluginvar['variable']))->count() == 0) {
-						$new_pluginvar['appid'] = $appid;
-						$new_pluginvar['displayorder'] = $new_pluginvar['displayorder'] ? (int)$new_pluginvar['displayorder'] : 100;
-						$this->appvar_db->update($new_pluginvar);
-					}
-				}
-			}
-			if(!empty($params['vars']['edit_pluginvar'])){
-				foreach ($params['vars']['edit_pluginvar'] AS $edit_pluginvar) {
-					$edit_pluginvar['appid'] = $appid;
-					$edit_pluginvar['displayorder'] = $edit_pluginvar['displayorder'] ? (int)$edit_pluginvar['displayorder'] : 100;
-					$this->appvar_db->where(array('id' => $edit_pluginvar['id']))->save($edit_pluginvar);
-				}
-			}
-		}
-		return TRUE;
-	}
-	/**
-	 * [export description]
-	 * @return [type] [description]
-	 */
-	public function export($appid){
-		$appid = (int) $appid;
-		$rs = $this->app_db->find($appid);
-		if(!$rs){
-			$this->error = '插件不存在';
-			return FALSE;
-		}
-		if($rs['branch_id'] > 0 || strpos($rs['identifier'],'module.')){
-			$this->error = '无法导出该插件';
-			return FALSE;
-		}
-		$rs['menu'] = unserialize($rs['menu']);
-		$rs['identifier'] = str_replace('plugin.', '', $rs['identifier']);
-		$plugin_array = array(
-			'type' => 'plugin',
-			'name' => $rs['name'],
-			'identifier' => $rs['identifier'],
-			'description' => $rs['description'],
-			'copyright' => $rs['copyright'],
-			'author' => $rs['author'],
-			'version' => $rs['version'],
-			'sort' => $rs['sort'],
-			'menu' => $rs['menu'],
-			'apply_version' => array(
-				HD_BRANCH => HD_VERSION
-			),
-		);
-		$plugin_folder = PLUGIN_PATH.$rs['identifier'];
-		$vars = $this->appvar_db->where(array('appid' => $appid))->order("displayorder ASC, id ASC")->select();
-		foreach ($vars as $key => $var) {
-			unset($vars[$key]['id'],$vars[$key]['appid']);
-		}
-		if($vars) {
-			$plugin_array['var'] = $vars;
-		}
-		$incfiles = array('install', 'uninstall', 'upgrade', 'check', 'enable', 'disable');
-		foreach ($incfiles as $file) {
-			if(file_exists($plugin_folder.'/'.$file.'.php')) {
-				$plugin_array[$file.'file'] = $file.'.php';
-			}
-		}
-		$plugin_export = array2xml($plugin_array, 1);
-		ob_end_clean();
-		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-		header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-		header('Cache-Control: no-cache, must-revalidate');
-		header('Pragma: no-cache');
-		header('Content-Encoding: none');
-		header('Content-Length: '.strlen($plugin_export));
-		header('Content-Disposition: attachment; filename=config.xml');
-		header('Content-Type: text/xml');
-		return $plugin_export;
-	}
-	/**
-	 * [setting description]
-	 * @return [id] [description]
-	 */
-	public function setting($params){
-		$sqlmap = array();
-		$sqlmap['appid'] = $params['id'];
-		foreach ($params as $key => $value) {
-			if(is_array($value)) $value = implode(',', $value);
-			$sqlmap['variable'] = $key;
-			$this->appvar_db->where($sqlmap)->setField('value', $value);
-		}
-		$this->clear_cache();
-		return TRUE;
-	}
-	/**
-	 * 清除缓存
-	 */
-	public function clear_cache(){
-		cache('plugins',NULL);
-	}
-	/**
-	 *获取插件缓存
-	 */
-	public function get_plugins($key = NULL){
-		if(!cache('plugins')){
-			$sqlmap = array();
-			$sqlmap['available'] = 1;
-			$app_lists = $this->app_db->where($sqlmap)->select();
-			$plugins = array();
-			if($app_lists) {
-				foreach ($app_lists as $app_list) {
-					if(strpos($app_list['identifier'],'module.') !== FALSE) continue;
-					$identifier = str_replace('plugin.', '', $app_list['identifier']);
-					$plugins[$identifier] = $app_list;
-					$plugins[$identifier]['vars'] = $this->get_pluginvar($app_list['id']);
-				}
-			}
-			cache('plugins', $plugins);
-		}
-		$result = cache('plugins');
-		return is_string($key) ? $result[$key] : $result;
-	}
-	/**
-	 * 获取模块缓存
-	 */
-	public function get_module($key = NULL){
-		if(!cache('module')){
-			$sqlmap = array();
-			$sqlmap['identifier'] = array('like','module.%');
-			$sqlmap['available'] = 1;
-			$apps = $this->app_db->where($sqlmap)->getField('identifier, name', true);
-			$modules = array();
-			foreach ($apps as $key => $value) {
-				$id = str_replace('module.', '', $key);
-				$modules[$id] = $value;
-			}
-			cache('module', $modules, 'common');
-		}
-		$result = cache('module');
-		return is_string($key) ? $result[$key] : $result;
-	}
-}
+}                                              

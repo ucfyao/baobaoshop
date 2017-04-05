@@ -39,7 +39,6 @@ class order_sku_table extends table {
                 }
             }
             $sku['_sku_spec'] = $_spec;
-            $sku['_sku_url'] = url('goods/index/detail',array('sku_id' => $sku['sku_id']));
             if ($sku['promotion']) $sku['promotion'] = json_decode($sku['promotion'] ,TRUE);
             $skus[$k] = $sku;
         }

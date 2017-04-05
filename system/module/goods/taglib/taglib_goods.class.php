@@ -1,6 +1,6 @@
 <?php
 class taglib_goods
-{
+{	
 	public function __construct() {
 		$this->model = model('goods/goods_spu');
 		$this->index_model = model('goods/goods_index');
@@ -34,12 +34,12 @@ class taglib_goods
 		$history = array_filter(explode(',',$_history));
 		foreach ($history as $key => $value) {
     		if($key < $options['limit']){
-    			$_historys[$key] = $this->sku_service->fetch_by_id($value,'price');
+    			$_historys[$key] = $this->sku_model->detail($value,TRUE,'goods',false)->output();
     			if(empty($_historys[$key])){
     				unset($_historys[$key]);
     			}
     		}
 		}
-		return $_historys;
+    	return $_historys; 	
 	}
 }

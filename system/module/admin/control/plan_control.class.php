@@ -12,7 +12,7 @@ class plan_control extends init_control {
 	public function app_update(){
 		if(!cache('app_lock')){
 			cache('app_lock',TIMESTAMP,'common',array('expire' => 7200));
-			$this->app_service->get_plugins();
+			$this->app_service->build_cache();
 			$this->load->service('admin/module')->build_cache();
 		}
 		return true;
@@ -34,15 +34,6 @@ class plan_control extends init_control {
             cache('cloud_lock',TIMESTAMP,'common',array('expire' => 7200));
 			$r = $this->cloud_service->update_site_userinfo();
         }
-		return TRUE;
-	}
-
-	/**
-	 * 更新商品促销状态
-	 */
-	public function update_status(){
-		$this->load->service('promotion/promotion_goods')->fetch_skuid_by_goods();
-		$this->load->service('promotion/promotion_time')->fetch_skuid_by_timeed();
 		return TRUE;
 	}
 }

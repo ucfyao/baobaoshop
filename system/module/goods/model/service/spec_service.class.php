@@ -17,7 +17,7 @@ class spec_service extends service {
 	 * @return [array] [保存规格信息的数组]
 	 */
 	public function spec_list($page,$limit){
-		$result = $this->db->page($page)->limit($limit)->order('sort asc')->getField('id,name,value,sort,status');
+		$result = $this->db->page($page)->limit($limit)->order('sort asc')->getField('id,name,value,status,sort');
 		if(!$result){
     		$this->error = $this->db->getError();
     	}
@@ -44,7 +44,7 @@ class spec_service extends service {
 		$result = $this->db->update($params);
     	if($result === FALSE){
     		$this->error = $this->db->getError();
-    	}
+    	}	
     	return $result;
 	}
 	/**
@@ -72,7 +72,7 @@ class spec_service extends service {
 		$result = $this->db->update($params);
     	if($result === FALSE){
     		$this->error = $this->db->getError();
-    	}
+    	}	
     	return $result;
 	}
 	/**
@@ -220,10 +220,10 @@ class spec_service extends service {
 		if (empty($new_value)){
 			$this->error = lang('goods_spec_value_empty','goods/language');
 			return FALSE;
-		}
+		} 
 		if ($data['id'] < 1){
 			$this->error = lang('goods_spec_id_error','goods/language');
-		}
+		} 
 		$old_info = $this->db->find($data['id']);
 		if (empty($old_info['value'])) {
 			$data['value'] = $new_value;
@@ -265,17 +265,4 @@ class spec_service extends service {
 		}
 		return $result;
 	}
-	/**
-     * 条数
-     * @param  [arra]   sql条件
-     * @return [type]
-     */
-    public function count($sqlmap = array()){
-        $result = $this->db->where($sqlmap)->count();
-        if($result === false){
-            $this->error = $this->db->getError();
-            return false;
-        }
-        return $result;
-    }
 }

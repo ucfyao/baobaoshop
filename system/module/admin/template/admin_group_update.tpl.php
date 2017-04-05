@@ -80,10 +80,10 @@
 				if(_selectnum.length){
 					_parent.attr('checked',true);
 				}
-
+	
 				selectAll();
 			});
-
+			
 			function selectAll(){
 				var flog = true;
 				$(".aut-input").each(function(){

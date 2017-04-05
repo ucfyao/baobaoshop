@@ -48,17 +48,4 @@ class node_service extends service {
         }
         return $result;
     }
-    /**
-     * @param  string  获取的字段
-     * @param  array    sql条件
-     * @return [type]
-     */
-    public function getField($field = '', $sqlmap = array()) {
-        $result = $this->model->where($sqlmap)->getfield($field);
-        if($result === false){
-            $this->error = $this->model->getError();
-            return false;
-        }
-        return $result;
-    }
 }

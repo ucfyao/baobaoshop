@@ -15,8 +15,7 @@ class account_control extends cp_control
 		}
 		$this->service = $this->load->service('member/member_address');
 		$this->member_service = $this->load->service('member/member');
-		$this->notify_service = $this->load->service('notify/notify');
-		$this->notify_template_service = $this->load->service('notify/notify_template');
+		$this->vcode_table = $this->load->table('vcode');
 	}
 
 	public function index() {
@@ -29,12 +28,12 @@ class account_control extends cp_control
 		$safe_level_mobile = !empty($this->member['mobile']) ? 33 : 0 ;
 		$safe_level = $safe_level + $safe_level_email + $safe_level_mobile;
 
-		$sms_enabled = $this->notify_service->find(array('code'=>'sms','enabled'=>1));
+		$sms_enabled = model('notify')->where(array('code'=>'sms','enabled'=>1))->find();
 		$mobile_validate = false;
 		if($sms_enabled){
 			$sqlmap['id'] = 'sms';
 			$sqlmap['enabled'] = array('like','%mobile_validate%');
-			$mobile_validate = $this->notify_template_service->find($sqlmap);
+			$mobile_validate = model('notify_template')->where($sqlmap)->find();
 		}
 
 		$member = $this->member;
@@ -63,7 +62,7 @@ class account_control extends cp_control
 			}
 			$data['password'] = md5(md5($newpassword).$this->member['encrypt']);
 			$data['id'] = $this->member['id'];
-			$r = $this->member_service->update($data,FALSE);
+			$r = $this->load->table('member')->update($data,FALSE);
 			if(!$r){
 				showmessage(lang('edit_password_error','member/language'),'',0);
 			}
@@ -75,7 +74,7 @@ class account_control extends cp_control
 		}
 	}
 
-	//修改手机号码
+	//修改密码
 	public function resetmobile(){
 		if(IS_POST){
 			$result = $this->member_service->resetmobile($_GET,$this->member['id']);
@@ -84,16 +83,16 @@ class account_control extends cp_control
 			}
 			showmessage(lang('edit_mobile_success','member/language'),url('safe'),1);
 		}else{
-			$sms_enabled = $this->notify_service->find(array('code'=>'sms','enabled'=>1));
+			$sms_enabled = model('notify')->where(array('code'=>'sms','enabled'=>1))->find();
 			$mobile_validate = false;
 			if($sms_enabled){
 				$sqlmap['id'] = 'sms';
 				$sqlmap['enabled'] = array('like','%mobile_validate%');
-				$mobile_validate = $this->notify_template_service->find($sqlmap);
+				$mobile_validate = model('notify_template')->where($sqlmap)->find();
 			}
 			$this->load->librarys('View')->assign('mobile_validate',$mobile_validate)->display('resetmobile');
 		}
-
+		
 	}
 
     /**
@@ -102,7 +101,7 @@ class account_control extends cp_control
     public function checkmobile()
     {
         $mobile = $_GET['mobile'];
-        $res = model('member/member','service')->_valid_mobile($mobile);
+        $res = model('member/member','service')->valid_mobile($mobile);
         if(!$res) showmessage('该手机号码已经被注册或者绑定!','',0,'','json');
 		showmessage('success','',1,'','json');
 
@@ -116,7 +115,7 @@ class account_control extends cp_control
 		if(FALSE === $template || is_null($template['template']['mobile_validate'])) {
 			showmessage(lang('cant_use_note','member/language'));
 		}
-		$this->member_service->vcode_delete(array('mid' => $this->member['id'],'action' =>'resetmobile','dateline'=>array('LT',TIMESTAMP)));
+		$this->vcode_table->where(array('mid' => $this->member['id'],'action' =>'resetmobile','dateline'=>array('LT',TIMESTAMP)))->delete();
 		$member = $_GET;
 		$member['mid'] = $this->member['id'];
 		$result = $this->load->service('member/member')->post_vcode($member,'resetmobile');

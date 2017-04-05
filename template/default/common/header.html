@@ -19,6 +19,12 @@
 		{hook/common_header data}
 	<!-- 头部 -->
 	<div class="header container">
+		<div class="logo fl">
+			<span><a href="{__APP__}"><a href="{__APP__}"><img width="190px" height="140px" src="<?php $cache = model('admin/setting','service')->get(); echo $cache['site_logo'] ? $cache['site_logo'] : 'template/default/statics/images/logo.png' ?>" /></a></span>
+			<div class="header_slogan">
+				{$SEO['other']}
+			</div>
+		</div>
 		<!-- 搜索框 -->
 		<div class="search-wrap border radius">
 			<div class="search">

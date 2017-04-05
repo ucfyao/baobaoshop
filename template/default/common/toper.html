@@ -37,10 +37,6 @@
 				{hook/left_site_bar data}
 			</ul>
 			-->
-			<div class="logo fl">
-				<!-- <span><a href="{__APP__}"><img width="190px" height="64px" src="<?php $cache = cache('setting'); echo $cache['site_logo'] ? __ROOT__.$cache['site_logo'] : __ROOT__.'template/default/statics/images/logo.png' ?>" /></a></span> -->
-				<span><a href="{__APP__}"><img width="190px" height="140px" src="<?php $cache = model('admin/setting','service')->get(); echo $cache['site_logo'] ? $cache['site_logo'] : 'template/default/statics/images/logo.png' ?>" /></a></span>
-			</div>
 
 			{hook/mid_site_bar data}
 			<ul class="fr padding-large-right">
@@ -60,9 +56,6 @@
 				<li><a href="#">手机版</a></li> -->
 				{hook/right_site_bar}
 			</ul>
-			<div class="header_slogan">
-				{$SEO['other']}
-			</div>
 		</div>
 	</div>
 

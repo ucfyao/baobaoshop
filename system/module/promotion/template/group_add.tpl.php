@@ -2,7 +2,7 @@
 <script type="text/javascript" src="./statics/js/template.js" ></script>
 		<div class="fixed-nav layout">
 			<ul>
-				<li class="first">组合营销管理<?php if(!$_GET['id']){?><a id="addHome" title="添加到首页快捷菜单">[+]</a><?php }?></li>
+				<li class="first">限时促销管理<?php if(!$_GET['id']){?><a id="addHome" title="添加到首页快捷菜单">[+]</a><?php }?></li>
 				<li class="spacer-gray"></li>
 				<li><a class="current" href="javascript:;"></a></li>
 			</ul>

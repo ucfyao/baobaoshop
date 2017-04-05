@@ -8,6 +8,14 @@
 				<p>数据正在努力加载中...</p>
 			</div>
 		</div>
+		<div class="padding-lr list-col-10 border-bottom">
+			<div class="border-bottom mui-clearfix order-lh-40">
+				<span class="icon-15 mui-inline margin-small-right"><img src="{SKIN_PATH}statics/images/ico_24.png" /></span>请选择并确认您的配送方式
+			</div>
+			<div data-id="delivery_box">
+				<p class="padding-top padding-bottom">数据正在努力加载中...</p>
+			</div>
+		</div>
 		{hook/wap_settlement_send_time}
     	<div class="padding-big" data-id="delivery">
     		<a href="javascript:;" class="mui-btn mui-btn-primary full hd-h4">确定支付配送方式</a>
@@ -27,15 +35,26 @@
 		}
 	});
 	
-	//确定 支付
+	//确定 支付&配送 方式 
 	$("[data-id='delivery']").on("tap",function() {
 		//读取localStorage已有数据
 		var hd_key = window.localStorage.getItem('hdkey');
 		var hd_datas = JSON.parse(window.localStorage.getItem('hddatas'));
 			hd_datas[hd_key].payMethod = $("[data-id='type_box']").find(".hd-btn-blue").data("id");
+		if($("[data-sellerid]").length > 0){
+			var deliverys = {};
+			$("[data-sellerid]").each(function(i , n){
+				var _sd = $(this).data('sellerid');
+				deliverys[_sd] = $(this).find(".hd-btn-blue").attr("delivery-district-id");
+			})
+			hd_datas[hd_key].deliverys = deliverys;
+		}else{
+			hd_datas[hd_key].deliverys = null;
+		}
 		window.localStorage.setItem('hddatas', JSON.stringify(hd_datas));
 		window.location.href = document.referrer;
 	});
+	
 	hd_order.setDeliver();
 	
 </script>

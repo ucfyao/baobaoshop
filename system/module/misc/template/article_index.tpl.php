@@ -30,67 +30,60 @@
 					<div class="th check-option" data-resize="false">
 						<input id="check-all" type="checkbox" />
 					</div>
-					<?php foreach ($lists['th'] AS $th) {?>
-						<span class="th" data-width="<?php echo $th['length']?>">
-							<span class="td-con"><?php echo $th['title']?></span>
-						</span>
-					<?php }?>
+					<div class="th" data-width="10"><span class="td-con">排序</span></div>
+					<div class="th" data-width="30"><span class="td-con">标题</span></div>
+					<div class="th" data-width="15"><span class="td-con">文章分类</span></div>
+					<div class="th" data-width="15"><span class="td-con">发布时间</span></div>
+					<div class="th" data-width="10"><span class="td-con">显示</span></div>
+					<div class="th" data-width="10"><span class="td-con">推荐</span></div>
 					<div class="th" data-width="10"><span class="td-con">操作</span></div>
 				</div>
-				<?php foreach ($lists['lists'] AS $list) {?>
-				<div class="tr">
-					<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $list['id']?>" /></span>
-					<?php foreach ($list as $key => $value) {?>
-					<?php if($lists['th'][$key]){?>
-					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
-					<span class="td">
-						<div class="double-click">
-							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-							<input class="input double-click-edit text-ellipsis" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
-						</div>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ident') {?>
-						<span class="td ident">
-							<span class="ident-show">
-								<em class="ico_pic_show"></em>
-								<div class="ident-pic-wrap">
-									<img src="<?php echo $list['logo'] ? $list['logo'] : '../images/default_no_upload.png'?>" />
-								</div>
-							</span>
+				<?php foreach ($article as $key => $value) {?>
+				<div class="tr" data-tree-id="<?php echo $value['id']?>">
+					<div class="td check-option"><input type="checkbox" name="id" value="<?php echo $value['id']?>" /></div>
+					<div class="td">
+						<div class="td-con">
 							<div class="double-click">
 								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" type="text" value="<?php echo $value?>" />
+								<input name="sort" class="input double-click-edit text-ellipsis" type="text" value="<?php echo $value['sort']?>" />
 							</div>
-						</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
-					<span class="td">
-						<a class="ico_up_rack ico_up_recks <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rec') {?>
-					<span class="td">
-						<a class="ico_up_rack ico_up_rec <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
-					<span class="td">
-						<span class="td-con"><?php echo $value ?></span>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
-						<input type="hidden" name="id" value="<?php echo $value?>" />
+						</div>
+					</div>
+					<div class="td">
+						<div class="td-con">
+							<div class="double-click">
+								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
+								<input name="title" class="input double-click-edit text-ellipsis" type="text" value="<?php echo $value['title']?>" />
+							</div>
+						</div>
+					</div>
+					<div class="td">
+						<span class="td-con"><?php echo $value['category']?></span>
+					</div>
+					<div class="td">
+						<span class="td-con"><?php echo $value['dataline']?></span>
+					</div>
+					<div class="td">
+					<?php if($value['display']==0){?>
+						<a class="ico_up_rack cancel" href="javascript:;" title="点击关闭"></a>
 					<?php }else{?>
-					<span class="td">
-						<span class="td-con"><?php echo $value;?></span>
-					</span>
+					    <a class="ico_up_rack" href="javascript:;" title="点击关闭"></a>
 					<?php }?>
+					</div>
+					<div class="td">
+					<?php if($value['recommend']==0){?>
+						<a class="ico_put cancel" href="javascript:;" title="点击关闭"></a>
+					<?php }else{?>
+					    <a class="ico_put" href="javascript:;" title="点击关闭"></a>
 					<?php }?>
-					<?php }?>
-					<span class="td">
-						<span class="td-con">
-						<a href="<?php echo url('edit',array('id'=>$list['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('delete', array('id[]' => $list['id'])); ?>">删除</a><?php echo $lists['option']?></span>
-					</span>
+					</div>
+					<div class="td">
+						<span class="td-con"><span class="td-con"><a href="<?php echo url('edit',array('id'=>$value['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a href="<?php echo url('delete',array('id[]'=>$value['id']))?>" data-confirm="是否确认删除？">删除</a></span></span>
+					</div>
 				</div>
 				<?php }?>
 				<div class="paging padding-tb body-bg clearfix">
-					<?php echo $lists['pages'];?>
+					<?php echo $pages;?>
 					<div class="clear"></div>
 				</div>
 			</div>
@@ -101,16 +94,39 @@
 				$(".table").treetable();
 				$(".paging-table").fixedPaging();
 				$('.table .tr:last-child').addClass("border-none");
-
+				//启用与关闭
+				$(".table .ico_up_rack").bind('click',function(){
+					if(!$(this).hasClass("cancel")){
+						$(this).addClass("cancel");
+						$(this).attr("title","点击显示");
+					}else{
+						$(this).removeClass("cancel");
+						$(this).attr("title","点击关闭");
+					}
+				});
 			})
 
-
+			$(window).load(function(){
+				$(".table").resizableColumns();
+				$(".table").treetable();
+				$('.table .tr:last-child').addClass("border-none");
+				//启用与关闭
+				$(".table .ico_put").bind('click',function(){
+					if(!$(this).hasClass("cancel")){
+						$(this).addClass("cancel");
+						$(this).attr("title","点击显示");
+					}else{
+						$(this).removeClass("cancel");
+						$(this).attr("title","点击关闭");
+					}
+				});
+			})
 
 			//ajax编辑文章信息
-			var ajax_edit = "<?php echo url('ajax_edit')?>";
+			var ajax_edit = "<?php echo url(ajax_edit)?>";
 			$("input[name=title]").bind('blur',function(){
 			   var title=$(this).val();
-			   var id = $(this).data("id");
+			   var id = $(this).parents('.tr').attr('data-tree-id');
 			   $.post(ajax_edit,{'id':id,'title':title},function(data){
 				   if(data == 1){
 					   return true;
@@ -121,7 +137,7 @@
 			})
 			$("input[name=sort]").bind('blur',function(){
 				var sort = $(this).val();
-				var id = $(this).data("id");
+				var id = $(this).parents('.tr').attr('data-tree-id');
 				$.post(ajax_edit,{'id':id,'sort':sort},function(data){
 					if(data == 1){
 						return true;
@@ -130,45 +146,30 @@
 					}
 				})
 			})
+			$(".ico_up_rack").bind('click',function(){
+				var display=$(this).attr('class') == 'ico_up_rack' ? 0:1;
+				var id= $(this).parents('.tr').attr('data-tree-id');
+				$.post(ajax_edit,{'id':id,'display':display},function(data){
+					if(data == 1){
+						return true;
+					}else{
+						return false;
+					}
+					
+				})
+			})
 
 
-
-			$(".ico_up_rack").on('click',function(){
-				var display=recommend=$(this).hasClass('cancel') ? 1:0;
-				var id= $(this).data("id");
-				var _this=$(this);
-				if($(this).hasClass("ico_up_rec")){
-					$.post(ajax_edit,{'id':id,'recommend':recommend},function(data){
-					if(data.status == 1){
-						if(!_this.hasClass("cancel")){
-							_this.addClass("cancel");
-							_this.attr("title","点击显示");
-						}else{
-							_this.removeClass("cancel");
-							_this.attr("title","点击关闭");
-						}
+			$(".ico_put").bind('click',function(){
+				var recommend=$(this).attr('class') == 'ico_put' ? 0:1;
+				var id= $(this).parents('.tr').attr('data-tree-id');
+				$.post(ajax_edit,{'id':id,'recommend':recommend},function(data){
+					if(data == 1){
+						return true;
 					}else{
 						return false;
 					}
 				},'json')
-				}
-				else{
-					$.post(ajax_edit,{'id':id,'display':display},function(data){
-						if(data.status == 1){
-							if(!_this.hasClass("cancel")){
-								_this.addClass("cancel");
-								_this.attr("title","点击显示");
-							}else{
-								_this.removeClass("cancel");
-								_this.attr("title","点击关闭");
-							}
-						}else{
-							return false;
-						}
-					},'json')
-
-				}
 			})
-
 		</script>
 	<?php include template('footer','admin');?>

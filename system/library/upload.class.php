@@ -9,69 +9,61 @@
 helper('attachment');
 class upload
 {
-    protected $instance;
+	protected $instance;
 
-    protected $config = array(
-        /* 根目录 */
-        'root'      => './uploadfile/',
-        /* 子目录 */
-        'path'        => 'common',
-        'module'      => 'goods',
-        /* 存在同名是否覆盖 */
+	protected $config = array(
+		/* 根目录 */
+		'root'		=> './uploadfile/',
+		/* 子目录 */
+		'path'		=> 'common',
+		/* 存在同名是否覆盖 */
         'md5'       => false,
+		'replace'	=> false,
         'hash'      => true,
         'saveName'  =>  array('uniqid', ''), //上传文件命名规则，[0]-函数名，[1]-参数，多个参数使用数组
+		'allow_exts' => array('bmp','jpg','jpeg','gif','png'), //允许上传的后缀
+        'allow_size' => 0, //允许的文件大小
         'allow_mimes' => '',//允许的mime类型
 
         /* 强制后缀名 */
-        'save_ext'  => '',
-        /* 上传前回调 */
+		'save_ext'	=> '',
+		/* 上传前回调 */
         '_before_function'  => 'attachment_exists',
         /* 上传前回调 */
         '_after_function'  => false,
-    );
+	);
 
-    public function __construct($config = array(),$driver = '') {
-        $setting = model('admin/setting','service')->get();
-        unset($config['allow_exts']);
-        $this->config['attach_enabled'] = isset($setting['attach_enabled']) ? $setting['attach_enabled'] : 1;
-        $this->config['replace'] = isset($setting['attach_replace']) ? ($setting['attach_replace']==1 ? true : false) : false;
-        $this->config['allow_exts'] = isset($setting['attach_ext']) ? explode(',', $setting['attach_ext']) : (isset($config['allow_exts']) ? $config['allow_exts'] : array('jpg','png','jpeg','bmp','gif'));
-        $this->config['allow_size'] = isset($setting['attach_size']) ? $setting['attach_size'] : 0;
-        // $driver = isset($driver) ? $driver : (isset($setting['upload_driver']) ? $setting['upload_driver'] : 'local');
-        $driver = $driver != '' ? $driver : (isset($setting['attach_type']) ? $setting['attach_type'] : 'local');
-        $this->config   =   array_merge($this->config, $config);
+	public function __construct($config = array(), $driver = 'local') {
+		$this->config   =   array_merge($this->config, $config);
         $this->temp_dir = CACHE_PATH.'temp/';
-        $this->initialize($driver, $this->config);
-        return $this;
-    }
+		$this->initialize($driver, $this->config);
+		return $this;
+	}
 
     public function __isset($name){
         return isset($this->config[$name]);
     }
 
-    public function __get($name) {
-        return $this->config[$name];
-    }
+	public function __get($name) {
+		return $this->config[$name];
+	}
 
-    public function __set($name,$value){
-        $this->config[$name] = $value;
-    }
+	public function __set($name,$value){
+		$this->config[$name] = $value;
+	}
 
-    private function initialize($driver, $config) {
-        $driver = 'upload_'.$driver;
-        if(require_cache(LIB_PATH.'upload/'.$driver.EXT) !== TRUE) {
-            hd_error::system_error('_no_exist_driver_');
-        }
-        if(!class_exists($driver)) {
-            hd_error::system_error('_class_not_exist_');
-        }
-        $this->instance = new $driver($config);
-    }
+	private function initialize($driver, $config) {
+		$driver = 'upload_'.$driver;
+		if(require_cache(LIB_PATH.'upload/'.$driver.EXT) !== TRUE) {
+			error::system_error('_no_exist_driver_');
+		}
+		if(!class_exists($driver)) {
+			error::system_error('_class_not_exist_');
+		}
+		$this->instance = new $driver($config);
+	}
 
-    public function upload($file = '') {
-
-
+	public function upload($file = '') {
         $file = $_FILES[$file];
         if(empty($file)){
             $this->error = lang('upload_file_empty');
@@ -108,7 +100,6 @@ class upload
         if (!$this->check($file)){
             return FALSE;
         }
-
         /* 获取文件hash */
         if($this->hash){
             $file['md5']  = md5_file($file['tmp_name']);
@@ -130,9 +121,9 @@ class upload
             return $file;
         }
         /* 生成保存文件名 */
-        $savename = $file['savename'] = $this->getSaveName($file);
+		$savename = $file['savename'] = $this->getSaveName($file);
         if(false == $savename){
-            return FALSE;
+		    return FALSE;
         }
 
         /* 检测并创建子目录 */
@@ -155,7 +146,6 @@ class upload
         }
         $file['url'] = $this->root.$file['savepath'].$file['savename'];
         /* 保存文件 并记录保存成功的文件 */
-        $this->upload_watermark($file['tmp_name']);
         if (FALSE === $this->instance->save($file, $this->replace)) {
             $this->error = $this->instance->getError();
             return FALSE;
@@ -171,7 +161,7 @@ class upload
         unset($file['error'], $file['tmp_name']);
         runhook('before_upload_img',$file['url']);
         return empty($file) ? false : $file;
-    }
+	}
 
     /**
      * 图片远程化
@@ -266,7 +256,6 @@ class upload
         $info['height'] = $imginfo[1];
         $info['url'] = $this->root.$info['savepath'].$info['savename'];
         /* 保存文件 并记录保存成功的文件 */
-        $this->upload_watermark($info['tmp_name']);
         if (FALSE === $this->instance->save($info, $this->replace)) {
             $this->error = $this->instance->getError();
             return FALSE;
@@ -278,7 +267,7 @@ class upload
             finfo_close($finfo);
         }
         unset($info['error'], $info['tmp_name']);
-        runhook('before_upload_img',$info['url']);
+        runhook('before_upload_img',$file['url']);
         return empty($info) ? false : $info;
 
     }
@@ -288,11 +277,6 @@ class upload
      * @param array $file 文件信息
      */
     private function check($file) {
-        /*是否开启附件上传*/
-        if($this->config['attach_enabled'] == 0){
-            $this->error = lang('未开启附件上传');
-            return false;
-        }
         /* 文件上传失败，捕获错误代码 */
         if ($file['error']) {
             $this->error($file['error']);
@@ -456,24 +440,9 @@ class upload
     public function remove_thumb($filepath){
         return $this->instance->remove_thumb($filepath);
     }
-
+    
     public function getError(){
         return $this->error;
-    }
-
-    public function upload_watermark($url)
-    {
-        $setting = model('admin/setting','service')->get();
-        if(!in_array($this->config['module'], $setting['attach_module'])) return FALSE;
-        if(!$setting['attach_watermark']) return FALSE;
-        $image = new image();
-        switch ($setting['attach_watermark']) {
-            case '1':
-             $image->open($url)->water($setting['attach_logo'], $setting['attach_position'], $setting['attach_alpha'])->save($url);
-                break;
-            default:
-                break;
-        }
     }
 
 }

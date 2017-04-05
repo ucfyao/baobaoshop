@@ -64,8 +64,4 @@ return array(
     'role_name_require'         => '角色名不能为空',
     'user_name_exist'           => '帐号名称已经存在！',
     'password_not_standard'     => '密码不符合规范',
-    'plugin_name_require'       => '插件名称不能为空',
-    'plugin_name_not_unique'       => '插件名称已存在',
-    'plugin_id_require'       => '插件标识不能为空',
-    'plugin_id_not_unique'       => '插件标识已存在',
 );

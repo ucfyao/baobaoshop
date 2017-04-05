@@ -35,7 +35,7 @@ class index_control extends init_control {
 	 * [article_lists 文章列表]
 	 */
 	public function article_lists(){
-		$title = $this->category->get_category_by_id($_GET['category_id'],'name');
+		$title = $this->category->get_category_by($_GET['category_id'],'name');
 		$SEO = seo($title.' - 文章列表');
 		$this->load->librarys('View')->assign('SEO',$SEO)->display('article_lists');
 	}

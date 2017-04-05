@@ -50,91 +50,94 @@
 		<div class="table-wrap">
 			<div class="table resize-table paging-table border clearfix">
 				<div class="tr">
-					<?php foreach ($lists['th'] AS $th) {?>
-					<span class="th" data-width="<?php echo $th['length']?>">
-						<span class="td-con"><?php echo $th['title']?></span>
+					<span class="th" data-width="15">
+						<span class="td-con">订单号</span>
 					</span>
-					<?php }?>
+					<span class="th" data-width="10">
+						<span class="td-con">会员帐号</span>
+					</span>
+					<span class="th" data-width="10">
+						<span class="td-con">收货人</span>
+					</span>
+					<span class="th" data-width="9">
+						<span class="td-con">收货电话</span>
+					</span>
+					<span class="th" data-width="12">
+						<span class="td-con">下单时间</span>
+					</span>
+					<span class="th" data-width="8">
+						<span class="td-con">订单金额</span>
+					</span>
+					<span class="th" data-width="7">
+						<span class="td-con">支付方式</span>
+					</span>
+					<span class="th" data-width="8">
+						<span class="td-con">订单类型</span>
+					</span>
+					<span class="th" data-width="8">
+						<span class="td-con">商家名称</span>
+					</span>
+					<span class="th" data-width="7">
+						<span class="td-con">订单状态</span>
+					</span>
 					<span class="th" data-width="6">
 						<span class="td-con">操作</span>
 					</span>
 				</div>
-				<?php foreach ($lists['lists'] AS $list) :?>
+				<?php foreach ($orders as $key => $order) : ?>
 					<div class="order-list">
 						<div class="main-order">
-						<div class="tr">
-								<?php foreach ($list as $key => $value) {?>
-								<?php if($lists['th'][$key]){?>
-								<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
+							<div class="tr">
 								<span class="td">
-									<div class="double-click">
-										<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-										<input class="input double-click-edit text-ellipsis text-center" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
-									</div>
+									<span class="td-con"><?php echo $order['sn'] ?></span>
 								</span>
-								<?php }elseif ($lists['th'][$key]['style'] == 'ident') {?>
-									<span class="td ident">
-										<span class="ident-show">
-											<em class="ico_pic_show"></em>
-											<div class="ident-pic-wrap">
-												<img src="<?php echo $list['logo'] ? $list['logo'] : '../images/default_no_upload.png'?>" />
-											</div>
-										</span>
-										<div class="double-click">
-											<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-											<input class="input double-click-edit text-ellipsis" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" type="text" value="<?php echo $value?>" />
-										</div>
-									</span>
-								<?php }elseif ($lists['th'][$key]['style'] == 'source') {?>
-									<span class="td">
-										<span class="td-con">
-											<?php if($value == 2) : ?>
-												<i class="ico_order_mobile"></i>
-											<?php elseif ($value == 3) : ?>
-												<i class="ico_order_wechat"></i>
-											<?php else : ?>
-												<i class="ico_order"></i>
-											<?php endif; ?>
-										</span>
-									</span>
-								<?php }elseif ($lists['th'][$key]['style'] == 'seller') {?>
 								<span class="td">
-									<?php if($value == 0) : ?>
+									<span class="td-con"><?php echo $order['_buyer']['username'] ?></span>
+								</span>
+								<span class="td">
+									<span class="td-con"><?php echo $order['address_name'] ?></span>
+								</span>
+								<span class="td">
+									<span class="td-con"><?php echo $order['address_mobile'] ?></span>
+								</span>
+								<span class="td">
+									<span class="td-con"><?php echo date('Y-m-d H:i' ,$order['system_time']) ?></span>
+								</span>
+								<span class="td">
+									<span class="td-con">￥<?php echo $order['real_amount'] ?></span>
+								</span>
+								<span class="td">
+									<span class="td-con"><?php echo $order['_pay_type'] ?></span>
+								</span>
+								<span class="td">
+									<span class="td-con">
+										<?php if($order['source'] == 2) : ?>
+											<i class="ico_order_mobile"></i>
+										<?php elseif ($order['source'] == 3) : ?>
+											<i class="ico_order_wechat"></i>
+										<?php else : ?>
+											<i class="ico_order"></i>
+										<?php endif; ?>
+									</span>
+								</span>
+								<span class="td">
+									<?php if($order['seller_ids'] == 0) : ?>
 										<span class="td-con">自营</span>
 									<?php endif; ?>
 								</span>
-								<?php }elseif ($lists['th'][$key]['style'] == '_status') {?>
 								<span class="td">
-									<span class="td-con"><?php echo ch_status($value) ?></span>
+									<span class="td-con"><?php echo ch_status($order['_status']['now']) ?></span>
 								</span>
-								<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
-								<span class="td">
-									<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
-								</span>
-								<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
-								<span class="td">
-									<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
-								</span>
-								<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
-									<input type="hidden" name="id" value="<?php echo $value?>" />
-								<?php }else{?>
-								<span class="td">
-									<span class="td-con"><?php echo $value;?></span>
-								</span>
-								<?php }?>
-								<?php }?>
-								<?php }?>
 								<span class="td">
 									<span class="td-con">
-										<?php if ($list['_showsubs'] == true) : ?>
+										<?php if ($order['_showsubs'] == true) : ?>
 											<a class="order-handle" href="javascript:;">展开</a>
 										<?php else: ?>
-											<a href="<?php echo url('order/admin_order/detail',array('sub_sn' => $list['sub_sn'])); ?>">查看</a>
+											<a href="<?php echo url('order/admin_order/detail',array('sub_sn' => $order['_subs']['0']['sub_sn'])); ?>">查看</a>
 										<?php endif; ?>
 									</span>
 								</span>
 							</div>
-
 						</div>
 						<!-- 子订单信息 -->
 						<!-- <div class="sub-order">
@@ -237,7 +240,7 @@
 			order_action.order(4,'<?php echo url("order/admin_order/delete"); ?>');
 		}
 	});
-
+	
 	$(".main-order .order-handle").live('click',function(){
 		var $obj = $(this).parents(".main-order").next(".sub-order");
 		if($obj.hasClass("show")){

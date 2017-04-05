@@ -1,7 +1,7 @@
 <?php
 /**
  *		商品类型服务层
- *      [Haao] (C)2013-2099 Dmibox Science and technology co., LTD.
+ *      [Haidao] (C)2013-2099 Dmibox Science and technology co., LTD.
  *      This is NOT a freeware, use is subject to license terms
  *
  *      http://www.haidao.la
@@ -13,7 +13,9 @@ class type_service extends service {
 		$this->db = $this->load->table('goods/type');
 		$this->attr_db = $this->load->table('goods/attribute');
 		$this->cate_db = $this->load->table('goods/goods_category');
-		$this->spec_db = $this->load->table('goods/spec');
+		$this->goods_db = $this->load->table('goods/goods_spu');
+		$this->goods_attr = $this->load->table('goods/goods_attribute');
+		$this->sku_db = $this->load->table('goods/goods_sku');
 	}
 	/**
 	 * [get_lists 获取商品类型列表]
@@ -28,9 +30,9 @@ class type_service extends service {
 			foreach ($attrs[$k] as $attr) {
 				$content .= $attr['name'].'&nbsp;&nbsp;&nbsp;';
 			}
-			$result[$k]['content'] = $content;
+			$result[$k]['desc'] = $content;
 		}
-
+		
 		if(!$result){
 			$this->error = $this->logic->error;
 		}
@@ -64,7 +66,7 @@ class type_service extends service {
 				}else{
 					unset($attrinfo['attr_ids'][$key]);
 					if(!$attrinfo['attr_val'][$key]) continue;
-				}
+				} 
 				$result = $this->attr_db->add($info);
 				$attrinfo['attr_ids']['attr'][$key] = 'att_'.$result;
 				if($result === FALSE){
@@ -102,11 +104,11 @@ class type_service extends service {
 		}
 	}
 	/**
-	 * [delete 删除规格，可批量删除]
+	 * [delete_spec 删除规格，可批量删除]
 	 * @param  [fixed] $params [类型id]
 	 * @return [boolean]         [返回删除结果]
 	 */
-	public function delete($params){
+	public function delete_type($params){
 		$params = (array) $params;
 		if(empty($params)){
 			$this->error = lang('_param_error_');
@@ -132,27 +134,62 @@ class type_service extends service {
 		}
 		$data = array();
 		$data['status']=array('exp',' 1-status ');
-		$result = $this->db->where(array('id' => $id))->save($data);
+		$result = $this->db->where(array('id'=>array('eq',$id)))->save($data);
 		if(!$result){
     		$this->error = lang('_operation_fail_');
     	}
     	return $result;
 	}
 	/**
-	 * [change_info 更改分类信息]
+	 * [change_sort 改变排序]
 	 * @param  [array] $params [规格id和排序数组]
 	 * @return [boolean]     [返回更改结果]
 	 */
-	public function change_info($params){
+	public function change_sort($params){
 		if((int)$params['id'] < 1){
 			$this->error = lang('_param_error_');
 			return FALSE;
 		}
-		$result = $this->db->where(array('id'=>$params['id']))->save($params);
+		$data = array();
+		$data['sort'] = $params['sort'];
+		$result = $this->db->where(array('id'=>array('eq',$params['id'])))->save($data);
 		if(!$result){
     		$this->error = lang('_operation_fail_');
     	}
     	return $result;
+	}
+	/**
+	 * [change_sort 改变名称]
+	 * @param  [array] $params [品牌id和name]
+	 * @return [boolean]     [返回更改结果]
+	 */
+	public function change_name($params){
+		if((int)$params['id'] < 1){
+			$this->error = lang('_param_error_');
+			return FALSE;
+		}
+		$data = array();
+		$data['name'] = $params['name'];
+		$result = $this->db->where(array('id'=>array('eq',$params['id'])))->save($data);
+		if(!$result){
+    		$this->error = lang('_operation_fail_');
+    	}
+    	return $result;
+	}
+	/**
+	 * [get_type_content 获取类型的内容字段]
+	 * @param  [type] $catid [分类id]
+	 * @return [type]        [array]
+	 */
+	private function get_type_content($catid){
+		if((int)$catid < 1){
+			$this->error = lang('_param_error_');
+			return FALSE;
+		}
+		$type_id = $this->cate_db->where(array('id'=>$catid))->getfield('type_id');
+		$_attrs_arr = $this->db->where(array('id'=>$type_id))->getfield('content');
+		$attrs = json_decode($_attrs_arr,TRUE);
+		return $attrs;
 	}
 	/**
 	 * [get_attrs 根据分类id获取商品属性，提供给商品添加页面选择属性]
@@ -164,51 +201,84 @@ class type_service extends service {
 			$this->error = lang('_param_error_');
 			return FALSE;
 		}
-		$type_id = $this->load->service('goods/goods_category')->detail($catid,'type_id');
-		$type = $this->fetch_by_id($type_id);
-		$attrs = json_decode($type['content'],TRUE);
-		$goods_attrs = array();
-		foreach ($attrs['attr'] as $key => $value) {
-			$goods_attrs[] = substr($value,strpos($value,'_')+1);
+		$_attrs_info = $this->get_type_content($catid);
+		$_attrs = $_attrs_info['attr'];
+		$attrs = array();
+		foreach ($_attrs as $key => $value) {
+			$attrs[] = substr($value,strpos($value,'_')+1);
 		}
-		return $goods_attrs;
+		return $attrs;
 	}
 	/**
-	 * [get_attrs 根据id获取商品类型信息]
+	 * [get_attrs 根据分类id获取商品类型id]
 	 * @param  [type] $catid [分类id]
 	 * @return [type]        [array]
 	 */
-	public function fetch_by_id($id,$field = TRUE){
-		$exist = strpos($field, ',');
-		if($exist === false && is_string($field)){
-			$result = $this->db->where(array('id'=>$id))->getfield($field);
-		}else{
-			$result = $this->db->where(array('id'=>$id))->field($field)->find();
-		}
-		if($result === false){
+	public function get_type_id($catid){
+		if((int)$catid < 1){
 			$this->error = lang('_param_error_');
-			return false;
+			return FALSE;
 		}
-		return $result;
+		$type_id = $this->cate_db->where(array('id'=>$catid))->getfield('type_id');
+		return $type_id;
+	}
+	/**
+	 * [get_attrs 根据id获取商品类型名]
+	 * @param  [type] $catid [分类id]
+	 * @return [type]        [array]
+	 */
+	public function get_type_name($id){
+		$type_name = $this->db->where(array('id'=>$id))->getfield('name');
+		return $type_name;
+	}
+	/**
+	 * [get_attrs 根据id获取商品类型名]
+	 * @param  [type] $catid [分类id]
+	 * @return [type]        [array]
+	 */
+	public function get_name_by_id($id){
+		if((int)$id < 1){
+			$this->error = lang('_param_error_');
+			return FALSE;
+		}
+		$type_name = $this->db->where(array('id'=>$id))->getfield('name');
+		return $type_name;
 	}
 	/**
 	 * [is_search 判断属性是否参与筛选]
 	 * @param  [type]  $id [description]
 	 * @return boolean     [description]
 	 */
-	private function is_search($attr_id){
-		if((int)$attr_id < 1){
+	private function is_search($id){
+		if((int)$id < 1){
 			$this->error = lang('_param_error_');
 			return FALSE;
 		}
-		$result = $this->attr_db->where(array('id'=>$attr_id))->getfield('search');
+		$result = $this->attr_db->where(array('id'=>$id))->getfield('search');
 		if($result == 1){
 			return $id;
+		}else{
+			return FALSE;
 		}
-		return FALSE;
 	}
 	/**
-	 * [get_pop_by_id 根据id获取商品属性信息]
+	 * [get_type_by_id 根据id获取商品类型信息]
+	 * @param  [type] $id [description]
+	 * @return [type]     [description]
+	 */
+	public function get_type_by_id($id){
+		if((int)$id < 1){
+			$this->error = lang('_param_error_');
+			return FALSE;
+		}
+		$result = $this->db->find($id);
+		if(!$result){
+			$this->error = $this->logic->error;
+		}
+		return $result;
+	}
+	/**
+	 * [get_type_by_id 根据id获取商品属性信息]
 	 * @param  [type] $id [description]
 	 * @return [type]     [description]
 	 */
@@ -236,7 +306,7 @@ class type_service extends service {
 		return $result;
 	}
 	/**
-	 * [get_spec_by_id 根据id获取类型关联规格信息]
+	 * [get_spec_by_id 根据id获取规格信息]
 	 * @param  [type] $id [description]
 	 * @return [type]     [description]
 	 */
@@ -250,27 +320,24 @@ class type_service extends service {
 		if(!empty($_attrs_info['spec'])){
 			foreach ($_attrs_info['spec'] AS $v) {
 				$attr[$v] = $v;
-			}
+			}	
 		}
 		return $attr;
 	}
 
 	/**
-	 * [get_attr_by_id 根据id获取商品属性信息]
+	 * [get_attr_info 根据id获取商品属性信息]
 	 * @param  [type] $catid [分类id]
 	 * @return [type]        [array]
 	 */
-	public function get_attr_by_id($attr_id){
-		if((int) $attr_id < 1){
-			$this->error = lang('_param_error_');
-			return FALSE;
+	public function get_attr_info($id){
+		$result = $this->attr_db->find($id);
+		if($result['value']){
+			$result['value'] = explode(',',$result['value']);
 		}
-		$result = $this->attr_db->find($attr_id);
 		if(!$result){
 			$this->error = $this->logic->error;
-			return FALSE;
 		}
-		if($result['value']) $result['value'] = explode(',',$result['value']);
 		return $result;
 	}
 	/**
@@ -280,112 +347,28 @@ class type_service extends service {
 	public function get_all_type(){
 		$result = $this->db->getField('id,name');
 		if(!$result){
-			$this->error = $this->db->getError();
-			return FALSE;
+			$this->error = $this->logic->error;
 		}
 		return $result;
 	}
-
-
-	/**
-	 * [get_type_info 获取商品类型和属性]
-	 * @return [type] [description]
-	 */
-	public function get_type_by_catid($catid){
-		$cat_type = array();
-		$cat_ids = $this->load->service('goods/goods_category')->get_parent($catid);
-		array_push($cat_ids, $catid);
-		foreach ($cat_ids as $key => $value) {
-			$k = $this->cate_db->where(array('id'=>$value))->getfield('type_id');
-			$cat_type[$value] = $k;
-		}
-		$cat_type = array_unique($cat_type);
-		$cat_ids = array_keys($cat_type);
-		foreach ($cat_ids as $key => $catid) {
-			if($catid != 0){
-				$type_id = $this->load->service('goods/goods_category')->detail($catid,'type_id');
-				$type_name = $this->db->where(array('id' => $type_id))->getfield('name');
-				if($type_name) $result['types'][$type_id] = $type_name;
-				$attrs = $this->get_attrs($catid);
-				foreach ($attrs AS $attr) {
-					$result['attr'][$type_id][] = $this->get_attr_by_id($attr);
-				}
-			}
-		}
-		ksort($result['types']);
-		return $result;
-	}
-
 	/**
 	 * [get_type_by_goods_id 根据商品id获取类型数据]
 	 * @param  [type] $goods_id [description]
 	 * @return [type]           [description]
 	 */
-	public function get_type_by_goods_id($spu_id){
+	public function get_type_by_goods_id($goods_id){
+		$catid = $this->goods_db->getField('catid');
+		$sku_id = $this->sku_db->where(array('spu_id'=>$goods_id))->getField('sku_id');
 		$result = array();
-		if((int) $spu_id > 0) {
-			$sku_id = $this->load->table('goods/goods_sku')->where(array('spu_id' => $spu_id))->getField('sku_id');
-			$attrs =  $this->load->table('goods/goods_attribute')->where(array('sku_id' => (int) $sku_id, 'type' => 1))->field('attribute_id,attribute_value')->select();
-			foreach ($attrs AS $attr) {
-				if(in_array($attr['attribute_value'], $result[$attr['attribute_id']])) continue;
-				$result[$attr['attribute_id']][] = $attr['attribute_value'];
-			}
+		$result['type'] = $this->cate_db->where(array('id'=>$catid))->getfield('type_id');
+		$attrs = $this->goods_attr->where(array('sku_id' => $sku_id,'type' => 1))->field('attribute_id,attribute_value')->select();
+		$temp = array();
+		foreach ($attrs AS $attr) {
+			list($n,$t) = array_values($attr);
+			$temp[$n][] = $t;
 		}
+		$result['attr'] = $temp;
 		return $result;
 	}
-
-	/**
-     * 条数
-     * @param  [arra]   sql条件
-     * @return [type]
-     */
-    public function count($sqlmap = array()){
-        $result = $this->db->where($sqlmap)->count();
-        if($result === false){
-            $this->error = $this->db->getError();
-            return false;
-    	}
-    	return $result;
-    }
-    /**
-     * 商品属性列表
-     */
-	public function lists($sqlmap = array(), $options = array()) {
-        $type_id = $this->cate_db->where(array('id'=>$sqlmap['catid']))->getfield('type_id');
-        $content = $this->db ->where(array('id'=>$type_id,'status'=>1))->getfield('content');
-        $_attrs_info = json_decode($content,TRUE);
-        $_attrs = $_attrs_info['attr'];
-        $attrs = array();
-        $map = array();
-        if(isset($sqlmap['order'])){
-            $order = $sqlmap['order'];
-        }
-        if(isset($options['limit'])){
-            $limit =$options['limit'];
-        }
-        $map['type'] = array('neq','input');
-        foreach ($_attrs as $key => $value) {
-            $attrs[$key] = substr($value,strpos($value,'_')+1);
-            $map['id'] = $attrs[$key];
-            $result[$value] = $this->attr_db->where($map)->field('id,name,value,type,search')->find();
-            if(!empty($result[$value]['value'])){
-                $result[$value]['value'] = explode(',', $result[$value]['value']);
-            }else{
-                unset($result[$value]);
-            }
-        }
-        return $result;
-    }
-
-    public function specs($sqlmap = array(), $options = array()) {
-        $type_id = $this->cate_db ->where(array('id'=>$sqlmap['catid']))->getfield('type_id');
-        $content = $this->db ->where(array('id'=>$type_id))->getfield('content');
-        $_attrs_info = json_decode($content,TRUE);
-        $_specs = $_attrs_info['spec'];
-        foreach ($_specs as $k =>$_spec) {
-             $result['spec_'.$_spec] = $this->spec_db->where(array('id'=>$_spec))->field('id,name,value')->find();
-             $result['spec_'.$_spec]['value'] = explode(',',$result['spec_'.$_spec]['value']);
-        }
-        return $result;
-    }
 }
+	

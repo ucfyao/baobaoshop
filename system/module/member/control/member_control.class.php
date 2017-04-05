@@ -11,6 +11,7 @@ class member_control extends init_control {
     public function _initialize() {
         parent::_initialize();
         $this->service = $this->load->service('member/member');
+        $this->model = $this->load->table('member/member');
     }
 
     public function index() {
@@ -19,25 +20,36 @@ class member_control extends init_control {
         if($_GET['group_id']){
             $sqlmap['group_id'] = array('EQ',$_GET['group_id']);
         }
+        $members['table'] = array(
+            array(
+                'name' => '会员',
+                'width' => '25'
+            ),
+            array(
+                'name' => '等级&经验',
+                'width' => '20'
+            ),
+            array(
+                'name' => '账户余额',
+                'width' => '15'
+            ),
+            array(
+                'name' => '注册&登录',
+                'width' => '20'
+            ),
+            array(
+                'name' => '状态',
+                'width' => '10'
+            )
+        );
 
         $limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 20;
-        $lists = $this->service->get_lists($sqlmap,$_GET['page'],$limit);
-        $count = $this->service->count($sqlmap);
+        $members['lists'] = $this->load->table('member/member')->where($sqlmap)->page($_GET['page'])->order('id DESC')->limit($limit)->select();
+        $count = $this->load->table('member/member')->where($sqlmap)->count();
         $pages = $this->admin_pages($count, $limit);
-        $member_group = $this->load->service('member/member_group')->getfield('id,name');
+        $member_group = $this->load->table('member/member_group')->getfield('id,name');
         array_unshift($member_group,'所有等级');
-        $lists = array(
-            'th' => array(
-                'username' => array('title' => '会员','length' => 25,'style' => 'member'),
-                'member_level' => array('title' => '等级&经验','length' => 20,'style' => 'level'),
-                'money' => array('length' => 15,'title' => '账户余额','style' => 'money'),
-                'login' => array('title' => '注册&登录','length' => 20,'style' => 'login'),
-                'lock' => array('length' => 10,'title' => '状态'),
-            ),
-            'lists' => $lists,
-            'pages' => $pages,
-        );
-        $this->load->librarys('View')->assign('lists',$lists)->assign('pages',$pages)->assign('member_group',$member_group)->display('member_index');
+        $this->load->librarys('View')->assign('members',$members)->assign('pages',$pages)->assign('member_group',$member_group)->display('member_index');
     }
 
     public function update() {

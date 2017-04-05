@@ -33,65 +33,41 @@
 					<span class="th check-option" data-resize="false">
 						<span><input id="check-all" type="checkbox" /></span>
 					</span>
-					<?php foreach ($lists['th'] AS $th) {?>
-			<span class="th" data-width="<?php echo $th['length']?>">
-				<span class="td-con"><?php echo $th['title']?></span>
-			</span>
-			<?php }?>
+					<span class="th" data-width="40">
+						<span class="td-con">促销名称</span>
+					</span>
+					<span class="th" data-width="40">
+						<span class="td-con">促销时间</span>
+					</span>
+					<span class="th" data-width="10">
+						<span class="td-con">状态</span>
+					</span>
 					<span class="th" data-width="10">
 						<span class="td-con">操作</span>
 					</span>
 				</div>
-				<?php foreach ($lists['lists'] AS $list) {?>
+				<?php foreach ($info AS $prom) {?>
 				<div class="tr">
-					<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $list['id']?>" /></span>
-					<?php foreach ($list as $key => $value) {?>
-					<?php if($lists['th'][$key]){?>
-					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
+					<div class="td check-option"><input type="checkbox" name="id" value="<?php echo $prom['id']?>" /></div>
 					<span class="td">
 						<div class="double-click">
-							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-							<input class="input double-click-edit text-ellipsis text-center" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
+							<a class="double-click-button" title="双击可编辑" href="javascript:;"></a>
+							<input class="input double-click-edit text-ellipsis" name="name" data-id="<?php echo $prom['id']?>" type="text" value="<?php echo $prom['name']?>">
 						</div>
 					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ident') {?>
-						<span class="td ident">
-							<span class="ident-show">
-								<em class="ico_pic_show"></em>
-								<div class="ident-pic-wrap">
-									<img src="<?php echo $list['logo'] ? $list['logo'] : '../images/default_no_upload.png'?>" />
-								</div>
-							</span>
-							<div class="double-click">
-								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" type="text" value="<?php echo $value?>" />
-							</div>
-						</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
 					<span class="td">
-						<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
+						<span class="td-con"><?php echo date('Y-m-d H:i:s',$prom['start_time'])?> ~ <?php echo date('Y-m-d H:i:s',$prom['end_time'])?></span>
 					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
 					<span class="td">
-						<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
+						<span class="td-con"><?php if($prom['status'] == 1){?>未开始<?php }elseif($prom['status'] == 2){?>已结束<?php }else{?>进行中<?php }?></span>
 					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
-						<input type="hidden" name="id" value="<?php echo $value?>" />
-					<?php }else{?>
 					<span class="td">
-						<span class="td-con"><?php echo $value;?></span>
-					</span>
-					<?php }?>
-					<?php }?>
-					<?php }?>
-					<span class="td">
-						<span class="td-con">
-						<a href="<?php echo url('edit',array('id'=>$list['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('delete', array('id[]' => $list['id'])); ?>">删除</a><?php echo $lists['option']?></span>
+						<span class="td-con"><a href="<?php echo url('edit',array('id'=>$prom['id']))?>">编辑</a>&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('delete',array('id'=>$prom['id']))?>">删除</a></span>
 					</span>
 				</div>
 				<?php }?>
 				<div class="paging padding-tb body-bg clearfix">
-					<?php echo $lists['pages'];?>
+					<?php echo $pages?>
 					<div class="clear"></div>
 				</div>
 			</div>

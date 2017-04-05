@@ -16,17 +16,4 @@ class delivery_district_service extends service {
 	public function import($params){
 		return $this->table->update($params);
 	}
-	/**
-	 * @param  array 	sql条件
-	 * @param  integer 	读取的字段
-	 * @return [type]
-	 */
-	public function find($sqlmap = array(), $field = "") {
-		$result = $this->table->where($sqlmap)->field($field)->find();
-		if($result===false){
-			$this->error = $this->table->getError();
-			return false;
-		}
-		return $result;
-	}
 }

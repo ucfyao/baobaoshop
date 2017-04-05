@@ -127,92 +127,115 @@
 					<div class="th check-option" data-resize="false">
 						<input id="check-all" type="checkbox" />
 					</div>
-					<?php foreach ($lists['th'] AS $th) {?>
-					<span class="th" data-width="<?php echo $th['length']?>">
-						<span class="td-con"><?php echo $th['title']?></span>
-					</span>
+					<div class="th" data-width="15">
+						<div class="td-con">商品货号</div>
+					</div>
+					<div class="th" data-width="<?php if($_GET['label'] < 3){?>25<?php }else{?>30<?php }?>">
+						<div class="td-con">商品名称</div>
+					</div>
+					<div class="th" data-width="25">
+						<div class="td-con">品牌&分类</div>
+					</div>
+					<div class="th" data-width="10">
+						<div class="td-con">价格</div>
+					</div>
+					<div class="th" data-width="<?php if($_GET['label'] == 1 || !isset($_GET['label'])){?>5<?php }else{?>10<?php }?>">
+						<div class="td-con">库存</div>
+					</div>
+					<?php if($_GET['label'] == 1 || !isset($_GET['label'])){?>
+					<div class="th" data-width="5">
+						<div class="td-con">排序</div>
+					</div>
+					<?php }?>
+					<?php if($_GET['label'] < 3){?>
+					<div class="th" data-width="5">
+						<div class="td-con">上架</div>
+					</div>
 					<?php }?>
 					<div class="th" data-width="10">
 						<div class="td-con">操作</div>
 					</div>
 				</div>
-				<?php foreach ($lists['lists'] AS $list) {?>
+				<?php foreach ($goods as $r) {?>
 				<div class="goods-list">
 					<div class="tr">
-					<span class="td check-option"><input type="checkbox" name="id" value="<?php echo $list['id']?>" /></span>
-					<?php foreach ($list as $key => $value) {?>
-					<?php if($lists['th'][$key]){?>
-					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
-					<span class="td">
-						<div class="td-con">
+						<div class="td check-option"><input type="checkbox" name="id" value="<?php if($_GET['label'] == 1 || !isset($_GET['label'])){echo $r['id'];}else{echo $r['sku_id'];}?>" /></div>
+						<div class="td">
+							<div class="td-con">
 							<div class="double-click">
 								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis text-center" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
+								<input  class="input double-click-edit text-ellipsis text-center" name="sn" data-id="<?php echo $_GET['label'] == 1 || !isset($_GET['label']) ? $r['id'] : $r['sku_id']?>" type="text"  value="<?php echo $r['sn']?>"/>
+							</div>
 							</div>
 						</div>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'goods') {?>
-						<span class="td">
+						<div class="td">
 							<div class="td-con td-pic">
-								<div class="pic"><img src="<?php echo $list['thumb'] ? thumb($list['thumb'],150,150) : './statics/images/default_no_upload.png'?>" /></div>
+								<div class="pic"><img src="<?php echo $r['thumb'] ? thumb($r['thumb'],150,150) : './statics/images/default_no_upload.png'?>" /></div>
 								<div class="title">
 									<div class="double-click">
 										<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-										<input class="input double-click-edit text-ellipsis" name="<?php if($_GET['label'] == 1 || !isset($_GET['label'])){?>name<?php }else{?>sku_name<?php }?>" data-id="<?php echo $list['id']?>" type="text" value="<?php echo $value?>" />
+										<input class="input double-click-edit text-ellipsis" name="<?php if($_GET['label'] == 1 || !isset($_GET['label'])){?>name<?php }else{?>sku_name<?php }?>" data-id="<?php echo $_GET['label'] == 1 || !isset($_GET['label']) ? $r['id'] : $r['sku_id']?>" type="text" value="<?php echo $_GET['label'] == 1 || !isset($_GET['label']) ? $r['name'] : $r['sku_name']?>" />
 									</div>
 								</div>
 								<div class="icon">
 								<?php if($_GET['label'] != 1 || isset($_GET['label'])){?>
-									<?php echo $list['spec_show']?>
+									<?php echo $r['spec_show']?>
 								<?php }?>
-
 								</div>
 							</div>
-						</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'cate_brand') {?>
-					<span class="td">
-						<span class="td-con double-row text-left">品牌：<?php echo $list['brand_name']?><br/>分类：<?php echo $list['cate_name'] ?></span>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
-					<span class="td">
-						<a class="ico_up_rack <?php if($_GET['label'] == 1 || !isset($_GET['label'])){?>spu_status<?}else{?>sku_status<?php }?> <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击<?php if($value == 1){?>取消<?php }?>上架"></a>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
-					<span class="td">
-						<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
-						<input type="hidden" name="id" value="<?php echo $value?>" />
-					<?php }else{?>
-					<span class="td">
-						<span class="td-con"><?php echo $value;?></span>
-					</span>
-					<?php }?>
-					<?php }?>
-					<?php }?>
-					<span class="td">
-						<div class="td-con double-row">
-							<?php if(isset($_GET['label']) && $_GET['label'] != 1){?>
-								<a target="_blank" href="<?php echo url('goods/index/detail',array('sku_id'=>$list['id']))?>">查看</a><br>
-								&nbsp;&nbsp;&nbsp;<a href="<?php echo url('sku_edit',array('sku_id' => $list['id']))?>">编辑</a>
+						</div>
+						<div class="td">
+							<span class="td-con double-row text-left">品牌：<?php echo $r['brandname'] ? $r['brandname'] : $r['brand']['name']?><br/>分类：<?php echo $r['catname']?></span>
+						</div>
+						<div class="td">
+							<span class="td-con"><?php echo $r['price'] ? $r['price'] : $r['shop_price']?></span>
+						</div>
+						<div class="td">
+							<span class="td-con"><?php echo $_GET['label'] == 1 || !isset($_GET['label']) ? $r['sku_total'] : ($r['number'] ? $r['number'] : 0)?></span>
+						</div>
+						<?php if($_GET['label'] == 1 || !isset($_GET['label'])){?>
+						<div class="td">
+							<div class="td-con">
+								<div class="double-click">
+									<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
+									<input class="input double-click-edit text-ellipsis text-center" name="sort" data-id="<?php echo $_GET['label'] == 1 || !isset($_GET['label']) ? $r['id'] : $r['sku_id']?>" type="text" value="<?php echo $r['sort']?>" />
+								</div>
+							</div>
+						</div>
+						<?php }?>
+						<?php if($_GET['label'] < 3){?>
+						<div class="td">
+							<span class="td-con">
+							<?php if($r['status'] == 1){?>
+							<a class="ico_up_rack <?php if($_GET['label'] == 1 || !isset($_GET['label'])){?>spu_status<?php }else{?> sku_status<?php }?>" href="javascript:;" data-id="<?php echo $_GET['label'] == 1 || !isset($_GET['label']) ? $r['id'] : $r['sku_id']?>" title="点击下架商品"></a>
 							<?php }else{?>
-								<a class="look-attr" target="_blank" data-id="<?php echo $list['id']?>" href="javascript:;">展开</a><br>
-								&nbsp;&nbsp;&nbsp;<a href="<?php echo url('goods_add',array('id' => $list['id']))?>">编辑</a>
+							<a class="ico_up_rack cancel <?php if($_GET['label'] == 1 || !isset($_GET['label'])){?>spu_status<?php }else{?> sku_status<?php }?>" href="javascript:;" data-id="<?php echo $_GET['label'] == 1 || !isset($_GET['label']) ? $r['id'] : $r['sku_id']?>" title="点击上架商品"></a>
 							<?php }?>
+							</span>
+						</div>
+						<?php }?>
+						<div class="td">
+							<div class="td-con double-row">
+							<?php if(isset($_GET['label']) && $_GET['label'] != 1){?>
+								<a target="_blank" href="<?php echo url('goods/index/detail',array('sku_id'=>$r['sku_id']))?>">查看</a><br>
+							<?php }else{?>
+								<a class="look-attr" target="_blank" data-id="<?php echo $r['id']?>" href="javascript:;">展开</a><br>
+							<?php }?>
+								&nbsp;&nbsp;&nbsp;<a href="<?php echo url('goods_add',array('id' => $_GET['label'] == 3 ? $r['spu_id'] : $r['id']))?>">编辑</a>
 								<?php if($_GET['label'] != 4){?>
 								<?php if($_GET['label'] == 1 || !isset($_GET['label'])){?>
-								&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('ajax_del',array('id[]'=>$list['id'],'label'=>$_GET['label']))?>">删除</a>
+								&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('ajax_del',array('id[]'=>$r['id'],'label'=>$_GET['label']))?>">删除</a>
 								<?php }else{?>
-								&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('ajax_del_sku',array('sku_id[]'=>$list['id'],'label'=>$_GET['label']))?>">删除</a>
+								&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('ajax_del_sku',array('sku_id[]'=>$r['sku_id'],'label'=>$_GET['label']))?>">删除</a>
 								<?php }?>
 								<?php }else{?>
-								&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('ajax_del_sku',array('sku_id[]'=>$list['id'],'label'=>$_GET['label']))?>">销毁</a>
-								&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认恢复？" href="<?php echo url('ajax_recover',array('id[]'=>$list['id']))?>">恢复</a>
+								&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认删除？" href="<?php echo url('ajax_del_sku',array('sku_id[]'=>$r['sku_id'],'label'=>$_GET['label']))?>">销毁</a>
+								&nbsp;&nbsp;&nbsp;<a data-confirm="是否确认恢复？" href="<?php echo url('ajax_recover',array('id[]'=>$r['sku_id']))?>">恢复</a>
 								<?php }?>
 							</div>
-					</span>
+						</div>
 					</div>
-					<div class="goods-list-box" data-id="<?php echo $list['id']?>">
+					<div class="goods-list-box" data-id="<?php echo $r['id']?>">
 					</div>
 					<script id="sku_info" type="text/html">
 					<%for(var item in lists){%>
@@ -364,7 +387,7 @@
 					list_action.change_status(ajax_sku_status,id,row,'sku');
 				})
 				//推荐
-				$(".spu_status").live('click',function(){
+				$(".spu_status").on('click',function(){
 					var id = $(this).attr('data-id');
 					var row = $(this);
 					list_action.change_status(ajax_status,id,row,'spu');
@@ -421,7 +444,7 @@
 					}
 				});
 				 /*
-			     *商品状态修改
+			     *商品状态修改 
 			     */
 			     $(".icon a.ico").live('click',function(){
 			     	var _this = $(this);
@@ -479,8 +502,8 @@
 
 			 //格式化分类
 			jsoncategory = <?php echo json_encode($category) ?> ;
-		    nb_category(0, '.root');
-
+		    nb_category(0, '.root'); 
+		    
 			$('.goods-add-class .root a, .goods-add-class .child a').live('click',function(){
 				//在下方已选择分类显示
 				$('.goods-search-class-wrap .goods-class-choose span').html(classNameText());
@@ -495,7 +518,7 @@
 				$('.goods-search-class-wrap .form-buttonedit-popup').removeClass("buttonedit-popup-hover");
 				$('.goods-search-class-content').addClass('hidden');
 			});
-
+			
 			function classNameText(){
 				var _txt = '';
 				$('.goods-add-class div.focus').each(function(){
@@ -518,7 +541,7 @@
 				})
 				return _txt;
 			}
-
+			
 			$('.goods-search-class-wrap .form-buttonedit-popup').click(function(){
 				if($('.goods-search-class-content').hasClass('hidden')){
 					$(this).addClass("buttonedit-popup-hover");

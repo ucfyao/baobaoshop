@@ -2,7 +2,7 @@
 	if($url == -1) {
 		$url = 'javascript:history.back()';
 	}
-	if(!defined('MOBILE')){include template('toper','common');};
+	include template('toper','common');
 	include template('header','common');
 ?>
 

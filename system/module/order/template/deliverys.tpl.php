@@ -43,69 +43,56 @@
 		<div class="table-wrap">
 			<div class="table resize-table paging-table border clearfix">
 				<div class="tr">
-					<?php foreach ($lists['th'] AS $th) {?>
-					<span class="th" data-width="<?php echo $th['length']?>">
-						<span class="td-con"><?php echo $th['title']?></span>
+					<span class="th" data-width="15">
+						<span class="td-con">订单号</span>
 					</span>
-					<?php }?>
+					<span class="th" data-width="15">
+						<span class="td-con">物流名称</span>
+					</span>
+					<span class="th" data-width="20">
+						<span class="td-con">物流编号</span>
+					</span>
+					<span class="th" data-width="20">
+						<span class="td-con">发货时间</span>
+					</span>
+					<span class="th" data-width="10">
+						<span class="td-con">是否收货</span>
+					</span>
+					<span class="th" data-width="10">
+						<span class="td-con">打印状态</span>
+					</span>
 					<span class="th" data-width="10">
 						<span class="td-con">操作</span>
 					</span>
 				</div>
 
-
-				<?php foreach ($lists['lists'] AS $list) {?>
-				<div class="tr">
-					<?php foreach ($list as $key => $value) {?>
-					<?php if($lists['th'][$key]){?>
-					<?php if ($lists['th'][$key]['style'] == 'double_click') {?>
-					<span class="td">
-						<div class="double-click">
-							<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-							<input class="input double-click-edit text-ellipsis text-center" type="text" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" value="<?php echo $value?>" />
-						</div>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ident') {?>
-						<span class="td ident">
-							<span class="ident-show">
-								<em class="ico_pic_show"></em>
-								<div class="ident-pic-wrap">
-									<img src="<?php echo $list['logo'] ? $list['logo'] : '../images/default_no_upload.png'?>" />
-								</div>
+				<?php foreach ($o_deliverys as $v) : ?>
+					<div class="tr">
+						<span class="td">
+							<span class="td-con"><?php echo $v['_sub_order']['order_sn']; ?></span>
+						</span>
+						<span class="td">
+							<span class="td-con"><?php echo $v['delivery_name']; ?></span>
+						</span>
+						<span class="td">
+							<span class="td-con"><?php echo $v['delivery_sn']; ?></span>
+						</span>
+						<span class="td">
+							<span class="td-con"><?php echo date('Y-m-d H:i:s' ,$v['delivery_time']);?></span>
+						</span>
+						<span class="td">
+							<span class="td-con"><?php echo ($v['receive_time'] == 0) ? '未收货' : '已收货'; ?></span>
+						</span>
+						<span class="td">
+							<span class="td-con"><?php echo ($v['print_time'] == 0) ? '未打印' : '已打印'; ?></span>
+						</span>
+						<span class="td">
+							<span class="td-con">
+								<a href="<?php echo url('order/admin_order/print_kd',array('o_id' => $v['id']))?>">打印</a>
 							</span>
-							<div class="double-click">
-								<a class="double-click-button margin-none padding-none" title="双击可编辑" href="javascript:;"></a>
-								<input class="input double-click-edit text-ellipsis" name="<?php echo $key?>" data-id="<?php echo $list['id']?>" type="text" value="<?php echo $value?>" />
-							</div>
 						</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'left_text') {?>
-					<span class="td">
-						<span class="td-con text-left"><?php echo $value;?></span>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'ico_up_rack') {?>
-					<span class="td">
-						<a class="ico_up_rack <?php if($value != 1){?>cancel<?php }?>" href="javascript:;" data-id="<?php echo $list['id']?>" title="点击取消推荐"></a>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'date') {?>
-					<span class="td">
-						<span class="td-con"><?php echo date('Y-m-d H:i' ,$value) ?></span>
-					</span>
-					<?php }elseif ($lists['th'][$key]['style'] == 'hidden') {?>
-						<input type="hidden" name="id" value="<?php echo $value?>" />
-					<?php }else{?>
-					<span class="td">
-						<span class="td-con"><?php echo $value;?></span>
-					</span>
-					<?php }?>
-					<?php }?>
-					<?php }?>
-					<span class="td">
-						<span class="td-con">
-							<a href="<?php echo url('order/admin_order/print_kd',array('o_id' => $list['id']))?>">打印</a>
-						</span>
-					</span>
-				</div>
-				<?php }?>
+					</div>
+				<?php endforeach; ?>
 				<!-- 分页 -->
 				<div class="paging padding-tb body-bg clearfix">
 					<ul class="fr"><?php echo $pages; ?></ul>

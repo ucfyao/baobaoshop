@@ -4,24 +4,14 @@ class order_control extends init_control {
 	public function _initialize() {
 		parent::_initialize();
 		$this->model = $this->load->service('promotion/promotion_order');
-		$this->sku_service = $this->load->service('goods_sku');
+		$this->table = $this->load->table('promotion/promotion_order');
 	}
 
 	public function index() {
 		$limit = (isset($_GET['limit']) && is_numeric($_GET['limit'])) ? $_GET['limit'] : 20;
-		$result = $this->model->get_lists($sqlmap, $limit, $_GET['page']);
-		$pages = $this->admin_pages($result['count'], $limit);
-		$lists = array(
-            'th' => array(
-                'name' => array('title' => '促销名称','length' => 30,'style' => 'double_click'),
-                'type' => array('title' => ' 促销类型','length' => 10),
-                'time' => array('title' => ' 促销时间','length' => 40),
-                'status' => array('length' => 10,'title' => '状态'),
-            ),
-            'lists' => $result['lists'],
-            'pages' => $pages,
-        );
-		$this->load->librarys('View')->assign('lists',$lists)->display('order_index');
+		$result = $this->model->lists($sqlmap, $limit, $_GET['page']);
+		$result['pages'] = $this->admin_pages($result['count'], $limit);
+		$this->load->librarys('View')->assign('result',$result)->display('order_index');
 	}
 
 	public function add() {
@@ -54,7 +44,7 @@ class order_control extends init_control {
 			}
 		} else {
 			if($info['type'] == 2) {
-				$info['_sku_info_'] = $this->sku_service->getBySkuid($info['discount']);
+				$info['_sku_info_'] = $this->load->table('goods_sku')->getBySkuid($info['discount']);
 			}
 			$this->load->librarys('View')->assign('info',$info)->assign('id',$id)->display('order_edit');
 		}
@@ -79,9 +69,9 @@ class order_control extends init_control {
 		if($id < 1 || empty($name)) {
 			showmessage(lang('_param_error_'));
 		}
-		$result = $this->service->setField(array('name'=>$name),array('id' => $id));
+		$result = $this->table->where(array('id' => $id))->setField('name', $name);
 		if($result === false) {
-			showmessage($this->service->getError());
+			showmessage($this->table->getError());
 		} else {
 			showmessage(lang('_operation_success_'), url('index'), 1);
 		}
