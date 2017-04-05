@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<root>
+	<item id="hd_version"><![CDATA[2.1.3.170316]]></item>
+	<item id="hd_release"><![CDATA[20170316]]></item>
+	<item id="hd_branch"><![CDATA[stable]]></item>
+	<item id="hd_fixbug"><![CDATA[000000008]]></item>
+	<item id="hd_log">
+		<item id="0"><![CDATA[优化兼容php7]]></item>
+		<item id="1"><![CDATA[优化部分服务层代码]]></item>
+		<item id="2"><![CDATA[优化插件变量读取方式]]></item>
+		<item id="3"><![CDATA[优化会员登陆、退出、注册的扩展性]]></item>
+		<item id="4"><![CDATA[优化商品编辑后，我的咨询无商品信息的问题]]></item>
+		<item id="5"><![CDATA[优化收货地址超过10个不显示]]></item>
+		<item id="6"><![CDATA[优化后台订单详情显示问题]]></item>
+		<item id="7"><![CDATA[修复发货导致下单时间显示错误的问题]]></item>
+		<item id="8"><![CDATA[修复商品详情页分类名称显示错误的问题]]></item>
+		<item id="9"><![CDATA[修复文章列表所属分类不显示的问题]]></item>
+		<item id="10"><![CDATA[修复部分链接伪静态失效的问题]]></item>
+		<item id="11"><![CDATA[修复付款后减库存未减库存的问题]]></item>
+		<item id="12"><![CDATA[修复php7环境下安装字符集为空]]></item>
+		<item id="13"><![CDATA[修复其它已知问题]]></item>
+	</item>
+	<item id="hd_files">
+		<item id="update">
+			<item id="0"><![CDATA[README.md]]></item>
+			<item id="1"><![CDATA[config/version.php]]></item>
+			<item id="2"><![CDATA[system/core/hd_hook.class.php]]></item>
+			<item id="3"><![CDATA[system/library/db.class.php]]></item>
+			<item id="4"><![CDATA[system/library/dir.class.php]]></item>
+			<item id="5"><![CDATA[system/library/plugin.class.php]]></item>
+			<item id="6"><![CDATA[system/library/template.class.php]]></item>
+			<item id="7"><![CDATA[system/module/admin/control/plan_control.class.php]]></item>
+			<item id="8"><![CDATA[system/module/admin/hooks/hook.class.php]]></item>
+			<item id="9"><![CDATA[system/module/admin/model/service/app_service.class.php]]></item>
+			<item id="10"><![CDATA[system/module/admin/template/home.tpl.php]]></item>
+			<item id="11"><![CDATA[system/module/ads/model/service/adv_position_service.class.php]]></item>
+			<item id="12"><![CDATA[system/module/comment/model/service/comment_service.class.php]]></item>
+			<item id="13"><![CDATA[system/module/goods/model/service/goods_consult_service.class.php]]></item>
+			<item id="14"><![CDATA[system/module/goods/model/service/goods_sku_service.class.php]]></item>
+			<item id="15"><![CDATA[system/module/goods/model/service/type_service.class.php]]></item>
+			<item id="16"><![CDATA[system/module/goods/template/goods_base.tpl.php]]></item>
+			<item id="17"><![CDATA[system/module/install/function/function.php]]></item>
+			<item id="18"><![CDATA[system/module/install/template/setup2.html]]></item>
+			<item id="19"><![CDATA[system/module/member/model/service/member_address_service.class.php]]></item>
+			<item id="20"><![CDATA[system/module/member/model/service/member_service.class.php]]></item>
+			<item id="21"><![CDATA[system/module/misc/control/category_control.class.php]]></item>
+			<item id="22"><![CDATA[system/module/misc/control/index_control.class.php]]></item>
+			<item id="23"><![CDATA[system/module/misc/model/service/article_category_service.class.php]]></item>
+			<item id="24"><![CDATA[system/module/misc/model/service/article_service.class.php]]></item>
+			<item id="25"><![CDATA[system/module/notify/hooks/hook.class.php]]></item>
+			<item id="26"><![CDATA[system/module/order/hooks/hook.class.php]]></item>
+			<item id="27"><![CDATA[system/module/order/model/service/delivery_service.class.php]]></item>
+			<item id="28"><![CDATA[system/module/order/model/service/order_service.class.php]]></item>
+			<item id="29"><![CDATA[system/module/order/model/service/order_sub_service.class.php]]></item>
+			<item id="30"><![CDATA[system/module/order/model/table/order_sku_table.class.php]]></item>
+			<item id="31"><![CDATA[system/module/order/template/detail.tpl.php]]></item>
+			<item id="32"><![CDATA[system/module/plugin/control/index_control.class.php]]></item>
+			<item id="33"><![CDATA[system/module/wap/hooks/hook.class.php]]></item>
+			<item id="34"><![CDATA[template/wap/member/consult.html]]></item>
+			<item id="35"><![CDATA[template/wap/member/my_order.html]]></item>
+			<item id="36"><![CDATA[template/wap/member/sale_service.html]]></item>
+			<item id="37"><![CDATA[update.sql]]></item>
+		</item>
+		<item id="create">
+			<item id="0"><![CDATA[system/library/db/db_mysqli.class.php]]></item>
+		</item>
+	</item>
+</root>
