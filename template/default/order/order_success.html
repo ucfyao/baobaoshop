@@ -1,9 +1,9 @@
 <?php include template('toper','common'); ?>
 
 	<!-- 头部 -->
-	<div class="header container">
+	<div class="header_cart container">
 		<div class="logo fl">
-			<span><a href="<?php echo __APP__ ?>"><img src="template/default/statics/images/logo.png" /></a></span>
+			<span><a href="<?php echo __APP__ ?>"><img width="190px" height="140px" src="template/default/statics/images/logo.png" /></a></span>
 			<div class="header_slogan">
 				{$SEO['other']}
 			</div>
@@ -57,12 +57,12 @@
 			{/if}
 
 			<div class="padding-small order-container">
-				<div class="tip-title margin-large-left margin-large-right">
-					<span class="padding-large-left">温馨提示</span>
+				<div class="tip-title">
+					<span class="">温馨提示</span>
 					<div class="border border-mix"></div>
 				</div>
 				<div class="order-ok-wrap padding-top padding-big-bottom padding-large-left padding-large-right">
-					<p>您的订单我们已经收到，会尽快确认订单并配送发货！</p>
+					<p class="text-center">您的订单我们已经收到，会尽快确认订单并配送发货！</p>
 					<div class="text-center order-tip">
 						<p class="text-sub">>> 您的包裹会在第一时间送达 >></p>
 						<a class="view-order cart-btn" href="{url('member/order/index')}">查看订单</a>
