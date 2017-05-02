@@ -101,7 +101,7 @@
 			{loop $carts['skus'] $sellerid $cart}
 				<div class="bill-wrap" data-sellerid="{$sellerid}">
 					<div class="goods-bill bg-gray-white">
-						<dl class="settlement-lists logistics layout border-bottom border-gray-white">
+						<dl class="settlement-lists logistics layout border-bottom border-gray-white hidden">
 							<dt>选择配送方式：</dt>
 							<dd class="item-checked" data-event="balance" data-model="delivery">
 								{if (empty($carts['deliverys'][$sellerid]))}
