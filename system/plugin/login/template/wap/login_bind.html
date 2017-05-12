@@ -1,0 +1,42 @@
+<?php include template('header','common');?>
+<script type="text/javascript" src="<?php echo __ROOT__?>statics/js/haidao.validate.js"></script>
+	<div class="mui-content">
+	    <div class="padding bg-white login-wrap">
+	    	<form class="padding-small" action="<?php echo __ROOT__?>plugin.php?id=login:login_bind" method="POST" name="login_form">
+	    		<div class="list">
+		        	<input type="text" class="input" name="username" placeholder="用户名/手机号/邮箱" datatype="s2-15|mobile|email" nullmsg="请输入用户名/邮箱/手机号" errmsg="格式不正确">
+		        </div>
+		        <div class="list">
+		        	<input type="password" class="input" name="password" placeholder="密码" datatype="*" nullmsg="请输入密码" />
+		        </div>
+		        <input type="hidden" name="openid" value="<?php echo $_GET['openid']?>">
+		        <input type="hidden" name="type" value="<?php echo $_GET['type']?>">
+		        <input type="hidden" name="account_name" value="<?php echo $_GET['account_name']?>">
+		        <input type="submit" class="mui-btn full" value="关联该帐号" />
+		    </form>
+	    </div>
+	</div>
+<?php include template('footer','common');?>
+<script type="text/javascript">
+	var login = $("form[name=login_form]").Validform({
+			showAllError:true,
+			ajaxPost:true,
+			callback:function(ret) {
+				if(ret.status == 0) {
+					$.tips({
+						content:ret.message,
+						callback:function() {
+							return false;
+						}
+					});
+				} else {
+					$.tips({
+						content:ret.message,
+						callback:function(){
+							window.location.href = ret.referer;
+						}
+					});
+				}
+			}
+		})
+</script>

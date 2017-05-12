@@ -1,0 +1,46 @@
+.ibar{height:100%;width:40px; z-index: 9990; position: fixed; top: 0px; bottom: 0; right: 0px;}
+.ibar .ibar-panel{position: relative; width: 100%; height: 100%; background-color: #444852; z-index: 9;}
+.ibar .ibar-mp-center, .ibar .ibar-mp-buttom{position: absolute; left: 0; width: 40px; background-color: #444852; z-index: 2;}
+.ibar .ibar-mp-center{top: 50%;}
+.ibar .ibar-mp-buttom{bottom: 0;}
+.ibar ul li{position: relative; height: 40px;}
+.ibar .ibar-tool{display: none; right: 55px; z-index: 2;}
+.ibar .ibar-tooltip{position: absolute; top: 0; width: 92px; line-height: 40px; text-align: center; color: #fff; background-color: #444852; z-index: 2;}
+.ibar .ibar-tooltip i{display: block; position: absolute; right: -5px; top: 50%; margin-top: -5px; width: 5px; height: 9px; background: url(ibar_sprites.png) no-repeat 0 -54px;}
+.ibar .ibar-colse{display: block; position: absolute; right: 10px; top: 10px; width: 23px; height: 23px; background: url(ibar_sprites.png) no-repeat -21px -83px; cursor: pointer;}
+.ibar ul li a{display: block; position: relative;}
+.ibar li.show .ibar-tooltip{display: block;}
+.ibar ul li.btn-user a{height: 100%; line-height: 120px; overflow: hidden;}
+.ibar .ibar-mp-center .btn-user em{position: absolute; left: 9px; top: 9px; display: block; width: 22px; height: 22px; background: url(ibar_sprites.png) no-repeat 0 0;}
+.ibar ul li.btn-customer{height: 104px;}
+.ibar ul .btn-customer a{padding: 54px 8px 18px; color: #fff; background: url(ibar_sprites.png) no-repeat -44px 0;}
+.ibar ul .btn-customer a:hover, .ibar ul .btn-customer.show a{background-position: -84px 0;}
+.ibar ul li.btn-qrcode a{height: 100%; line-height: 120px; overflow: hidden;}
+.ibar .ibar-mp-buttom .btn-qrcode em{position: absolute; left: 9px; top: 9px; display: block; width: 22px; height: 22px; background: url(ibar_sprites.png) no-repeat -22px 0;}
+.ibar .ibar-intro{position: fixed; right: -280px; top: 0; width: 280px; min-height: 695px; height: 100%; color: #696969; border: 1px solid #d5d8df; background-color: #f9f9f9; z-index: 1;}
+.ibar .ibar-intro .top, .ibar .ibar-intro .bottom{position: absolute; left: 0; padding: 0 25px; width: 100%; background-color: #e8e8e8; z-index: 2;}
+.ibar .ibar-intro .top{top: 0; padding-top: 25px; height: 116px;}
+.ibar .ibar-intro .bottom{bottom: 0; padding-top: 25px; height: 126px;}
+.ibar .ibar-intro .center{position: relative; padding: 116px 0 126px; z-index: 1;}
+.ibar .ibar-intro h2{color: #0ca3cd;}
+.ibar .ibar-intro .ibar-colse{right: 25px; top: 25px;}
+.ibar .ibar-intro .intro-box{position: relative; padding: 126px 25px 136px; margin: 10px 0; width: 278px; height: 100%; background-color: #f9f9f9;}
+.ibar .intro-box ul{margin-bottom: 20px;}
+.ibar .intro-box ul li{margin-top: 10px; height: 28px;}
+.ibar .intro-box ul a{position: relative; display: block; padding: 0; padding-left: 40px; height: 28px; line-height: 28px; color: #000; background-image: none; background-color: #f9f9f9 !important;}
+.ibar ul .intro-box a:hover{background-color: #f9f9f9;}
+.intro-box ul li em{display: block; position: absolute; left: 0; top: 0; width: 28px; height: 28px; background: url(ibar_sprites.png) no-repeat 0 -22px;}
+.intro-box ul li span{display: block; position: absolute; left: 0; top: 0; width: 28px; height: 28px;}
+.ibar .intro-box .text{padding-top: 20px; border-top: 1px solid #e8ebee;}
+.ibar .intro-box .text a{margin-top: 10px; padding: 0; color: #0ca3cd; background: none; background-color: #f9f9f9 !important;}
+.ibar-intro .bottom .time-text em{float: left; display: block; margin-top: 5px; margin-right: 15px; width: 32px; height: 31px; background: url(ibar_sprites.png) no-repeat -12px -51px;}
+.ibar-intro .bottom .time-text span{display: block;}
+.ibar-intro .bottom .tel{width: 228px; font-size: 28px; color: #256fda;font-family: 'Lantinghei SC','微软雅黑','microsoft yahei',Tahoma,Helvetica,'SimSun',sans-serif;}
+.ibar .ibar-img{position: absolute; bottom: 0; padding: 15px; background: #fff;}
+.ibar .btn-qrcode.show .ibar-img{display: block;}
+.ibar .ibar-img i{display: block; position: absolute; right: -4px; bottom: 10px; width: 5px; height: 9px; background: url(ibar_sprites.png) no-repeat 0 -74px;}
+.ibar .btn-gotop{padding-top: 2px;display: none; background: url(ibar_sprites.png) no-repeat -44px -102px;}
+.ibar .btn-gotop a{display: block; height: 40px; background: url(iconsprite_btbar.png) no-repeat center;}
+.intro-box ul li a:hover{color:#0CA3CD;}
+.ibar .intro-box .text a:hover{text-decoration:underline;}
+.btn-qrcode .ibar-img p{text-align:center;font-size: 12px; color: #333;font-family: 'Lantinghei SC','微软雅黑','microsoft yahei',Tahoma,Helvetica,'SimSun',sans-serif;}

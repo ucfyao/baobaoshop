@@ -1,0 +1,152 @@
+<?php include template('header','common');?>
+<script type="text/javascript">
+      	//mui.init();
+		mui.init({
+	        pullRefresh: {
+	            container: '#refreshContainer', //待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+	            up: {
+	                contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+	                contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+	                callback: add_more //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+	            },
+	            down : {
+			      contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+			      contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+			      contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+			      callback : refresh_page //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+	        }
+	    });
+	    var map = jQuery.parseJSON('<?php echo json_encode($_GET)?>');
+	    var page = "<?php echo $_GET['page']+1 ?>";
+		var url = "<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index','act' => 'list','ajax' => 'list')); ?>";
+	    function add_more(){
+	    	if($(".user-list-none").length>0) return false;
+    		var param = {
+    			limit : 5,
+    			page : page,
+    			map : map
+			};
+			pull_get_lists(param,url,'up');
+    	}
+	    
+	    function refresh_page(){
+	    	var param = {
+    			limit : 5,
+    			page : 1,
+    			map : map
+			};
+			pull_get_lists(param,url,'down');
+	    }
+		function pull_get_lists(param,url,type){
+				$.get(url,param,function(ret){
+    			if(ret.logs && ret.logs.length > 0){
+    				var _html = '';
+    				$.each(ret.logs,function(i,item){
+    					_html += '<li class="order-list list-col-10">';
+					    _html += '<div class="order-stuats padding-tb lh-icon-15 list-item">';
+						_html += '	<span>申请日期：'+ item.up_date +'</span>';
+						_html += '</div>';
+						_html += '<div class="order-stuats padding-tb lh-icon-15 list-item">';
+						_html += '	<span>收款账户：'+ item.account +'</span>';
+						_html += '	<span class="mui-pull-right">'+ item.account_type +'</span>';
+						_html += '</div>';
+						_html += '<div class="order-stuats padding-tb lh-icon-15 list-item">';
+						_html += '	<span>收款人：'+ item.true_name +'</span>';
+						_html += '	<span class="mui-pull-right">提现费率：'+ item.rate +'%</span>';
+						_html += '</div>';
+						_html += '<div class="order-stuats padding-tb lh-icon-15 list-item">';
+						_html += '	<span>提现金额：￥'+ item.money +'</span>';
+						_html += '	<span class="mui-pull-right">实到金额：￥'+ item.go_money +'</span>';
+						_html += '</div>';
+				        _html += '<div class="order-stuats padding-tb lh-icon-15 list-item">';
+						_html += '	<span>处理日期：'+ item.do_date +'</span>';
+						_html += '	<span class="mui-pull-right">'+ item.status +'</span>';
+						_html += '</div>';
+						_html += '</li>';
+					});
+					if(type == 'up'){
+						$('.order-lists').append(_html);
+						page = page*1 + 1;
+						mui('#refreshContainer').pullRefresh().endPullupToRefresh(false);
+					}else{
+						$('.order-lists').html(_html);
+						page = 2;
+						mui('#refreshContainer').pullRefresh().endPulldownToRefresh(false);
+						mui('#refreshContainer').pullRefresh().refresh(true);
+					}
+    			}else{
+					if(type == 'up'){
+						mui('#refreshContainer').pullRefresh().endPullupToRefresh(true);
+					}else{
+						mui('#refreshContainer').pullRefresh().endPulldownToRefresh(true);
+					}
+    			}
+    		},'json')
+		}
+    </script>
+	
+	<div class="hd-grid filter-items bg-white">
+
+<?php if ($config['alipay_status']):?>
+		<div class="hd-col-xs-e4 w30">
+			<a href="<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index')); ?>" class="filter-item <?php if (!isset($_GET[act])):?>current<?php endif;?>">支付宝提现</a>
+		</div>
+<?php endif;?>
+
+<?php if ($openid && $config['wxpay_status']):?>
+		<div class="hd-col-xs-e4 w30">
+			<a href="<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index','act'=>'wxpay')); ?>" class="filter-item <?php if ($_GET[act] == 'wxpay'):?>current<?php endif;?>">微信提现</a>
+		</div>
+<?php endif;?>
+
+		<div class="hd-col-xs-e4 w30">
+			<a href="<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index','act'=>'list')); ?>" class="filter-item <?php if ($_GET[act] == 'list'):?>current<?php endif;?>">提现记录</a>
+		</div>
+
+	</div>
+
+	<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+	  	<div class="mui-scroll has-scorll-top">
+			<ul class="order-lists mui-clearfix">
+				<?php foreach($logs as $r):?>
+					<li class="order-list list-col-10">
+					
+					    <div class="order-stuats padding-tb lh-icon-15 list-item">
+							<span>申请日期：<?php echo date('Y-m-d H:i:s',$r['up_date'])?></span>
+						</div>
+					
+						<div class="order-stuats padding-tb lh-icon-15 list-item">
+							<span>收款账户：<?php if($r['account_type']=='alipay'){?><?php echo $r['account']?><?php }elseif($r['account_type']=='wxpay'){?>/<?php }?></span>
+							<span class="mui-pull-right"><?php if($r['account_type']=='alipay'){?>支付宝<?php }elseif($r['account_type']=='wxpay'){?>微信<?php }?></span>
+						</div>
+                      						
+						<div class="order-stuats padding-tb lh-icon-15 list-item">
+							<span>收款人：<?php echo $r['true_name']?></span>
+							<span class="mui-pull-right">提现费率：<?php echo sprintf('%.2f' ,$r[rate])?>%</span>
+						</div>
+						
+						<div class="order-stuats padding-tb lh-icon-15 list-item">
+							<span>提现金额：￥<?php echo sprintf('%.2f' ,$r[money])?></span>
+							<span class="mui-pull-right">实到金额：￥<?php echo sprintf('%.2f' ,$r[go_money])?></span>
+						</div>
+						
+						<div class="order-stuats padding-tb lh-icon-15 list-item">
+							<span>处理日期：<?php if($r['do_date']=='0'){?><?php }else{?><font title="<?php echo date('Y-m-d H:i:s',$r['do_date'])?>"><?php echo date('Y-m-d',$r['do_date'])?></font><?php }?></span>
+							<span class="mui-pull-right"><?php if($r['status']=='0'){?>未处理<?php }elseif($r['status']== '-1'){?>已拒绝<?php }else{?>已打款<?php }?></span>
+						</div>
+					</li>
+				<?php endforeach;?>
+				
+				<!-- 无提现时 -->
+				<?php if(!$logs):?>
+					<li class="user-list-none mui-text-center">
+						<p class="margin-top text-black hd-h5">暂无提现记录</p>
+					</li>
+				<?php endif;?>
+			</ul>
+		</div>
+
+</body>
+
+</html>

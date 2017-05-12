@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<root>
+	<item id="code"><![CDATA[wechat_wap]]></item>
+	<item id="name"><![CDATA[微信手机登录]]></item>
+	<item id="description"><![CDATA[微信手机登录只能在微信浏览器显示和登录]]></item>
+	<item id="dataline"><![CDATA[2015-5-5 11:55:44]]></item>
+	<item id="version"><![CDATA[1.0]]></item>
+	<item id="config">
+		<item id="app_id">
+			<item id="name"><![CDATA[接口账号(APP ID)]]></item>
+			<item id="type"><![CDATA[text]]></item>
+			<item id="value"><![CDATA[]]></item>
+			<item id="tips"><![CDATA[设置微信登录接口账号]]></item>
+		</item>
+		<item id="app_key">
+			<item id="name"><![CDATA[接口密匙(APP KEY)]]></item>
+			<item id="type"><![CDATA[text]]></item>
+			<item id="value"><![CDATA[]]></item>
+			<item id="tips"><![CDATA[设置微信登录的接口密匙]]></item>
+		</item>
+	</item>
+</root>

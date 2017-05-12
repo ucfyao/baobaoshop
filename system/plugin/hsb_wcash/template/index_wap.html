@@ -1,0 +1,178 @@
+<?php include template('header','common');?>
+<script type="text/javascript" src="<?php echo __ROOT__;?>statics/js/haidao.validate.js?v={HD_VERSION}"></script>
+
+<script type="text/javascript" src="<?php echo __ROOT__;?>template/default/statics/js/jquery.cookie.js?v={HD_VERSION}"></script>
+	<div class="hd-grid filter-items bg-white">
+
+<?php if ($config['alipay_status']):?>
+		<div class="hd-col-xs-e4 w30">
+			<a href="<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index')); ?>" class="filter-item <?php if (!isset($_GET[act])):?>current<?php endif;?>">支付宝提现</a>
+		</div>
+<?php endif;?>
+
+<?php if ($openid && $config['wxpay_status']):?>
+		<div class="hd-col-xs-e4 w30">
+			<a href="<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index','act'=>'wxpay')); ?>" class="filter-item <?php if ($_GET[act] == 'wxpay'):?>current<?php endif;?>">微信提现</a>
+		</div>
+<?php endif;?>
+
+		<div class="hd-col-xs-e4 w30">
+			<a href="<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index','act'=>'list')); ?>" class="filter-item <?php if ($_GET[act] == 'list'):?>current<?php endif;?>">提现记录</a>
+		</div>
+
+
+	</div>
+
+	<div class="mui-content">
+      <div class="mui-scroll has-scorll-top">
+	  
+
+
+        <div class="padding bg-white border-bottom">
+			账户余额：<font class="text-red"><?php echo $member['money']?></font> 元
+		</div>
+<?php if($member['money']>0):?>
+		<form action="" method="post" name="form" target="">
+<?php if ($_GET[act] !== 'wxpay'):?>
+		<div class="padding bg-white border-bottom">
+			<input class="margin-none" type="text" datatype="*" placeholder="请输入支付宝账户" name="account" nullmsg="请输入支付宝账户"/>
+		</div>
+<?php endif;?>
+        
+		<div class="padding bg-white border-bottom">
+			<input class="margin-none" type="text" datatype="*" placeholder="请输入真实姓名" name="true_name" nullmsg="请输入真实姓名（错误的姓名将导致款项无法入账）"/>
+		</div>
+		
+		<div class="padding bg-white border-bottom">
+			<input class="margin-none" type="text" datatype="*" placeholder="请输入提现金额" name="money" id="money" nullmsg="请输入提现金额" onchange="setTotal();"/>
+		</div>
+
+<?php if($config['alidayu_mobilecheck_status']):?>	
+<div class="padding bg-white border-bottom">		
+		<div class="list relative">
+			<input type="text" class="number" placeholder="请输入验证码" name="vcode" disabled="disabled"  datatype="n" nullmsg="请输入验证码"/>
+			<button class="mui-btn mui-btn-primary ver-code" id="sendsms">发送验证码</button>
+		</div>
+</div>
+<?php endif;?>	
+
+<?php if($config['rate']>0):?>
+		<div class="padding bg-white border-bottom">
+			最终到账：<span id="total_money" style="color:#FF0000"></span> 元 （提现费率：<?php echo $config['rate']?>%）
+		</div>
+<?php endif;?>	
+
+	    <div class="margin padding-small">
+<?php if($_GET[act] == 'wxpay'){?>
+			<input class="input w25 inline" name="account_type" type="hidden" value="wxpay"/>
+<?php }else{?>
+			<input class="input w25 inline" name="account_type" type="hidden" value="alipay"/>
+<?php }?>
+			<input type="submit" value="立即提现" class="mui-btn mui-btn-blue full hd-h4 recharge"/>
+	    </div>
+
+		</form>
+<?php else:?>
+	    <div class="padding bg-white border-bottom">
+			账户余额不足，无法提现！
+	    </div>
+<?php endif;?>
+
+
+     </div>
+	</div>
+
+</body>
+
+</html>
+<script>
+
+   function setTotal(){
+　　var fare=<?php echo $config['rate_j']?>;
+　　var num=document.getElementById("money").value;
+　　if(/^[0-9]+.?[0-9]*$/.test(num)){//检查用户输入的值是否是数字
+      total = fare*num;
+      total = total.toFixed(2);
+　    document.getElementById("total_money").innerHTML=parseFloat(total);
+　　}else{
+　  　alert("请您输入正确的金额！");
+　  　document.getElementById("total_money").innerHTML="0"
+　　}
+　　}
+
+
+		var form = $("form[name=form]").Validform({
+			showAllError:true,
+			ajaxPost:true,
+			callback:function(ret) {
+				if(ret.status == 0) {
+					$.tips({
+						icon:'error',
+						content:ret.message,
+						callback:function() {
+							return false;
+						}
+					});
+				}else{
+					$.tips({
+						icon:'success',
+						content:ret.message,
+						callback:function() {
+							window.location.href=ret.referer;
+						}
+					});
+				}
+			}
+		})
+	
+
+/*仿刷新：检测是否存在cookie*/
+			if($.cookie("reg_captcha")){
+				reget($.cookie("reg_captcha"));
+			}
+			$("#sendsms").bind("click",function(){
+			    var action = "wcash_checkmobile";
+				var ajaxurl="<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index','act'=>'checkmobile')); ?>";
+				$.post(ajaxurl,{'action':action},function(data){
+				    if(data.status == 0) {
+						$.tips({
+							icon:'error',
+							content:data.message,
+							callback:function() {
+								return false;
+							}
+						});
+					} else {
+						$.tips({
+							icon:'success',
+							content:data.message,
+							callback:function() {
+								$("[name=vcode]").removeAttr("readonly disabled");
+								reget(60);
+							}
+						});					
+					}
+					return false;
+				},'json');
+
+			})
+			//重新获取验证码
+		function reget(count){
+	    var mobj = $('input[name="mobile"]');
+		var btn = $("#sendsms");
+		var count = count;
+		var resend = setInterval(function(){
+			count--;
+			if (count > 0){
+				btn.text(count+"s后再试");
+				mobj.attr('readonly',true);
+				$.cookie("reg_captcha", count, {path: '/', expires: (1/86400)*count});
+			}else {
+				clearInterval(resend);
+				mobj.removeAttr('disabled readonly');
+				btn.text("重获验证码").removeAttr('disabled').css({'cursor':'','background':'#046bb3'});
+			}
+		}, 1000);
+ 			 btn.attr('disabled',true).css({'cursor':'not-allowed','background':'#989898'});
+		}
+</script>

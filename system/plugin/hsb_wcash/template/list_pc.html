@@ -1,0 +1,132 @@
+<?php include template('header','member');?>
+		<div class="margin-big-top layout">
+			<div class="container border border-gray-white member clearfix">
+				<div class="left padding-big">
+					<div class="user-head margin-big-left margin-big-top">
+						<img src="<?php echo $this->member['avatar'];?>" height="148" />
+						<span><a href="<?php echo url('member/account/avatar'); ?>">修改头像</a></span>
+					</div>
+					<div class="margin-top text-center text-default"><p><?php echo $member['username']?></p></div>
+					<dl class="margin-big-top member-memu clearfix">
+					 <?php include template('menu_account','member');?>
+					</dl>
+				</div>
+				<div class="right padding-big-left padding-big-right">
+				
+				<div class="member-order-top margin-top margin-bottom small-search clearfix">
+				<div class="fl padding-small-top">
+					<ul class="order-menu">
+<?php if ($config['alipay_status']):?><li><a <?php if (!isset($_GET[act])):?>class="current"<?php endif;?> href="<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index')); ?>">支付宝提现</a></li><?php endif;?>
+<?php if ($openid && $config['wxpay_status']):?><li><a <?php if ($_GET[act] == 'wxpay'):?>class="current"<?php endif;?> href="<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index','act'=>'wxpay')); ?>">微信提现</a></li><?php endif;?>
+						<li><a <?php if ($_GET[act] == 'list'):?>class="current"<?php endif;?> href="<?php echo url('plugin/index/index',array('id' => 'hsb_wcash:index','act'=>'list')); ?>">提现记录</a></li>
+						<div class="mat"></div>
+					</ul>
+				</div>
+			    </div>
+				
+				<?php if (!$config['alipay_status'] && !$config['wxpay_status']):?>
+				<div class="hot-tip margin-big-top padding radius border">
+				  <em class="ico-tip"></em>
+				  <span>目前暂时停止了提现申请，您可以在此查看您过往的提现记录。</span>
+				</div>
+			   <?php endif;?>
+			
+					<div class="margin-top table border-td text-center border border-gray-white text-lh-40">
+						<div class="tr">
+							<div class="th w5">序号</div>
+							<div class="th w20">收款账户</div>
+							<div class="th w10">账户类型</div>
+							<div class="th w10">收款人</div>
+							<div class="th w10">提现金额</div>
+							<div class="th w10">提现费率</div>
+							<div class="th w10">实到金额</div>
+							<div class="th w10">申请日期</div>
+							<div class="th w10">处理日期</div>
+							<div class="th w5">状态</div>
+						</div>
+						<?php foreach($logs as $k => $r):?>
+						<div class="tr">
+							<div class="td w5"><?php echo $k+1?></div>
+							<div class="td w20"><?php if($r['account_type']=='alipay'){?><?php echo $r['account']?><?php }elseif($r['account_type']=='wxpay'){?>/<?php }?></div>
+							<div class="td w10"><?php if($r['account_type']=='alipay'){?>支付宝<?php }elseif($r['account_type']=='wxpay'){?>微信<?php }?></div>
+							<div class="td w10"><?php echo $r['true_name']?></div>
+							<div class="td w10">￥<?php echo sprintf('%.2f' ,$r[money])?></div>
+							<div class="td w10"><?php echo sprintf('%.2f' ,$r[rate])?>%</div>
+							<div class="td w10">￥<?php echo sprintf('%.2f' ,$r[go_money])?></div>
+							<div class="td w10"><font title="<?php echo date('Y-m-d H:i:s',$r['up_date'])?>"><?php echo date('Y-m-d',$r['up_date'])?></font></div>
+							<div class="td w10"><?php if($r['do_date']=='0'){?><?php }else{?><font title="<?php echo date('Y-m-d H:i:s',$r['do_date'])?>"><?php echo date('Y-m-d',$r['do_date'])?></font><?php }?></div>
+							<div class="td w5"><?php if($r['status']=='0'){?>未处理<?php }elseif($r['status']== '-1'){?>已拒绝<?php }else{?>已打款<?php }?></div>
+						</div>
+						<?php endforeach;?>
+					</div>
+					<div class="paging margin-top padding-tb clearfix" data-id="<?php echo $_GET[id]?>" data-page="<?php echo $_GET[page]?>">
+						<?php echo $pages?>
+					</div>
+					
+					
+				</div>
+			</div>
+		</div>
+
+<script>
+
+	$(".o-stutas-filter .open").click(function(){
+		$(".o-stutas-filter .order-stutas").removeClass("hidden");
+	});
+	$(".o-stutas-filter .order-stutas dt").click(function(){
+		$(this).parent().addClass("hidden");
+	});
+	$(".o-stutas-filter .order-stutas dd").click(function(){
+		$(this).addClass("selected").siblings().removeClass("selected");
+		$(this).parent().addClass("hidden");
+	});
+
+	$(".order-menu li a").bind('mouseover',function(){
+		var _left = $(this).offset().left-$(".order-menu").offset().left;
+		$(".mat").stop().animate({left:_left+"px",width:$(this).width()},300);
+	});
+	$(".order-menu").bind('mouseleave',function(){
+		orderMenuAutoSlide(300);
+	});
+	function orderMenuAutoSlide(timer){
+		var num = 0;
+		var width = 0;
+		$(".order-menu li").each(function(){
+			if($(this).children("a").hasClass("current")){
+				num = $(this).children("a").offset().left;
+				width = $(this).children("a").width();
+			}
+		});
+		$(".mat").stop().animate({left:num-$(".order-menu").offset().left+"px",width:width},timer).show();
+	}
+	orderMenuAutoSlide(0);
+	
+   function setTotal(){
+　　var fare=<?php echo $config['rate_j']?>;
+　　var num=document.getElementById("money").value;
+　　if(/^[0-9]+.?[0-9]*$/.test(num)){//检查用户输入的值是否是数字
+      total = fare*num;
+      total = total.toFixed(2);
+　    document.getElementById("total_money").innerHTML=parseFloat(total);
+　　}else{
+　  　alert("请您输入正确的金额！");
+　  　document.getElementById("total_money").innerHTML="0"
+　　}
+　　}
+
+</script>
+ <?php include template('footer','common');?>
+ 		<script>
+			$(function(){
+				//点击到指定页
+				$(".paging .button").click(function(){
+					jump_to_page(this);
+				});
+				//回车到指定页
+				$(".paging input[name=page]").live('keyup',function(e){
+					if(e.keyCode == 13){
+						jump_to_page(this);
+					} 
+				});
+			})
+		</script>

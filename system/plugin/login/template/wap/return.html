@@ -1,0 +1,30 @@
+<?php include template('header','common');?>
+    <style type="text/css">
+    .related-account-head { width: 120px; height: 120px; border: 2px solid #2d2d2d; border-radius: 3px; }
+	</style>
+	<div class="mui-content">
+	    <div class="mui-text-center padding-15">
+	    	<div class="margin-large-top margin-big-bottom mui-inline related-account-head">
+	    		<div class="square-item">
+		    		<img src="<?php echo $_GET['avatar']?>" />
+		    	</div>
+	    	</div>
+	    	<h4 class="hd-h4"><?php echo $_GET['username']?></h4>
+	    	<p class="margin-top margin-bottom mui-h4 text-drak">您的<?php echo $_GET['account_type']?>账号尚未关联商城账号</p>
+	    	<button href="javascript:;" class="margin-top mui-btn mui-btn-blue full mui-h4 reg">关联新账号</button>
+	    	<button href="javascript:;" class="margin-top mui-btn bg-orange border-none text-white full mui-h4 login">关联到已有账号</button>
+	    </div>
+	</div>
+<?php include template('footer','common');?>
+<script type="text/javascript">
+	var type = "<?php echo $_GET['type']?>";
+	var openid = "<?php echo $_GET['openid']?>";
+	var url_forward = "<?php echo $_GET['url_forward']?>";
+	var account_name = "<?php echo $_GET['account_name']?>";
+	$('.reg').bind('click',function(){
+		window.location.href = "<?php echo __ROOT__?>plugin.php?id=login:reg_bind&type=" + type + "&openid=" + openid + '&url_forward=' + url_forward + '&account_name=' + account_name;
+	})
+	$('.login').bind('click',function(){
+		window.location.href = "<?php echo __ROOT__?>plugin.php?id=login:login_bind&type=" + type + "&openid=" + openid + '&url_forward=' + url_forward + '&account_name=' + account_name;
+	})
+</script>
