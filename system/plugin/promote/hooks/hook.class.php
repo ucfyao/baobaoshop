@@ -73,7 +73,8 @@ class plugin_promote_hook {
                         'pid'           => $list['id'],
                         'uid'           => $member['member']['id'],
                         'order_sn'      => $member['order_sn'],
-                        'real_price'    => $order['paid_amount'],
+                        // 商品总额-所有优惠总额
+                        'real_price'    => $order['sku_amount'] - $order['promot_amount'],
                         'create_time'   => time(),
                         'status'        => 1,
                         'promo_code'    => cookie('promo_code')
