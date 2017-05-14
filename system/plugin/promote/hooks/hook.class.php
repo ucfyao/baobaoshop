@@ -57,10 +57,8 @@ class plugin_promote_hook {
             if ($list) {
                 $order = model('order_sku')->where(array('order_sn' => $member['order_sn']))->select();
                 if ($order) {
-                    $real_price = 0;
                     foreach ($order as $v) {
                         $list['good_num'] = $list['good_num'] + $v['buy_nums'];
-                        $real_price = $real_price +  $v['real_price'];
                     }
                     $date['id'] = $list['id'];
                     $date['good_num'] = $list['good_num'];
@@ -69,12 +67,13 @@ class plugin_promote_hook {
                     $arr[] = $member['order_sn'];
                     $date['orders'] = implode(",", $arr);
                     model('promote')->update($date);
+                    $order = model('order')->where(array('sn' => $member['order_sn'] ))->find();
                     // 添加到渠道用户订单表
                     $inData = [
                         'pid'           => $list['id'],
                         'uid'           => $member['member']['id'],
                         'order_sn'      => $member['order_sn'],
-                        'real_price'    => $real_price,
+                        'real_price'    => $order['paid_amount'],
                         'create_time'   => time(),
                         'status'        => 1,
                         'promo_code'    => cookie('promo_code')
