@@ -60,7 +60,7 @@ class plugin_promote_hook {
                     $real_price = 0;
                     foreach ($order as $v) {
                         $list['good_num'] = $list['good_num'] + $v['buy_nums'];
-                        $real_price = $real_price +  $order['real_price'];
+                        $real_price = $real_price +  $v['real_price'];
                     }
                     $date['id'] = $list['id'];
                     $date['good_num'] = $list['good_num'];
@@ -84,7 +84,7 @@ class plugin_promote_hook {
             }
         }
     }
- /**
+    /**
      * 该渠道推广所得完成商品购买量，所得订单完成量，完成订单编号集合（逗号隔开）】
      */
     public function order_finish(&$sn) {
