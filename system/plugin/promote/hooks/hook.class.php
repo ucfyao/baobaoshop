@@ -35,6 +35,15 @@ class plugin_promote_hook {
                 $arr[] = $mid;
                 $date['members'] = implode(",", $arr);
                 model('promote')->update($date);
+                $inData = [
+                    'pid'           => $list['id'],
+                    'uid'           => $mid,
+                    'created_time'  => time(),
+                    'status'        => 1,
+                    'promo_code'    => cookie('promo_code')
+                ];
+                // 添加到渠道用户关联表
+                model('promote_user')->add($inData);
             }
         }
     }
@@ -48,8 +57,10 @@ class plugin_promote_hook {
             if ($list) {
                 $order = model('order_sku')->where(array('order_sn' => $member['order_sn']))->select();
                 if ($order) {
+                    $real_price = 0;
                     foreach ($order as $v) {
                         $list['good_num'] = $list['good_num'] + $v['buy_nums'];
+                        $real_price = $real_price +  $order['real_price'];
                     }
                     $date['id'] = $list['id'];
                     $date['good_num'] = $list['good_num'];
@@ -58,6 +69,17 @@ class plugin_promote_hook {
                     $arr[] = $member['order_sn'];
                     $date['orders'] = implode(",", $arr);
                     model('promote')->update($date);
+                    // 添加到渠道用户订单表
+                    $inData = [
+                        'pid'           => $list['id'],
+                        'uid'           => $member['member']['id'],
+                        'order_sn'      => $member['order_sn'],
+                        'real_price'    => $real_price,
+                        'create_time'   => time(),
+                        'status'        => 1,
+                        'promo_code'    => cookie('promo_code')
+                    ];
+                    model('promote_order')->add($inData);
                 }
             }
         }
@@ -81,6 +103,14 @@ class plugin_promote_hook {
                     $arr[] = $sn;
                     $date['dealorders'] = implode(",", $arr);
                     model('promote')->update($date);
+                    // 更新渠道用户订单表
+                    $promoteOrder = model('promote_order')->where(array('order_sn' => $sn))->find();
+                    if($promoteOrder){
+                        $promoteData['id'] = $promoteOrder['id'];
+                        $promoteData['status'] = 2;
+                        $promoteData['order_finish_time'] = time();
+                        model('promote_order')->update($promoteData);
+                    }
                 }
             }
         }

@@ -46,19 +46,19 @@ return array(
     'DATA_CACHE_SUBDIR'     => false,    // 使用子目录缓存 (自动根据缓存标识的哈希创建子目录)
     'DATA_PATH_LEVEL'       => 1,        // 子目录缓存级别
 
-    'AUTHKEY'               => 'fP5a_',
+    'AUTHKEY'               =>'d2SShpfegKfTXRfE9kyqEj6Y',
 
     /* Cookie设置 */
     'COOKIE_EXPIRE'         => 0,    // Coodie有效期
     'COOKIE_DOMAIN'         => '',      // Cookie有效域名
     'COOKIE_PATH'           => '/',     // Cookie路径
-    'COOKIE_PREFIX'         => 'fP5a_',      // Cookie前缀 避免冲突
+    'COOKIE_PREFIX'         =>'UN6UX_',      // Cookie前缀 避免冲突
 
     /* SESSION设置 */
     'SESSION_AUTO_START'    => true,    // 是否自动开启Session
     'SESSION_OPTIONS'       => array(), // session 配置数组 支持type name id path expire domain 等参数
     'SESSION_TYPE'          => '', // session hander类型 默认无需设置 除非扩展了session hander驱动
-    'SESSION_PREFIX'        => 'fP5a_', // session 前缀
+    'SESSION_PREFIX'        =>'MNbxb_', // session 前缀
     //'VAR_SESSION_ID'      => 'session_id',     //sessionID的提交变量
 
 
